@@ -35,7 +35,7 @@ static LMAP_SCROLLWIN *w_sys = NULL;
 /* protos */
 
 int scr_info(void);
-void ncurses_msg(const char *fmt, va_list ap);
+void ncurses_msg(const char *msg);
 static void print_ifaceconfig(LMAP_WIN *win);
 static void print_suggconfig(LMAP_WIN *win);
 
@@ -95,6 +95,14 @@ int scr_info(void)
             USER_MSG("TAB: redrawing window");
             break;
       }
+  
+      /* 
+       * flush the messages queue.
+       * use -1 to flush all the messages or
+       * n for only n messages
+       */
+      
+      ui_msg_flush(-1);
       
    } while ( inputkey > 12 );
   
@@ -113,7 +121,7 @@ int scr_info(void)
  * handler for the USER_MSG implementation
  */
 
-void ncurses_msg(const char *fmt, va_list ap)
+void ncurses_msg(const char *msg)
 {
    /* 
     * if the window does not exist 
@@ -122,8 +130,10 @@ void ncurses_msg(const char *fmt, va_list ap)
       return;
    }
 
+   // wmove(W(w_sys), w_sys->y_scroll - 1, 0);        
+   
    wprintw(W(w_sys), "\n");
-   vwprintw(W(w_sys), (char *)fmt, ap);
+   wprintw(W(w_sys), (char *)msg);
    SAFE_SCROLL_REFRESH(w_sys);
 }
 

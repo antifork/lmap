@@ -53,18 +53,7 @@ WINDOW * menu_create(void)
    
    keypad(w_menu, TRUE);
    nodelay(w_menu, TRUE); 
-
-   return w_menu;
-}
-
-/* redraw the menu */
-
-void menu_refresh(WINDOW *w_menu)
-{
-   /* if total packet count hasn't changed, do nothing */
-   if (stats == get_stat("TOTAL"))
-      return;
-  
+   
    wattron(w_menu, A_REVERSE);
    mvwprintw(w_menu, 0, 0, "<F1>");     
    wattroff(w_menu, A_REVERSE);
@@ -81,6 +70,24 @@ void menu_refresh(WINDOW *w_menu)
    mvwprintw(w_menu, 0, COLS - 20, "Packets: %8d ", get_stat("TOTAL") );
    
    SAFE_WREFRESH(w_menu);
+
+   return w_menu;
+}
+
+/* redraw the menu */
+
+void menu_refresh(WINDOW *w_menu)
+{
+   
+   /* if total packet count hasn't changed, do nothing */
+   if (stats == get_stat("TOTAL")) {
+      return;
+   }
+   
+   wattroff(w_menu, A_REVERSE);
+   mvwprintw(w_menu, 0, COLS - 20, "Packets: %8d ", get_stat("TOTAL") );
+   
+   SAFE_WREFRESH(w_menu);
    stats = get_stat("TOTAL");
    refresh_statistics();
    
@@ -93,11 +100,13 @@ void menu_destroy(WINDOW **w_menu)
    DEBUG_MSG("menu_destroy");
         
    werase(*w_menu);
+   werase(w_stat);
    SAFE_WREFRESH(*w_menu);
+   SAFE_WREFRESH(w_stat);
    delwin(*w_menu);
    delwin(w_stat);
    *w_menu = NULL;
-   w_menu = NULL;
+   w_stat = NULL;
 }
 
 

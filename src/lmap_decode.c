@@ -102,10 +102,13 @@ void lmap_decode(u_char *u, const struct pcap_pkthdr *pkthdr, const u_char *pkt)
       
       /*
        * if there is pending data, update the pointer
+       * else we are out of the buffer... exit immediatly !
        */
       
       if (datalen > 0)
          data += len;
+      else
+         break;
       
       decoder = next_decoder;
       

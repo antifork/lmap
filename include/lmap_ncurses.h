@@ -53,16 +53,14 @@ enum {
    C_FOCUS  = 4,
 };
    
-#define SAFE_WREFRESH(x)   do { UI_LOCK; wrefresh(x); UI_UNLOCK; } while(0)
+#define SAFE_WREFRESH(x)   do { wrefresh(x); } while(0)
 
-#define SAFE_WIN_REFRESH(x)   do { UI_LOCK; wrefresh(x->win); UI_UNLOCK; } while(0)
+#define SAFE_WIN_REFRESH(x)   do { wrefresh(x->win); } while(0)
 
 #define SAFE_SCROLL_REFRESH(sx) do {  \
-   UI_LOCK;                            \
    pnoutrefresh(sx->win, sx->y_scroll, 0, sx->y + 1, sx->x + 1, sx->y + sx->lines - 2, sx->cols - 1 ); \
    wnoutrefresh(sx->out);              \
    doupdate();                         \
-   UI_UNLOCK;                          \
 } while(0)
 
 

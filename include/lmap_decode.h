@@ -62,7 +62,8 @@ enum {
 /* proto layer types */
 
 enum {
-   LP_TYPE_SSH  = 0x0012,
+   LP_TYPE_DHCPD = 0x0043,     /* 67.udp  server */
+   LP_TYPE_DHCPC = 0x0044,     /* 68.udp  client */
 };
 
 /* IPv6 options types */
@@ -70,7 +71,7 @@ enum {
 /*       double check new definitions of either types.                  */
 
 enum {
-   LO6_TYPE_HBH = 0,  /* Hop-By-Hop */
+   LO6_TYPE_HBH = 0,   /* Hop-By-Hop */
    LO6_TYPE_RT  = 43,  /* Routing */
    LO6_TYPE_FR  = 44,  /* Fragment */
    LO6_TYPE_DST = 60,  /* Destination */

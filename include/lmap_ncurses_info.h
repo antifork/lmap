@@ -5,7 +5,7 @@
 #include <stdarg.h>
 
 extern int scr_info(void);
-extern void ncurses_msg(const char *fmt, va_list ap);
+extern void ncurses_msg(const char *msg);
 
 #endif
 

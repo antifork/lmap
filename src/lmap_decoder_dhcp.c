@@ -1,5 +1,5 @@
 /*
-    lmap -- ncurses TOPOLOGY implementation
+    lmap -- DHCP decoder module
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -19,57 +19,60 @@
 */
 
 #include <lmap.h>
-#include <lmap_ui.h>
-#include <lmap_ncurses.h>
-#include <lmap_ncurses_menu.h>
+#include <lmap_decode.h>
 
-#include <poll.h>
+
+/* globals */
+
 
 /* protos */
 
-int scr_topology(void);
+FUNC_DECODER(decode_dhcpd);
+FUNC_DECODER(decode_dhcpc);
+void dhcp_init(void);
 
 /*******************************************/
 
-/* 
- * handle the "topology" screen
- * returns the next screen to be displayed
+/*
+ * this function is the initializer.
+ * it adds the entry in the table of registered decoder
  */
 
-int scr_topology(void)
+void __init dhcp_init(void)
 {
-   int inputkey = 0; 
-   WINDOW *w_menu;
-  
-   /* the upper menu */
-   w_menu = menu_create();
-   SAFE_WREFRESH(w_menu);
+   add_decoder(APP_LAYER, LP_TYPE_DHCPD, decode_dhcpd);
+   add_decoder(APP_LAYER, LP_TYPE_DHCPC, decode_dhcpc);
+   register_stat("DHCP");
+}
 
-   /* loop inside this screen */
-   
-   do {
-      inputkey = 0xff;  /* unused value */
 
-      POLL_WGETCH(inputkey, w_menu);
-      
-      menu_refresh(w_menu);
+/* server messages */
 
-      menu_event(w_menu, &inputkey);
-      
-      switch(inputkey) {
-         case KEY_TAB:
-            break;
-      }
-      
-   } while ( inputkey > 12 );
-  
-   /* clean up the screen and return */
+FUNC_DECODER(decode_dhcpd)
+{
+   (void)DECODE_DATA;
+
+   DECODED_LEN = 0;
+
+   USER_MSG("DHCP -- server");
+   DEBUG_MSG("DHCP -- server");
+
+   return NULL;
+}
+
+
+/* client messages */
+
+FUNC_DECODER(decode_dhcpc)
+{
+   (void)DECODE_DATA;
+
+   DECODED_LEN = 0;
+
+   USER_MSG("DHCP -- client");
+   DEBUG_MSG("DHCP -- client");
    
-   menu_destroy(&w_menu);
-   
-   DEBUG_MSG("scr_topology exits with code %d", inputkey);
-   
-   return inputkey;        
+   return NULL;
 }
 
 
