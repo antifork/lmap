@@ -1,6 +1,8 @@
 #ifndef LMAP_DB_H
 #define LMAP_DB_H
 
+#include <lmap_inet.h>
+
 /* bucket content */
 
 struct L2_info {
@@ -10,8 +12,8 @@ struct L2_info {
 };
 
 struct L3_info {
-   u_int32  ip_src;
-   u_int32  ip_dst;
+   struct ip_addr  ip_src;
+   struct ip_addr  ip_dst;
    u_int16  proto;
    u_int8   ttl;
 };
@@ -27,9 +29,9 @@ struct L5_info {
    int type;
    union {
       struct dhcp {
-         u_int32  ip;
-         u_int32  gw;
-         u_int32  dns;
+         struct ip_addr  ip;
+         struct ip_addr  gw;
+         struct ip_addr  dns;
       };
    } un;
 };
