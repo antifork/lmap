@@ -15,6 +15,7 @@ lmap_SOURCES = lmap_main.c \
                lmap_decoder_eth.c \
                lmap_decoder_wifi.c \
                lmap_decoder_ip.c \
+               lmap_decoder_icmp.c \
                lmap_decoder_arp.c \
                lmap_decoder_udp.c \
                lmap_decoder_tcp.c \

@@ -1,5 +1,5 @@
 /*
-    lmap -- UDP decoder module
+    lmap -- ICMP decoder module
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -19,21 +19,32 @@
 
 #include <lmap.h>
 #include <lmap_decode.h>
-
+#include <lmap_inet.h>
 
 /* globals */
 
-struct udp_header {
-   u_int16  sport;           /* source port */
-   u_int16  dport;           /* destination port */
-   u_int16  ulen;            /* udp length */
-   u_int16  sum;             /* udp checksum */
+struct icmp_header {
+   u_int8   type;     /* message type */
+   u_int8   code;     /* type sub-code */
+   u_int16  checksum;
+   union {
+      struct {
+         u_int16  id;
+         u_int16  sequence;
+      } echo;       /* echo datagram */
+      u_int32     gateway; /* gateway address */
+      struct {
+         u_int16  __unused;
+         u_int16  mtu;
+      } frag;       /* path mtu discovery */
+   } un;
 };
+
 
 /* protos */
 
-FUNC_DECODER(decode_udp);
-void udp_init(void);
+FUNC_DECODER(decode_icmp);
+void icmp_init(void);
 
 /*******************************************/
 
@@ -42,29 +53,29 @@ void udp_init(void);
  * it adds the entry in the table of registered decoder
  */
 
-void __init udp_init(void)
+void __init icmp_init(void)
 {
-   add_decoder(PROTO_LAYER, LN_TYPE_UDP, decode_udp);
+   add_decoder(PROTO_LAYER, LN_TYPE_ICMP, decode_icmp);
 }
 
 
-FUNC_DECODER(decode_udp)
+FUNC_DECODER(decode_icmp)
 {
-   struct udp_header *udp;
+   struct icmp_header *icmp;
 
-   udp = (struct udp_header *)DECODE_DATA;
+   icmp = (struct icmp_header *)DECODE_DATA;
+  
+   DECODED_LEN = sizeof(struct icmp_header);
 
-   DECODED_LEN = sizeof(struct udp_header);
    
-   DEBUG_MSG("UDP : 0x%04x bytes\n%s\n", 
+   DEBUG_MSG("ICMP : 0x%04x bytes\n%s", 
                    DECODE_DATALEN, 
                    hex_format(DECODE_DATA, DECODED_LEN));
    
-   DEBUG_MSG(" --> source  %d", ntohs(udp->sport));
-   DEBUG_MSG(" --> dest    %d", ntohs(udp->dport));
 
-   DEBUG_MSG(" --> data    %d bytes\n", ntohs(udp->ulen) - DECODED_LEN);
-   
+   DEBUG_MSG(" --> type   0x%02x\n", icmp->type);
+
+      
    return NULL;
 }
 
