@@ -42,6 +42,7 @@ void register_stat(const char *type);
 u_int32 get_stat_count(void);
 void update_stat(const char *type, const u_int32 count);
 u_int32 get_stat(const char *type);
+int get_all_stats(char **type, int *num);
 void free_stats(void);
 
 /***************************************/
@@ -99,6 +100,31 @@ u_int32 get_stat(const char *type)
    
    return 0; 
 }
+
+/*
+ * this function has to be used only
+ * in cicles... it maintain an internal static
+ * counter to return all the stats, so
+ * it must be called until it returns 0
+ */
+
+int get_all_stats(char **type, int *num)
+{
+   static struct stat_list *current = NULL;
+   
+   if (current == NULL)
+      current = LIST_FIRST(&stat_list_head);
+   else {
+      *type = strdup(current->type);
+      *num = current->num;
+      current = LIST_NEXT(current, next);
+      return 1;
+   }
+   
+   return 0; 
+}
+
+
 
 void free_stats(void)
 {

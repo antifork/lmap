@@ -118,24 +118,24 @@ void show_statistics(void)
 void refresh_statistics(void)
 {
    int i = 1;
+   char *type;
+   u_int32 num;
    
    (void)i; 
 
    /* if statistics are not displayed, do nothing */
    if (w_stat == NULL)
       return;
-  
-#error NON COMPILA VOLUTAMENTE... vedere i commenti
-   /*
-    * ora e' tardi (01:05 am) e ho sonno...  quindi non la implemento ora...
-    *
-    * cmq bisognarebbe trovare un modo per stampare le stat
-    * senza sapere come e' fatta la stat_list in questo punto.
-    *
-    * una funzione che torna type e num successivamente andrebbe bene.
+ 
+   /* 
+    * get_all_stat has an internal counter...
+    * always run until it returns 0
     */
    
-   //   mvwprintw(w_stat, i++, 2, "%5s  : %8d", curr->type, curr->num);
+   while (get_all_stats(&type, &num)) {
+      mvwprintw(w_stat, i++, 2, "%5s  : %8d", type, num);
+      SAFE_FREE(type);
+   }
    
    SAFE_WREFRESH(w_stat);
 }
