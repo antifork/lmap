@@ -34,11 +34,11 @@ static LIST_HEAD(, thread_list) thread_list_head;
 
 /* protos... */
 
-char * lmap_thread_getname(u_int32 id);
-char * lmap_thread_getdesc(u_int32 id);
-void lmap_thread_register(u_int32 id, char *name, char *desc);
-u_int32 lmap_thread_new(char *name, char *desc, void *(*function)(void *), void *args);
-void lmap_thread_destroy(u_int32 id);
+char * lmap_thread_getname(pthread_t id);
+char * lmap_thread_getdesc(pthread_t id);
+void lmap_thread_register(pthread_t id, char *name, char *desc);
+pthread_t lmap_thread_new(char *name, char *desc, void *(*function)(void *), void *args);
+void lmap_thread_destroy(pthread_t id);
 void lmap_thread_init(void);
 void lmap_thread_testcancel(void);
 void lmap_thread_kill_all(void);
@@ -47,7 +47,7 @@ void lmap_thread_kill_all(void);
 
 /* returns the name of a thread */
 
-char * lmap_thread_getname(u_int32 id)
+char * lmap_thread_getname(pthread_t id)
 {
    struct thread_list *current;
 
@@ -64,7 +64,7 @@ char * lmap_thread_getname(u_int32 id)
 
 /* returns the description of a thread */
 
-char * lmap_thread_getdesc(u_int32 id)
+char * lmap_thread_getdesc(pthread_t id)
 {
    struct thread_list *current;
 
@@ -82,7 +82,7 @@ char * lmap_thread_getdesc(u_int32 id)
 
 /* add a thread in the thread list */
 
-void lmap_thread_register(u_int32 id, char *name, char *desc)
+void lmap_thread_register(pthread_t id, char *name, char *desc)
 {
    struct thread_list *current, *newelem;
 
@@ -113,7 +113,7 @@ void lmap_thread_register(u_int32 id, char *name, char *desc)
  * creates a new thread on the given function
  */
 
-u_int32 lmap_thread_new(char *name, char *desc, void *(*function)(void *), void *args)
+pthread_t lmap_thread_new(char *name, char *desc, void *(*function)(void *), void *args)
 {
    pthread_t id;
 
@@ -122,26 +122,26 @@ u_int32 lmap_thread_new(char *name, char *desc, void *(*function)(void *), void 
    if (pthread_create(&id, NULL, function, args) < 0)
       ERROR_MSG("not enough system resources to create a new thread");
 
-   lmap_thread_register((u_int32)id, name, desc);
+   lmap_thread_register(id, name, desc);
 
    DEBUG_MSG("lmap_thread_new -- %d created ", (u_int32)id);
    
-   return (u_int32)id;
+   return id;
 }
 
 /*
  * destroy a thread in the list
  */
 
-void lmap_thread_destroy(u_int32 id)
+void lmap_thread_destroy(pthread_t id)
 {
    struct thread_list *current;
 
    DEBUG_MSG("lmap_thread_destroy -- terminating %lu [%s]", id, lmap_thread_getname(id));
 
-   pthread_cancel(id);
+   pthread_cancel((pthread_t)id);
 
-   pthread_join(id, NULL);
+   pthread_join((pthread_t)id, NULL);
 
    LIST_FOREACH(current, &thread_list_head, next) {
       if (current->t.id == id) {
@@ -182,7 +182,7 @@ void lmap_thread_init(void)
 void lmap_thread_kill_all(void)
 {
    struct thread_list *current;
-   u_int32 id = pthread_self();
+   pthread_t id = pthread_self();
 
    DEBUG_MSG("lmap_thread_kill_all -- caller %lu [%s]", id, lmap_thread_getname(id));
 

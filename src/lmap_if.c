@@ -73,7 +73,7 @@ int eth_addr_ntoa(const u_int8 *ll_addr, u_char *ascii)
 
 int get_iface_idx(const char *iface)
 {
-#if !defined OS_SOLARIS /* XXX fix this */
+#if defined OS_LINUX /* XXX fix this */
    int sock;
    struct ifreq ifr;
 
@@ -280,7 +280,7 @@ int get_iface_ll(const char *iface, char *ll_addr)
          sdl = (struct sockaddr_dl *)(ifm + 1);
          if (strncmp(&sdl->sdl_data[0], iface, sdl->sdl_nlen) == 0)
          {
-            memcpy(ll_addr, LLADDR(sdl), ETHER_ADDR_LEN);
+            memcpy(ll_addr, LLADDR(sdl), ETH_ADDR_LEN);
             break;
          }
       }

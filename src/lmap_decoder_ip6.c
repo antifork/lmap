@@ -76,8 +76,12 @@ FUNC_DECODER(decode_ip6)
    
    ip6 = (struct ip6_header *)DECODE_DATA;
   
-   
-   DECODED_LEN = ip6->payload_len + IP6_HDR_LEN;
+   if (ip6->payload_len == 0) {
+      USER_MSG("IPv6 jumbogram, Hop-By-Hop header should follow");
+      DECODED_LEN = 0;
+   } else {
+      DECODED_LEN = ip6->payload_len + IP6_HDR_LEN;
+   }
 
    /* IP addresses */
    ip_addr_init(&BUCKET->L3->ip_src, AF_INET6, (u_char *)&ip6->saddr);

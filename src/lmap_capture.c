@@ -28,7 +28,13 @@
 #include <pcap.h>
 
 #define PCAP_PROMISC 1
+
+#ifdef OS_LINUX
 #define PCAP_TIMEOUT 0
+#else
+/* BSD and Solaris sux */
+#define PCAP_TIMEOUT 1
+#endif
 
 void capture_init(void);
 void capture_close(void);

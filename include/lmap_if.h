@@ -5,6 +5,12 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 
+#ifdef OS_BSD
+#include <net/if_dl.h>
+#include <sys/param.h>
+#include <sys/sysctl.h>
+#endif
+
 #define LINUX_ROUTE_FILE "/proc/net/route"
 #define RESOLV_FILE "/etc/resolv.conf"
 
