@@ -46,6 +46,7 @@ void udp_init(void);
 void __init udp_init(void)
 {
    add_decoder(PROTO_LAYER, LN_TYPE_UDP, decode_udp);
+   register_stat("UDP");
 }
 
 
@@ -53,7 +54,7 @@ FUNC_DECODER(decode_udp)
 {
    struct udp_header *udp;
 
-   ADD_STAT(udp);
+   update_stat("UDP", 1);
    
    udp = (struct udp_header *)DECODE_DATA;
 

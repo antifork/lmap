@@ -57,6 +57,7 @@ void icmp_init(void);
 void __init icmp_init(void)
 {
    add_decoder(PROTO_LAYER, LN_TYPE_ICMP, decode_icmp);
+   register_stat("ICMP");
 }
 
 
@@ -64,7 +65,7 @@ FUNC_DECODER(decode_icmp)
 {
    struct icmp_header *icmp;
 
-   ADD_STAT(icmp);
+   update_stat("ICMP", 1);
    
    icmp = (struct icmp_header *)DECODE_DATA;
   

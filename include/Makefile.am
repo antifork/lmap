@@ -20,7 +20,8 @@ noinst_HEADERS = lmap_capture.h \
                  lmap_ncurses_info.h \
                  lmap_ncurses_menu.h \
                  lmap_version.h \
-                 lmap_threads.h 
+                 lmap_threads.h \
+				 lmap_stat.h 
    
 EXTRA_DIST = missing/strlcpy.h \
              missing/strlcat.h \

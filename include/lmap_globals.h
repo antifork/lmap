@@ -24,12 +24,9 @@ struct pcap_env {
 };
 
 struct stat_env {
+   char *id;
    u_int32 total;
-   u_int32 ip;
-   u_int32 icmp;
-   u_int32 arp;
-   u_int32 tcp;
-   u_int32 udp;
+   struct stat_env *next;
 };
 
 

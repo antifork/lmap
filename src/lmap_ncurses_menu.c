@@ -62,7 +62,7 @@ WINDOW * menu_create(void)
 void menu_refresh(WINDOW *w_menu)
 {
    /* if total packet count hasn't changed, do nothing */
-   if (stats == GBL_STAT->total)
+   if (stats == get_stathead()->total)
       return;
   
    wattron(w_menu, A_REVERSE);
@@ -70,7 +70,7 @@ void menu_refresh(WINDOW *w_menu)
    wattroff(w_menu, A_REVERSE);
    mvwprintw(w_menu, 0, COLS - 20, "Packets: %8d ", GET_STAT(total) );
    SAFE_WREFRESH(w_menu);
-   stats = GBL_STAT->total;
+   stats = get_stathead()->total;
    refresh_statistics();
    
 }
@@ -101,7 +101,7 @@ void show_statistics(void)
       return;
    }
    
-   w_stat = newwin(7, 20, 1, COLS - 20);
+   w_stat = newwin(get_stat_count()+2, 20, 1, COLS - 20);
 
    wattron(w_stat, COLOR_PAIR(C_TITLE));
                    
@@ -117,15 +117,20 @@ void show_statistics(void)
 
 void refresh_statistics(void)
 {
+   int i = 1;
+   struct stat_env *curr = NULL;
+
    /* if statistics are not displayed, do nothing */
    if (w_stat == NULL)
       return;
    
-   mvwprintw(w_stat, 1, 2, "IP   : %8d", GET_STAT(ip));
-   mvwprintw(w_stat, 2, 2, "ARP  : %8d", GET_STAT(arp));
-   mvwprintw(w_stat, 3, 2, "ICMP : %8d", GET_STAT(icmp));
-   mvwprintw(w_stat, 4, 2, "TCP  : %8d", GET_STAT(tcp));
-   mvwprintw(w_stat, 5, 2, "UDP  : %8d", GET_STAT(udp));
+   curr = get_stathead();
+
+   while (curr->next != NULL) {
+      curr = curr->next;
+      mvwprintw(w_stat, i, 2, "%s  : %8d", curr->id, curr->total);
+      i++;
+   }
    
    SAFE_WREFRESH(w_stat);
 }

@@ -64,6 +64,7 @@ void tcp_init(void);
 void __init tcp_init(void)
 {
    add_decoder(PROTO_LAYER, LN_TYPE_TCP, decode_tcp);
+   register_stat("TCP");
 }
 
 
@@ -71,7 +72,7 @@ FUNC_DECODER(decode_tcp)
 {
    struct tcp_header *tcp;
 
-   ADD_STAT(tcp);
+   update_stat("TCP", 1);
    
    tcp = (struct tcp_header *)DECODE_DATA;
 

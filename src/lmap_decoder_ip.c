@@ -60,6 +60,7 @@ void ip_init(void);
 void __init ip_init(void)
 {
    add_decoder(NET_LAYER, LL_TYPE_IP, decode_ip);
+   register_stat("IP");
 }
 
 
@@ -67,7 +68,7 @@ FUNC_DECODER(decode_ip)
 {
    struct ip_header *ip;
 
-   ADD_STAT(ip);
+   update_stat("IP", 1);
    
    ip = (struct ip_header *)DECODE_DATA;
   

@@ -54,6 +54,7 @@ void arp_init(void);
 void __init arp_init(void)
 {
    add_decoder(NET_LAYER, LL_TYPE_ARP, decode_arp);
+   register_stat("ARP");
 }
 
 
@@ -61,7 +62,7 @@ FUNC_DECODER(decode_arp)
 {
    struct arp_header *arp;
 
-   ADD_STAT(arp);
+   update_stat("ARP", 1);
    
    arp = (struct arp_header *)DECODE_DATA;
 

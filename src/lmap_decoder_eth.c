@@ -56,7 +56,7 @@ FUNC_DECODER(decode_eth)
 {
    struct eth_header *eth;
 
-   ADD_STAT(total);
+   update_stat("TOTAL", 1);
   
    DECODED_LEN = sizeof(struct eth_header);
    

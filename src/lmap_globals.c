@@ -51,6 +51,9 @@ void globals_alloc(void)
    
    gbls->stat = calloc(1, sizeof(struct stat_env));
    ON_ERROR(gbls->stat, NULL, "can't allocate stat_env");
+   gbls->stat->id = "TOTAL";
+   gbls->stat->next = NULL;
+   printf("%s\n", GBL_STAT->id);
    
    atexit(globals_free);
    
@@ -63,7 +66,7 @@ void globals_free(void)
  
    GBL_FREE(gbls->pcap);
    
-   GBL_FREE(gbls->stat);
+   free_stats();
    
    GBL_FREE(gbls->env->name);
    GBL_FREE(gbls->env->version);

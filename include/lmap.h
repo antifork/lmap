@@ -26,7 +26,7 @@
 #include <lmap_debug.h>
 #include <lmap_stdint.h>
 #include <lmap_globals.h>
-
+#include <lmap_stat.h>
 
 #ifndef HAVE_STRLCAT
    #include <missing/strlcat.h>
