@@ -95,6 +95,7 @@ lmap_SOURCES = lmap_main.c \
                lmap_capture.c \
                lmap_inet.c \
                lmap_threads.c \
+               lmap_data.c \
                lmap_ui.c \
                lmap_ncurses.c \
                lmap_ncurses_info.c \
@@ -126,8 +127,9 @@ am_lmap_OBJECTS = lmap-lmap_main.$(OBJEXT) lmap-lmap_debug.$(OBJEXT) \
 	lmap-lmap_error.$(OBJEXT) lmap-lmap_signal.$(OBJEXT) \
 	lmap-lmap_globals.$(OBJEXT) lmap-lmap_parser.$(OBJEXT) \
 	lmap-lmap_capture.$(OBJEXT) lmap-lmap_inet.$(OBJEXT) \
-	lmap-lmap_threads.$(OBJEXT) lmap-lmap_ui.$(OBJEXT) \
-	lmap-lmap_ncurses.$(OBJEXT) lmap-lmap_ncurses_info.$(OBJEXT) \
+	lmap-lmap_threads.$(OBJEXT) lmap-lmap_data.$(OBJEXT) \
+	lmap-lmap_ui.$(OBJEXT) lmap-lmap_ncurses.$(OBJEXT) \
+	lmap-lmap_ncurses_info.$(OBJEXT) \
 	lmap-lmap_ncurses_menu.$(OBJEXT) lmap-lmap_decode.$(OBJEXT) \
 	lmap-lmap_decoder_raw.$(OBJEXT) lmap-lmap_decoder_eth.$(OBJEXT) \
 	lmap-lmap_decoder_wifi.$(OBJEXT) lmap-lmap_decoder_ip.$(OBJEXT) \
@@ -153,6 +155,7 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	$(DEPDIR)/missing/strlcpy.Po \
 @AMDEP_TRUE@	$(DEPDIR)/missing/strsep.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/lmap-lmap_capture.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/lmap-lmap_data.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/lmap-lmap_debug.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/lmap-lmap_decode.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/lmap-lmap_decoder_arp.Po \
@@ -227,6 +230,7 @@ lmap-lmap_parser.$(OBJEXT): lmap_parser.c
 lmap-lmap_capture.$(OBJEXT): lmap_capture.c
 lmap-lmap_inet.$(OBJEXT): lmap_inet.c
 lmap-lmap_threads.$(OBJEXT): lmap_threads.c
+lmap-lmap_data.$(OBJEXT): lmap_data.c
 lmap-lmap_ui.$(OBJEXT): lmap_ui.c
 lmap-lmap_ncurses.$(OBJEXT): lmap_ncurses.c
 lmap-lmap_ncurses_info.$(OBJEXT): lmap_ncurses_info.c
@@ -258,6 +262,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/missing/strlcpy.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/missing/strsep.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lmap-lmap_capture.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lmap-lmap_data.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lmap-lmap_debug.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lmap-lmap_decode.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lmap-lmap_decoder_arp.Po@am__quote@
@@ -402,6 +407,18 @@ lmap-lmap_threads.obj: lmap_threads.c
 @AMDEP_TRUE@	depfile='$(DEPDIR)/lmap-lmap_threads.Po' tmpdepfile='$(DEPDIR)/lmap-lmap_threads.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(lmap_CFLAGS) $(CFLAGS) -c -o lmap-lmap_threads.obj `cygpath -w lmap_threads.c`
+
+lmap-lmap_data.o: lmap_data.c
+@AMDEP_TRUE@	source='lmap_data.c' object='lmap-lmap_data.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/lmap-lmap_data.Po' tmpdepfile='$(DEPDIR)/lmap-lmap_data.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(lmap_CFLAGS) $(CFLAGS) -c -o lmap-lmap_data.o `test -f 'lmap_data.c' || echo '$(srcdir)/'`lmap_data.c
+
+lmap-lmap_data.obj: lmap_data.c
+@AMDEP_TRUE@	source='lmap_data.c' object='lmap-lmap_data.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/lmap-lmap_data.Po' tmpdepfile='$(DEPDIR)/lmap-lmap_data.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(lmap_CFLAGS) $(CFLAGS) -c -o lmap-lmap_data.obj `cygpath -w lmap_data.c`
 
 lmap-lmap_ui.o: lmap_ui.c
 @AMDEP_TRUE@	source='lmap_ui.c' object='lmap-lmap_ui.o' libtool=no @AMDEPBACKSLASH@
