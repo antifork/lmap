@@ -19,14 +19,15 @@
 
 #include <lmap.h>
 #include <lmap_decode.h>
+#include <lmap_threads.h>
 
 #include <pcap.h>
 
 /* globals */
 
-FUNC_DECODER_PTR(l2_decoder);
+static FUNC_DECODER_PTR(l2_decoder);
 
-SLIST_HEAD (, dec_entry) decoders_table;
+static SLIST_HEAD (, dec_entry) decoders_table;
 
 struct dec_entry {
    int type;
@@ -54,13 +55,15 @@ void lmap_decode(u_char *u, const struct pcap_pkthdr *pkthdr, const u_char *pkt)
    int len;
    u_char *data;
    int datalen;
-   
-   DEBUG_MSG("\n***************************************************************\n");
-   DEBUG_MSG("lmap_get_packets (one packet dispatched from pcap)");
+  
+   lmap_thread_testcancel();
+  
+   USER_MSG("\n***************************************************************\n");
+   USER_MSG("lmap_get_packets (one packet dispatched from pcap)");
 
-   DEBUG_MSG("CAPTURED: 0x%04x bytes\n%s\n", pkthdr->caplen,
+   USER_MSG("CAPTURED: 0x%04x bytes\n%s\n", pkthdr->caplen,
                                              hex_format(pkt, pkthdr->caplen));
-
+   
    /* dump packet to file if specified on command line */
 
    if (GBL_OPTIONS->dump)
@@ -75,6 +78,8 @@ void lmap_decode(u_char *u, const struct pcap_pkthdr *pkthdr, const u_char *pkt)
    
    do {
            
+      lmap_thread_testcancel();
+      
       /*
        * execute the decoder
        * it will return the next decoder or NULL if 

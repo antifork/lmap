@@ -60,6 +60,8 @@ FUNC_DECODER(decode_arp)
 {
    struct arp_header *arp;
 
+   ADD_STAT(arp);
+   
    arp = (struct arp_header *)DECODE_DATA;
 
    /*

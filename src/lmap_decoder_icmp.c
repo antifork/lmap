@@ -63,6 +63,8 @@ FUNC_DECODER(decode_icmp)
 {
    struct icmp_header *icmp;
 
+   ADD_STAT(icmp);
+   
    icmp = (struct icmp_header *)DECODE_DATA;
   
    DECODED_LEN = sizeof(struct icmp_header);

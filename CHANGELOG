@@ -9,7 +9,8 @@ Legenda:
 0.0.2 -- 
 
 + thread support
-+ preliminary UI enginge
++ preliminary UI engine
+! fixed automake issue with missing functions
 
 
 0.0.1 -- 20021021

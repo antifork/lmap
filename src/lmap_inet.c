@@ -22,15 +22,28 @@
 
 #include <netinet/in.h>
 #include <arpa/inet.h>
-
+#include <sys/socket.h>
+#include <sys/ioctl.h>
+#include <net/if.h>
+#include <net/route.h>
 
 /* protos... */
 
 
+/* XXX remove these */
 char * ha_ntoa(const u_char *ll_addr);
 char * ha_aton(const u_char *ll_addr);
 char * pa_ntoa(const u_char *ip_addr);
 u_int32 pa_aton(const u_char *ip_addr);
+/********************/
+
+int pa_ntoa_r(u_int32 ip_addr, u_char *ascii);
+int ha_ntoa_r(u_int8 *ll_addr, u_char *ascii);
+
+int get_iface_ip(char *iface, u_int32 *ip_addr);
+int get_iface_ll(char *iface, char *ll_addr);
+int get_iface_mask(char *iface, u_int32 *netmask);
+int get_default_gw(u_int32 *gw_addr);
 
 
 /*******************************************/
@@ -89,6 +102,144 @@ char * ha_aton(const u_char *ll_addr)
    network[5] = (char) m6;
    
    return network;
+}
+
+
+/* convert a ip address to a printable dot notation */
+
+int pa_ntoa_r(u_int32 ip_addr, u_char *ascii)
+{
+   u_char *p;
+
+   p = (u_char *)&ip_addr;
+   
+   sprintf(ascii, "%u.%u.%u.%u", p[0], p[1], p[2], p[3]);
+        
+   return ESUCCESS;
+}
+
+/* convert a link layer address to a printable dot notation */
+
+int ha_ntoa_r(u_int8 *ll_addr, u_char *ascii)
+{
+   sprintf(ascii, "%02X:%02X:%02X:%02X:%02X:%02X", ll_addr[0], ll_addr[1],
+                   ll_addr[2], ll_addr[3], ll_addr[4], ll_addr[5]);
+   
+   return ESUCCESS;
+}
+
+
+/* return the IP address for the specified iface */
+
+int get_iface_ip(char *iface, u_int32 *ip_addr)
+{
+   int sock;
+   struct ifreq ifr;
+
+   if (ip_addr == NULL)
+      return -EINVALID;
+
+   sock = socket(AF_INET, SOCK_DGRAM, 0);
+
+   memset(&ifr, 0, sizeof(ifr));
+   strncpy(ifr.ifr_name, iface, sizeof(ifr.ifr_name));
+
+   if ( ioctl(sock, SIOCGIFADDR, &ifr) < 0 ) {
+      close(sock);
+      return -ENOADDRESS;
+   }
+   
+   memcpy((char *)ip_addr, ifr.ifr_addr.sa_data + 2, IP_ADDR_LEN);
+        
+   close(sock);
+   
+   return ESUCCESS;
+}
+
+/* return the NETMASK for the specified iface */
+
+int get_iface_mask(char *iface, u_int32 *netmask)
+{
+   int sock;
+   struct ifreq ifr;
+
+   if (netmask == NULL)
+      return -EINVALID;
+   
+   sock = socket(AF_INET, SOCK_DGRAM, 0);
+
+   memset(&ifr, 0, sizeof(ifr));
+   strncpy(ifr.ifr_name, iface, sizeof(ifr.ifr_name));
+
+   if ( ioctl(sock, SIOCGIFNETMASK, &ifr) < 0 ) {
+      close(sock);
+      return -ENOADDRESS;
+   }
+   
+   memcpy((char *)netmask, ifr.ifr_addr.sa_data + 2, IP_ADDR_LEN);
+   
+   close(sock);
+   
+   return ESUCCESS;
+}
+
+/* return the LINK LAYER address for the specified iface */
+
+int get_iface_ll(char *iface, char *ll_addr)
+{
+#ifdef OS_LINUX
+   int sock;
+   struct ifreq ifr;
+
+   if (ll_addr == NULL)
+      return -EINVALID;
+   
+   sock = socket(AF_INET, SOCK_DGRAM, 0);
+
+   memset(&ifr, 0, sizeof(ifr));
+   strncpy(ifr.ifr_name, iface, sizeof(ifr.ifr_name));
+
+   if ( ioctl(sock, SIOCGIFHWADDR, &ifr) < 0 )
+      ERROR_MSG("ioctl(SIOCGIFNETMASK)");
+   
+   memcpy(ll_addr, ifr.ifr_addr.sa_data, ETH_ADDR_LEN);
+   
+   close(sock);
+#else
+   #error get_iface_ll implemented only under linux
+#endif
+   
+   return ESUCCESS;
+}
+
+int get_default_gw(u_int32 *gw_addr)
+{
+#ifdef OS_LINUX
+   FILE *rf_fp = (FILE *)NULL;
+   char line[1024];
+   u_int32 dest;
+   u_int16 flags;
+
+   if((rf_fp = fopen(LINUX_ROUTE_FILE, "r")) == (FILE *)NULL) {
+      return(EINVALID);
+   }
+
+   fgets(line, sizeof(line) - 1, rf_fp);
+   while(fgets(line, sizeof(line) - 1, rf_fp) != (char *)NULL) {
+      if(sscanf(line + 8, "%x %x %hx", &dest, gw_addr, &flags) != 3) {
+	 continue;
+      }
+      if((flags & RTF_GATEWAY) && (dest == INADDR_ANY)) {
+         fclose(rf_fp);
+         return(ESUCCESS);
+      }
+   }
+   fclose(rf_fp);
+   return(ENOTFOUND);
+
+#else
+   #error get_default_gw implemented only under linux
+#endif
 }
 
 

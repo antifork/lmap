@@ -29,7 +29,7 @@ struct eth_header
 {
    u_int8   dha[ETH_ADDR_LEN];       /* destination eth addr */
    u_int8   sha[ETH_ADDR_LEN];       /* source ether addr */
-   u_int16  proto;               /* packet type ID field */
+   u_int16  proto;                   /* packet type ID field */
 };
 
 
@@ -54,7 +54,9 @@ void __init eth_init(void)
 FUNC_DECODER(decode_eth)
 {
    struct eth_header *eth;
-   
+
+   ADD_STAT(total);
+  
    DECODED_LEN = sizeof(struct eth_header);
    
    eth = (struct eth_header *)DECODE_DATA;

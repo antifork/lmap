@@ -70,6 +70,8 @@ FUNC_DECODER(decode_tcp)
 {
    struct tcp_header *tcp;
 
+   ADD_STAT(tcp);
+   
    tcp = (struct tcp_header *)DECODE_DATA;
 
    DECODED_LEN = (tcp->off * 4);

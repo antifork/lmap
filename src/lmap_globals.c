@@ -48,6 +48,9 @@ void globals_alloc(void)
    gbls->pcap = calloc(1, sizeof(struct pcap_env));
    ON_ERROR(gbls->pcap, NULL, "can't allocate pcap_env");
    
+   gbls->stat = calloc(1, sizeof(struct stat_env));
+   ON_ERROR(gbls->stat, NULL, "can't allocate stat_env");
+   
    atexit(globals_free);
    
    return;
@@ -58,6 +61,8 @@ void globals_free(void)
 {
  
    GBL_FREE(gbls->pcap);
+   
+   GBL_FREE(gbls->stat);
    
    GBL_FREE(gbls->env->name);
    GBL_FREE(gbls->env->version);

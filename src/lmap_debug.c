@@ -24,6 +24,10 @@
 
 #ifdef DEBUG
 
+#ifdef HAVE_NCURSES
+   #include <ncurses.h>
+#endif
+
 #include <stdarg.h>
 #ifdef HAVE_SYS_UTSNAME_H
    #include <sys/utsname.h>
@@ -67,6 +71,9 @@ void debug_init(void)
    #if defined (__GNUC__) && defined (__GNUC_MINOR__)
       fprintf (debug_file, "-> compiled with gcc %d.%d\n", __GNUC__, __GNUC_MINOR__);
    #endif
+   #ifdef HAVE_NCURSES 
+      fprintf (debug_file, "-> %s\n", curses_version());
+   #endif
    fprintf (debug_file, "\n\nDEVICE OPENED FOR %s DEBUGGING\n\n", GBL_PROGRAM);
    fflush(debug_file);
    atexit(debug_close);
@@ -88,7 +95,7 @@ void debug_msg(const char *message, ...)
    va_list ap;
    char debug_message[strlen(message)+2];
 
-   fprintf (debug_file, "[%10s]\t", lmap_thread_getname(LMAP_SELF));
+   fprintf (debug_file, "[%9s]\t", lmap_thread_getname(LMAP_SELF));
 
    strlcpy(debug_message, message, sizeof(debug_message));
    strlcat(debug_message, "\n", sizeof(debug_message));
@@ -97,12 +104,6 @@ void debug_msg(const char *message, ...)
    vfprintf(debug_file, debug_message, ap);
    va_end(ap);
 
-/* XXX - removeme */
-   va_start(ap, message);
-   vprintf(debug_message, ap);
-   va_end(ap);
-/******************/
-   
    fflush(debug_file);
 }
 

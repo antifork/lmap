@@ -30,7 +30,7 @@ struct thread_list {
 
 /* global data */
 
-LIST_HEAD(, thread_list) thread_list_head;
+static LIST_HEAD(, thread_list) thread_list_head;
 
 /* protos... */
 
@@ -40,6 +40,8 @@ void lmap_thread_register(u_int32 id, char *name, char *desc);
 u_int32 lmap_thread_new(char *name, char *desc, void *(*function)(void *), void *args);
 void lmap_thread_destroy(u_int32 id);
 void lmap_thread_init(void);
+void lmap_thread_testcancel(void);
+void lmap_thread_kill_all(void);
 
 /*******************************************/
 
@@ -124,6 +126,8 @@ u_int32 lmap_thread_new(char *name, char *desc, void *(*function)(void *), void 
 
    lmap_thread_register((u_int32)id, name, desc);
 
+   DEBUG_MSG("lmap_thread_new -- %d created ", (u_int32)id);
+   
    return (u_int32)id;
 }
 
@@ -161,6 +165,8 @@ void lmap_thread_destroy(u_int32 id)
 
 void lmap_thread_init(void)
 {
+   DEBUG_MSG("lmap_thread_init -- %d", pthread_self());
+   
    /* 
     * allow a thread to be cancelled as soon as the
     * cancellation  request  is received
@@ -169,6 +175,37 @@ void lmap_thread_init(void)
    pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
 
 }
+
+/*
+ * kill all the registerd thread but
+ * the calling one
+ */
+
+void lmap_thread_kill_all(void)
+{
+   struct thread_list *current;
+   u_int32 id = pthread_self();
+
+   DEBUG_MSG("lmap_thread_kill_all -- caller %lu [%s]", id, lmap_thread_getname(id));
+
+   LIST_FOREACH(current, &thread_list_head, next) {
+      if (current->t.id != id) {
+         lmap_thread_destroy(current->t.id);      
+      }
+   }
+        
+}
+
+
+/*
+ * set a cancellation point
+ */
+
+void lmap_thread_testcancel(void)
+{
+   pthread_testcancel();
+}
+
 
 /* EOF */
 

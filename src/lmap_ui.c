@@ -21,6 +21,7 @@
 #include <lmap_ui.h>
 
 #include <stdarg.h>
+#include <pthread.h>
 
 /* globals */
 
@@ -29,8 +30,20 @@ struct ui_env {
    void (*start)(void);
    void (*cleanup)(void);
    void (*msg)(const char *fmt, va_list ap);
-} ui;
+};
 
+/* default hook */
+
+static struct ui_env ui = {
+   .init = &do_nothing,
+   .start = &do_nothing,
+   .cleanup = &do_nothing,
+   .msg = (void (*)(const char *, va_list))&vprintf,
+};
+
+/* globa mutex on interface */
+
+pthread_mutex_t ui_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 /* protos... */
 

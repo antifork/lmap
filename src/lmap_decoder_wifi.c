@@ -64,6 +64,8 @@ FUNC_DECODER(decode_wifi)
    struct wifi_ll_header *wifi_ll;
    void *next_decoder = NULL;
 
+   ADD_STAT(total);
+   
    DECODED_LEN = sizeof(struct wifi_header);
       
    wifi = (struct wifi_header *)DECODE_DATA;

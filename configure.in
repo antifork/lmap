@@ -19,7 +19,11 @@ dnl    Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA
 dnl
 
 AC_INIT(include/lmap.h)
-AM_INIT_AUTOMAKE(lmap, 0.0)
+
+VERSION=`grep LMAP_VERSION ./include/lmap_version.h | cut -f2 -d"\""`
+
+AC_CONFIG_SRCDIR(src/missing)
+AM_INIT_AUTOMAKE(lmap, $VERSION)
 
 AM_CONFIG_HEADER(include/config.h)
 
@@ -29,7 +33,6 @@ EB=`./shtool echo -n -e %b`
 AC_SUBST(SB)
 AC_SUBST(EB)
 
-VERSION=`grep LMAP_VERSION ./include/lmap_version.h | cut -f2 -d"\""`
 AC_SUBST(VERSION)
 
 LMAP_MESSAGE(Configuring lmap-$VERSION)
@@ -145,7 +148,6 @@ dnl   Check for libs
 dnl =====================
 
 AC_FUNC_MALLOC
-AC_FUNC_MEMCMP
 AC_TYPE_SIGNAL
 AC_FUNC_VPRINTF
 
@@ -153,8 +155,13 @@ dnl ===============================
 dnl   Check for non standard libs
 dnl ===============================
 
-
-AC_CHECK_FUNCS(strlcat strlcpy strsep memmem)
+AC_CHECK_FUNCS([strlcpy], , AC_LIBOBJ(missing/strlcpy) )
+AC_CHECK_FUNCS([strlcat], , AC_LIBOBJ(missing/strlcat) )
+AC_CHECK_FUNCS([strsep], , AC_LIBOBJ(missing/strsep) )
+AC_CHECK_FUNCS([memmem], , AC_LIBOBJ(missing/memmem) )
+AC_CHECK_FUNCS([memcmp], , AC_LIBOBJ(missing/memcmp) )
+AC_CHECK_FUNCS([getopt], , AC_LIBOBJ(missing/getopt) )
+AC_CHECK_FUNCS([getopt_long], , AC_LIBOBJ(missing/getopt_long) )
 
 
 dnl =======================================
@@ -238,6 +245,8 @@ AC_ARG_WITH(libpcap,
 )
 
 
+AH_TEMPLATE(HAVE_NCURSES, [ncurses support])
+
 ac_cv_lmap_libncurses=default
 
 AC_MSG_CHECKING(for libncurses)
@@ -254,14 +263,16 @@ AC_ARG_WITH(libncurses,
         if cd $withval; then withval=`pwd`; cd $owd; fi
         NCURSINC="-I$withval"
         NCURSLIB="-L$withval -lncurses"
-        ac_cv_sad_libncurses=$withval
+        AC_DEFINE(HAVE_NCURSES, 1)
+        ac_cv_lmap_libncurses=$withval
      elif test -f $withval/include/ncurses.h -a \
                -f $withval/lib/libncurses.a; then
         owd=`pwd`
         if cd $withval; then withval=`pwd`; cd $owd; fi
         NCURSINC="-I$withval/include"
         NCURSLIB="-L$withval/lib -lncurses"
-        ac_cv_sad_libncurses=$withval
+        AC_DEFINE(HAVE_NCURSES, 1)
+        ac_cv_lmap_libncurses=$withval
      else
         AC_ERROR(ncurses.h or libncurses.a not found in $withval)
      fi
@@ -270,8 +281,10 @@ AC_ARG_WITH(libncurses,
 [ if test -f /usr/include/ncurses/ncurses.h; then
      NCURSINC="-I/usr/include/ncurses"
      NCURSLIB="-lncurses"
+     AC_DEFINE(HAVE_NCURSES, 1)
   elif test -f /usr/include/ncurses.h; then
      NCURSLIB="-lncurses"
+     AC_DEFINE(HAVE_NCURSES, 1)
   else
      AC_MSG_RESULT(no)
      AC_ERROR(libncurses not found)
@@ -280,7 +293,7 @@ AC_ARG_WITH(libncurses,
 )
 
 
-LMAP_CFLAGS="$CFLAGS $PCAPINC $NCURSINC"
+LMAP_CFLAGS="$PCAPINC $NCURSINC"
 LMAP_LIBS="$LIBS $PCAPLIB $NCURSLIB $PTHREADLIB"
 
 AC_SUBST(LMAP_CFLAGS)
@@ -299,7 +312,6 @@ AC_OUTPUT(man/lmap.8 Makefile man/Makefile src/Makefile include/Makefile)
 dnl ===============
 dnl   THE SUMMARY
 dnl ===============
-
 
 LMAP_MESSAGE(lmap has been configured as follow)
 

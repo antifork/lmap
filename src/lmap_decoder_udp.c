@@ -52,6 +52,8 @@ FUNC_DECODER(decode_udp)
 {
    struct udp_header *udp;
 
+   ADD_STAT(udp);
+   
    udp = (struct udp_header *)DECODE_DATA;
 
    DECODED_LEN = sizeof(struct udp_header);

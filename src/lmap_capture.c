@@ -47,8 +47,6 @@ void capture_init(void)
    int dlt;
    char pcap_errbuf[PCAP_ERRBUF_SIZE];
    
-   DEBUG_MSG("capture_init");
-
    /*
     * if the user didn't specified the interface,
     * we have to found one...
@@ -60,6 +58,8 @@ void capture_init(void)
       
       GBL_OPTIONS->iface = strdup(ifa);
    }
+   
+   DEBUG_MSG("capture_init %s", GBL_OPTIONS->iface);
               
    USER_MSG("Listening on on %s...\n\n", GBL_OPTIONS->iface);
    
@@ -124,6 +124,8 @@ void capture_close(void)
 LMAP_THREAD_FUNC(capture)
 {
    DEBUG_MSG("neverending loop (capture)");
+  
+   lmap_thread_init();
    
    /* 
     * infinite loop 

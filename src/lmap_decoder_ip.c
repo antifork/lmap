@@ -66,6 +66,8 @@ FUNC_DECODER(decode_ip)
 {
    struct ip_header *ip;
 
+   ADD_STAT(ip);
+   
    ip = (struct ip_header *)DECODE_DATA;
   
    DECODED_LEN = ip->ihl * 4;

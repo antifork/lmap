@@ -95,6 +95,10 @@ int main(int argc, char *argv[])
 
    /* reached only whent the UI is shutted down */
 
+   /* kill all the running threads but the current */
+   lmap_thread_kill_all();
+  
+   /* clean up the UI */
    ui_cleanup();
 
    return 0;

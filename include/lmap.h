@@ -39,10 +39,16 @@
 
 #define __init __attribute__ ((constructor))
 
-#endif   /*  LMAP_H */
+
+#define ADD_STAT(x)  (GBL_STAT->x)++
+#define GET_STAT(x)  (GBL_STAT->x)
+
+
 
 extern void do_nothing(void);
 
+
+#endif   /*  LMAP_H */
 
 /* EOF */
 

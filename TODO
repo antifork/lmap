@@ -5,9 +5,16 @@ The whole thing... ;)
 TODO for the lmap 
 -------------------
 
+
    + test the wifi decoder under wifi card different from cisco
 
    + fix the signal handling (pthread is very ugly for this)
+
+   + remove the hex_format function !! it is NOT thread safe !!
+   
+   + pa_ntoa & co.  needs to be "thread safe"tize
+
+   + set the iface config and default gw
 
    + db && relative API
    
