@@ -27,8 +27,8 @@
 struct wifi_header {
    u_int16  type;
    u_int16  duration;
-   u_int8   dest[ETH_ADDR_LEN];
-   u_int8   source[ETH_ADDR_LEN];
+   u_int8   dha[ETH_ADDR_LEN];
+   u_int8   sha[ETH_ADDR_LEN];
    u_int8   bssid[ETH_ADDR_LEN];
    u_int16  seq;
 };
@@ -72,24 +72,25 @@ FUNC_DECODER(decode_wifi)
       
    wifi = (struct wifi_header *)DECODE_DATA;
 
-   /* we are only interested in "data" (0x0802) type */
+   /* fill the bucket with sensitive data */
+   memcpy(BUCKET->L2->mac_src, wifi->sha, ETH_ADDR_LEN);
+   memcpy(BUCKET->L2->mac_dst, wifi->dha, ETH_ADDR_LEN);
+  
+   /* XXX - where is the ESSID ? check with ethereal */
+  
+   /* BUCKET->L2->ESSID = ??? */
    
+   /* we are only interested in "data" (0x0802) type */
    if (ntohs(wifi->type) == 0x0802) {
       wifi_ll = (struct wifi_ll_header *)(wifi + 1);
       DECODED_LEN += sizeof(struct wifi_ll_header);
       next_decoder = get_decoder(NET_LAYER, ntohs(wifi_ll->type));
-   }
-
-   if (ntohs(wifi->type) == 0x0800) {
+   } else {
+      /* BACON (or unsupported message) */
       DECODED_LEN = DECODE_DATALEN;
       next_decoder = NULL;
-      USER_MSG("WIFI: BACON (or unsupported message)");
    }
    
-   USER_MSG("WIFI : 0x%04x bytes\n%s\n", 
-                   DECODE_DATALEN, 
-                   hex_format(DECODE_DATA, DECODED_LEN));
-
    return next_decoder;
 }
 

@@ -54,22 +54,20 @@ void __init eth_init(void)
 FUNC_DECODER(decode_eth)
 {
    struct eth_header *eth;
-   char tmp[20]; /* XXX no magic numbers! */
 
    update_stat("TOTAL", 1);
   
    DECODED_LEN = sizeof(struct eth_header);
    
    eth = (struct eth_header *)DECODE_DATA;
+
+   /* fill the bucket with sensitive data */
+   memcpy(BUCKET->L2->mac_src, eth->sha, ETH_ADDR_LEN);
+   memcpy(BUCKET->L2->mac_dst, eth->dha, ETH_ADDR_LEN);
+
+   /* ESSSID for the eth is "lmap_wired" */
+   BUCKET->L2->ESSID = strdup("lmap_wired");
    
-   USER_MSG("ETH : 0x%04x bytes\n%s", 
-                   DECODE_DATALEN,
-                   hex_format(DECODE_DATA, DECODED_LEN));
-   eth_addr_ntoa(eth->sha, tmp);
-   USER_MSG(" --> source  %s", tmp);
-   eth_addr_ntoa(eth->dha, tmp);
-   USER_MSG(" --> dest    %s", tmp);
-   USER_MSG(" --> type    0x%04x\n", ntohs(eth->proto));
    
    return get_decoder(NET_LAYER, ntohs(eth->proto));
 }

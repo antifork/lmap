@@ -22,6 +22,9 @@
 #include <lmap_db.h>
 #include <lmap_ui.h>
 
+/* XXX - remove me !  (functions in bucket_send) */
+#include <lmap_if.h>
+
 /* protos */
 
 struct bucket * db_bucket_alloc(void);
@@ -66,21 +69,31 @@ void db_bucket_free(struct bucket *p)
 /* 
  * send the bucket to the database */
 
-void db_bucket_send(struct bucket *p)
+void db_bucket_send(struct bucket *b)
 {
+   char tmp[50]; /* XXX -- ONLY FOR DEBUGGING PURPOSE */
+   
    USER_MSG("db_bucket_send -- NOT YET IMPLEMENTED\n");
 
-   USER_MSG("L2 INFO\n");
-   SAFE_FREE(p->L2);
+   USER_MSG("--- L2 INFO ---\n");
+
+   eth_addr_ntoa(b->L2->mac_src, tmp);
+   USER_MSG(" --> source  %s", tmp);
+   eth_addr_ntoa(b->L2->mac_dst, tmp);
+   USER_MSG(" --> dest    %s", tmp);
+   USER_MSG(" --> ESSID   %s", b->L2->ESSID);
+   
+   SAFE_FREE(b->L2->ESSID);
+   SAFE_FREE(b->L2);
    
    USER_MSG("L3 INFO\n");
-   SAFE_FREE(p->L3);
+   SAFE_FREE(b->L3);
    
    USER_MSG("L4 INFO\n");
-   SAFE_FREE(p->L4);
+   SAFE_FREE(b->L4);
    
    USER_MSG("L5 INFO\n");
-   SAFE_FREE(p->L5);
+   SAFE_FREE(b->L5);
 }
 
 
