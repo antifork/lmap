@@ -6,6 +6,14 @@ Legenda:
 
 =========================================
 
+
+0.0.1 -- 20021021
+
++ capturing engine is in place
++ support for wifi in monitor mode
++ dump to / read from pcap file
+
+
 0.0.0 -- 20021020
 
 * Here we go...
