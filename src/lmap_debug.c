@@ -31,7 +31,9 @@
 #include <stdarg.h>
 #ifdef HAVE_SYS_UTSNAME_H
    #include <sys/utsname.h>
+#ifdef OS_LINUX
    #include <features.h>
+#endif
 #endif
 
 /* globals */

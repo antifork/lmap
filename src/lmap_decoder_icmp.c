@@ -34,7 +34,7 @@ struct icmp_header {
       } echo;       /* echo datagram */
       u_int32     gateway; /* gateway address */
       struct {
-         u_int16  __unused;
+         u_int16  unused;
          u_int16  mtu;
       } frag;       /* path mtu discovery */
    } un;
