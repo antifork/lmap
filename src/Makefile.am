@@ -11,6 +11,7 @@ lmap_SOURCES = lmap_main.c \
                lmap_parser.c \
                lmap_capture.c \
                lmap_inet.c \
+			   lmap_inet6.c \
                lmap_threads.c \
                lmap_data.c \
                lmap_hash.c \
@@ -19,6 +20,7 @@ lmap_SOURCES = lmap_main.c \
                lmap_ui.c \
 			   lmap_stat.c \
                lmap_ncurses.c \
+			   lmap_addr.c \
                lmap_ncurses_info.c \
                lmap_ncurses_menu.c \
                lmap_decode.c \
@@ -26,6 +28,7 @@ lmap_SOURCES = lmap_main.c \
                lmap_decoder_eth.c \
                lmap_decoder_wifi.c \
                lmap_decoder_ip.c \
+			   lmap_decoder_ip6.c \
                lmap_decoder_icmp.c \
                lmap_decoder_arp.c \
                lmap_decoder_udp.c \

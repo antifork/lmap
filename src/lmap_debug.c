@@ -45,7 +45,7 @@ FILE *debug_file = NULL;
 /* protos */
 
 void debug_init(void);
-void debug_close(void);
+static void debug_close(void);
 void debug_msg(const char *message, ...);
 
 char * hex_format(const u_char *buffer, int buff_len);

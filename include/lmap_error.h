@@ -13,11 +13,13 @@ extern void error_msg(char *file, char *function, int line, char *message, ...);
 #define ON_ERROR(x, y, fmt, args...) do { if (x == y) ERROR_MSG(fmt, ## args); } while(0)
 
 
-#define ESUCCESS     0
-#define ENOTFOUND    1
-#define ENOTHANDLED  2
-#define EINVALID     3
-#define ENOADDRESS   4
+enum {
+   ESUCCESS    = 0,
+   ENOTFOUND   = 1,
+   ENOTHANDLED = 2,
+   EINVALID    = 3,
+   ENOADDRESS  = 4,
+};
 
 #endif
 

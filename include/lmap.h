@@ -27,6 +27,7 @@
 #include <lmap_stdint.h>
 #include <lmap_globals.h>
 #include <lmap_stat.h>
+#include <lmap_addr.h>
 
 #ifndef HAVE_STRLCAT
    #include <missing/strlcat.h>
@@ -39,10 +40,14 @@
 
 #define __init __attribute__ ((constructor))
 
+#ifndef __set_errno
+#define __set_errno(e) (errno = (e))
+#endif
+
+#define SPRINTF(x) ((size_t)sprintf x)
 
 #define ADD_STAT(x)  (GBL_STAT->x)++
 #define GET_STAT(x)  (GBL_STAT->x)
-
 
 
 extern void do_nothing(void);

@@ -5,6 +5,7 @@
 #include <lmap_threads.h>
 
 extern void capture_init(void);
+extern void capture_close(void);
 extern LMAP_THREAD_FUNC(capture);
 
 #endif

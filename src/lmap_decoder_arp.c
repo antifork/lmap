@@ -86,12 +86,21 @@ FUNC_DECODER(decode_arp)
    if (arp->ar_hln == ETH_ADDR_LEN && arp->ar_pln == IP_ADDR_LEN) {
    
       struct arp_eth_header *earp;
-
+      struct ip_addr ipa_spa, ipa_tpa;
+      char tmp[IP_ASCII_ADDR_LEN];
+      
       earp = (struct arp_eth_header *)(arp + 1);
-           
+      
       USER_MSG(" --> sha  %s", ha_ntoa(earp->arp_sha));
+      
+      init_addr(&ipa_spa, AF_INET, 4, (char *)&earp->arp_spa);
+      print_addr(&ipa_spa, tmp, IP_ASCII_ADDR_LEN);
       USER_MSG(" --> spa  %s", pa_ntoa(earp->arp_spa));
+      
       USER_MSG(" --> tha  %s", ha_ntoa(earp->arp_tha));
+      
+      init_addr(&ipa_tpa, AF_INET, 4, (char *)&earp->arp_tpa);
+      print_addr(&ipa_tpa, tmp, IP_ASCII_ADDR_LEN);
       USER_MSG(" --> tpa  %s\n", pa_ntoa(earp->arp_tpa));
            
    }

@@ -79,7 +79,7 @@ struct entry {
 
 /* protos */
 
-void discard_macdb(void);
+static void discard_macdb(void);
 int manuf_init(void);
 char * manuf_search(char *m);
 

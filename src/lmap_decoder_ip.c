@@ -21,6 +21,7 @@
 #include <lmap.h>
 #include <lmap_decode.h>
 #include <lmap_inet.h>
+#include <lmap_addr.h>
 
 /* globals */
 
@@ -39,8 +40,8 @@ struct ip_header {
    u_int8   ttl;
    u_int8   protocol;
    u_int16  check;
-   u_int32  saddr;
-   u_int32  daddr;
+   u_int8   saddr[IP_ADDR_LEN];
+   u_int8   daddr[IP_ADDR_LEN];
 /*The options start here. */
 };
 
@@ -67,6 +68,8 @@ void __init ip_init(void)
 FUNC_DECODER(decode_ip)
 {
    struct ip_header *ip;
+   struct ip_addr ipa_src, ipa_dst;
+   char tmp[IP_ASCII_ADDR_LEN];
 
    update_stat("IP", 1);
    
@@ -79,9 +82,15 @@ FUNC_DECODER(decode_ip)
                    DECODE_DATALEN, 
                    hex_format(DECODE_DATA, DECODED_LEN));
    
+   
+   init_addr(&ipa_src, AF_INET, 4, (char *)&ip->saddr);
+   print_addr(&ipa_src, tmp, IP_ASCII_ADDR_LEN);
+   USER_MSG(" --> source  %s", tmp);
+   
+   init_addr(&ipa_dst, AF_INET, 4, (char *)&ip->daddr);
+   print_addr(&ipa_dst, tmp, IP_ASCII_ADDR_LEN);
+   USER_MSG(" --> dest    %s", tmp);
 
-   USER_MSG(" --> source  %s", pa_ntoa((char *)&ip->saddr));
-   USER_MSG(" --> dest    %s", pa_ntoa((char *)&ip->daddr));
    USER_MSG(" --> proto   0x%02x\n", ip->protocol);
 
    if (ip->ihl * 4 != sizeof(struct ip_header))

@@ -33,7 +33,7 @@ WINDOW * menu_create(void);
 void menu_refresh(WINDOW *w_menu);
 void menu_destroy(WINDOW **w_menu);
 void show_statistics(void);
-void refresh_statistics(void);
+static void refresh_statistics(void);
 int menu_event(WINDOW *w_menu, int key);
 
 /*******************************************/

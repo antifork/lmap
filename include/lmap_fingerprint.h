@@ -5,9 +5,11 @@
 extern int fingerprint_init(void);
 extern char * fingerprint_search(char *m);
 
-#define FINGER_LEN   28
-#define OS_LEN       60
-
+enum {
+   FINGER_LEN = 28,
+   OS_LEN     = 60,
+};
+   
 #endif
 
 /* EOF */

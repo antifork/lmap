@@ -32,9 +32,9 @@ static int onscreen = 0;
 /* protos */
 
 void ncurses_register(void);
-void ncurses_init(void);
-void ncurses_start(void);
-void ncurses_cleanup(void);
+static void ncurses_init(void);
+static void ncurses_start(void);
+static void ncurses_cleanup(void);
 
 LMAP_WIN *lmap_newwin(int lines, int cols, int x, int y, char *title);
 void lmap_redrawwin(LMAP_WIN *win, int focus);
@@ -42,7 +42,7 @@ void lmap_delwin(LMAP_WIN **win);
 
 LMAP_SCROLLWIN *lmap_newscrollwin(int lines, int cols, int x, int y, char *title, int maxline);
 void lmap_redrawscrollwin(LMAP_SCROLLWIN *win, int focus);
-void lmap_drawscroller(LMAP_SCROLLWIN *win);
+static void lmap_drawscroller(LMAP_SCROLLWIN *win);
 void lmap_scroll(LMAP_SCROLLWIN *win, int delta);
 void lmap_delscrollwin(LMAP_SCROLLWIN **win);
 

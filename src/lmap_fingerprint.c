@@ -47,7 +47,7 @@ struct entry {
 
 /* protos */
 
-void fingerprint_discard(void);
+static void fingerprint_discard(void);
 int fingerprint_init(void);
 char * fingerprint_search(char *f);
 

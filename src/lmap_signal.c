@@ -24,10 +24,13 @@
 #include <signal.h>
 #include <sys/resource.h>
 
+typedef void handler_t(int);
+
 void signal_handler(void);
 
-RETSIGTYPE signal_SEGV(int sig);
-RETSIGTYPE signal_TERM(int sig);
+static handler_t *signal_handle(int signo, handler_t *handler, int flags);
+static RETSIGTYPE signal_SEGV(int sig);
+static RETSIGTYPE signal_TERM(int sig);
 
 
 /*************************************/
@@ -36,9 +39,26 @@ void signal_handler(void)
 {
    DEBUG_MSG("signal_handler activated");
 
-   signal(SIGSEGV,  signal_SEGV);
-   signal(SIGINT,   signal_TERM);
-   signal(SIGTERM,  signal_TERM);
+   signal_handle(SIGSEGV, signal_SEGV, 0);
+   signal_handle(SIGINT, signal_TERM, 0);
+   signal_handle(SIGTERM, signal_TERM, 0);
+}
+
+
+handler_t *signal_handle(int signo, handler_t *handler, int flags)
+{
+   struct sigaction act, old_act;
+
+   act.sa_handler = handler;
+
+   sigfillset(&act.sa_mask); /* don't permit nested signal handling */
+
+   act.sa_flags = flags;
+
+   if (sigaction(signo, &act, &old_act) < 0)
+      ERROR_MSG("sigaction() failed");
+
+   return (old_act.sa_handler);
 }
 
 

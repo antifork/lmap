@@ -29,7 +29,7 @@
 
 /* protos... */
 
-void lmap_usage(void);
+static void lmap_usage(void);
 void parse_options(int argc, char **argv);
 
 //-----------------------------------

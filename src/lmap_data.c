@@ -23,8 +23,8 @@
 
 /* protos */
 
-char * get_full_path(char *file);
-char * get_local_path(char *file);
+static char * get_full_path(char *file);
+static char * get_local_path(char *file);
 FILE * open_data(char *file, char *mode);
 
 /*******************************************/

@@ -30,6 +30,7 @@
 
 /* protos... */
 
+const char *inet_ntop4(const char *src, char *dst, size_t size);
 
 /* XXX remove these */
 char * ha_ntoa(const u_char *ll_addr);
@@ -50,6 +51,21 @@ int get_default_dns(u_int32 *dns_addr);
 
 /*******************************************/
 
+const char *
+inet_ntop4(const char *src, char *dst, size_t size)
+{
+	static const char fmt[] = "%u.%u.%u.%u";
+	char tmp[sizeof("255.255.255.255")+1];
+   int n;
+   
+	n = sprintf(tmp, fmt, (char)src[0], src[1], src[2], src[3]);
+   
+   tmp[n] = '\0';
+ 
+   strlcpy(dst, tmp, size);
+   
+   return dst;
+}
 
 /*
  * convert a ip address to a printable dot notation

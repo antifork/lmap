@@ -46,12 +46,13 @@ extern void lmap_delscrollwin(LMAP_SCROLLWIN **win);
 
 #define W(x)   (x)->win
 
-
-#define C_BORDER  1
-#define C_TITLE   2
-#define C_MENU    3
-#define C_FOCUS   4
-
+enum {
+   C_BORDER = 1,
+   C_TITLE  = 2,
+   C_MENU   = 3,
+   C_FOCUS  = 4,
+};
+   
 #define SAFE_WREFRESH(x)   do { UI_LOCK; wrefresh(x); UI_UNLOCK; } while(0)
 
 #define SAFE_WIN_REFRESH(x)   do { UI_LOCK; wrefresh(x->win); UI_UNLOCK; } while(0)
@@ -80,10 +81,11 @@ extern void lmap_delscrollwin(LMAP_SCROLLWIN **win);
 
 /* some extra key definitios */
 
-#define KEY_TAB      '\t'    
-#define KEY_RETURN   10
-#define KEY_CTRL_L   12
-
+enum {
+   KEY_TAB    = '\t',    
+   KEY_RETURN = 10,
+   KEY_CTRL_L = 12,
+};
 
 
 #endif

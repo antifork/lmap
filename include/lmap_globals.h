@@ -46,8 +46,7 @@ extern struct globals *gbls;
 
 /* exported functions */
 
-void globals_alloc(void);
-
+extern void globals_alloc(void);
 
 #endif
 

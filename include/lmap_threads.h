@@ -10,7 +10,9 @@ struct lmap_thread {
    u_int32 id;
 };
 
-#define LMAP_SELF 0
+enum {
+   LMAP_SELF = 0,
+};
 
 #define LMAP_THREAD_FUNC(x) void * x(void *args)
 #define LMAP_THREAD_PARAM  args

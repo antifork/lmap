@@ -36,8 +36,8 @@ static LMAP_SCROLLWIN *w_sys;
 
 int scr_info(void);
 void ncurses_msg(const char *fmt, va_list ap);
-void print_ifaceconfig(LMAP_WIN *win);
-void print_suggconfig(LMAP_WIN *win);
+static void print_ifaceconfig(LMAP_WIN *win);
+static void print_suggconfig(LMAP_WIN *win);
 
 /*******************************************/
 

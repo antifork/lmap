@@ -5,7 +5,6 @@
 extern int manuf_init(void);
 extern char * manuf_search(char *m);
 
-
 #endif
 
 /* EOF */
