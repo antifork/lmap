@@ -5,9 +5,19 @@ The whole thing... ;)
 TODO for the lmap 
 -------------------
 
-   + test the wifi decoder under wifi card different from cisco
+   *** ??? should IP and IPv6 be separated in stats ??? ***
 
-   + fix the signal handling (pthread is very ugly for this)
+   + WIFI decoder
+      + extract more infos (ESSID BSSID, ecc ecc)
+      + test the wifi decoder under wifi card different from cisco
+
+   + IPv6 decoder
+      + implement ARP for ipv6
+
+   + ICMP decoder
+      + what information can we catch from this ?
+         + if ICMP TTL excedeed it can be a ruoter
+      + add to the bucket structure these infos
 
    + remove the hex_format function !! it is NOT thread safe !!
    

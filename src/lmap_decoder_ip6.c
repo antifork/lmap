@@ -37,8 +37,8 @@ struct ip6_header {
    u_int8   next_hdr;
    u_int8   hop_limit;
 
-   u_int8   saddr[16];
-   u_int8   daddr[16];
+   u_int8   saddr[IP6_ADDR_LEN];
+   u_int8   daddr[IP6_ADDR_LEN];
    
    /* OPTIONS MAY FOLLOW */
 };
@@ -66,9 +66,6 @@ FUNC_DECODER(decode_ip6)
 {
    struct ip6_header *ip6;
    int opt; /* -1 means no options defined, if 0 an option is present */
-   struct ip_addr ipa_src, ipa_dst;
-   char tmp[IP6_ASCII_ADDR_LEN];
-   char details[IP6_DETAILS_SIZE];
    
    update_stat("IPv6", 1);
    
@@ -77,22 +74,13 @@ FUNC_DECODER(decode_ip6)
    
    DECODED_LEN = 0 /* XXX calculate this */ ;
 
-   USER_MSG("IPv6 : 0x%04x bytes\n%s", 
-                   DECODE_DATALEN, 
-                   hex_format(DECODE_DATA, DECODED_LEN));
+   /* IP addresses */
+   ip_addr_init(&BUCKET->L3->ip_src, AF_INET6, (u_char *)&ip6->saddr);
+   ip_addr_init(&BUCKET->L3->ip_dst, AF_INET6, (u_char *)&ip6->daddr);
    
-
-   ip_addr_init(&ipa_src, AF_INET6, (u_char *)&ip6->saddr);
-   ip_addr_ntoa(&ipa_src, tmp); 
-   ip_addr_details(&ipa_src, details, IP6_DETAILS_SIZE);
-   USER_MSG(" --> source  %s %s", tmp, details);
-
-   ip_addr_init(&ipa_dst, AF_INET6, (u_char *)&ip6->daddr);
-   ip_addr_ntoa(&ipa_dst, tmp);
-   ip_addr_details(&ipa_dst, details, IP6_DETAILS_SIZE);
-   USER_MSG(" --> dest    %s %s", tmp, details);
-   
-   USER_MSG(" --> proto   0x%x ", ip6->next_hdr);
+   /* other relevant infos */
+   BUCKET->L3->proto = ip6->next_hdr;
+   BUCKET->L3->ttl = ip6->hop_limit;
 
    switch (ip6->next_hdr) {
       case 0:

@@ -31,6 +31,10 @@ struct arp_header {
    u_int8   ar_hln;          /* Length of hardware address.  */
    u_int8   ar_pln;          /* Length of protocol address.  */
    u_int16  ar_op;           /* ARP opcode (command).  */
+#define ARPOP_REQUEST   1    /* ARP request.  */
+#define ARPOP_REPLY     2    /* ARP reply.  */
+#define ARPOP_RREQUEST  3    /* RARP request.  */
+#define ARPOP_RREPLY    4    /* RARP reply.  */
 };
 
 struct arp_eth_header {
@@ -76,35 +80,29 @@ FUNC_DECODER(decode_arp)
    DECODED_LEN = sizeof(struct arp_header) +
                  2 * (arp->ar_hln + arp->ar_pln);
 
-
-   
-   USER_MSG("ARP : 0x%04x bytes\n%s", 
-                   DECODE_DATALEN, 
-                   hex_format(DECODE_DATA, DECODED_LEN));
-   
-   USER_MSG(" --> op   0x%04x\n", ntohs(arp->ar_op));
+   /*
+    * XXX - TODO
+    *
+    *    1) differentiate between request and reply
+    */
    
    if (arp->ar_hln == ETH_ADDR_LEN && arp->ar_pln == IP_ADDR_LEN) {
    
       struct arp_eth_header *earp;
-      struct ip_addr ipa_spa, ipa_tpa;
-      char tmp[IP_ASCII_ADDR_LEN];
-      
       earp = (struct arp_eth_header *)(arp + 1);
       
-      eth_addr_ntoa(earp->arp_sha, tmp);
-      USER_MSG(" --> sha  %s", tmp);
+      ip_addr_init(&BUCKET->L3->ip_src, AF_INET, (char *)&earp->arp_spa);
+      ip_addr_init(&BUCKET->L3->ip_dst, AF_INET, (char *)&earp->arp_tpa);
+           
+   }
+   
+   if (arp->ar_hln == ETH_ADDR_LEN && arp->ar_pln == IP6_ADDR_LEN) {
+   
+      struct arp_eth_header *earp;
+      earp = (struct arp_eth_header *)(arp + 1);
       
-      ip_addr_init(&ipa_spa, AF_INET, (char *)&earp->arp_spa);
-      ip_addr_ntoa(&ipa_spa, tmp);
-      USER_MSG(" --> spa  %s", tmp);
-      
-      eth_addr_ntoa(earp->arp_sha, tmp);
-      USER_MSG(" --> tha  %s", tmp);
-      
-      ip_addr_init(&ipa_tpa, AF_INET, (char *)&earp->arp_tpa);
-      ip_addr_ntoa(&ipa_tpa, tmp);
-      USER_MSG(" --> tpa  %s\n", tmp);
+      ip_addr_init(&BUCKET->L3->ip_src, AF_INET6, (char *)&earp->arp_spa);
+      ip_addr_init(&BUCKET->L3->ip_dst, AF_INET6, (char *)&earp->arp_tpa);
            
    }
    

@@ -67,8 +67,6 @@ void __init ip_init(void)
 FUNC_DECODER(decode_ip)
 {
    struct ip_header *ip;
-   struct ip_addr ipa_src, ipa_dst;
-   char tmp[IP_ASCII_ADDR_LEN];
 
    update_stat("IP", 1);
    
@@ -76,25 +74,19 @@ FUNC_DECODER(decode_ip)
   
    DECODED_LEN = ip->ihl * 4;
 
+   /* IP addresses */
+   ip_addr_init(&BUCKET->L3->ip_src, AF_INET, (char *)&ip->saddr);
+   ip_addr_init(&BUCKET->L3->ip_dst, AF_INET, (char *)&ip->daddr);
    
-   USER_MSG("IP : 0x%04x bytes\n%s", 
-                   DECODE_DATALEN, 
-                   hex_format(DECODE_DATA, DECODED_LEN));
-   
-   
-   ip_addr_init(&ipa_src, AF_INET, (char *)&ip->saddr);
-   ip_addr_ntoa(&ipa_src, tmp);
-   USER_MSG(" --> source  %s", tmp);
-   
-   ip_addr_init(&ipa_dst, AF_INET, (char *)&ip->daddr);
-   ip_addr_ntoa(&ipa_dst, tmp);
-   USER_MSG(" --> dest    %s", tmp);
+   /* other relevant infos */
+   BUCKET->L3->proto = ip->protocol;
+   BUCKET->L3->ttl = ip->ttl;
 
-   USER_MSG(" --> proto   0x%02x\n", ip->protocol);
-
+#if 0
    if (ip->ihl * 4 != sizeof(struct ip_header))
       USER_MSG(" --> IP OPTIONS PRESENT (%d byte)\n", (ip->ihl * 4) - sizeof(struct ip_header));
-      
+#endif
+   
    return get_decoder(PROTO_LAYER, ip->protocol);
 }
 

@@ -110,7 +110,15 @@ u_int32 get_stat(const char *type)
 
 int get_all_stats(char **type, int *num)
 {
-   static struct stat_list *current = NULL;
+   static struct stat_list *current = (void *)~0;
+   
+   if (current == (void *)~0) {
+      current = LIST_FIRST(&stat_list_head);
+      *type = strdup(current->type);
+      *num = current->num;
+      current = LIST_NEXT(current, next);
+      return 1;
+   }
    
    if (current == NULL)
       current = LIST_FIRST(&stat_list_head);

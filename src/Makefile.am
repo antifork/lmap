@@ -24,7 +24,6 @@ lmap_SOURCES = lmap_main.c \
                lmap_ncurses_info.c \
                lmap_ncurses_menu.c \
                lmap_decode.c \
-               lmap_decoder_raw.c \
                lmap_decoder_eth.c \
                lmap_decoder_wifi.c \
                lmap_decoder_ip.c \

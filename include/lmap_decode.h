@@ -38,9 +38,8 @@ enum {
 /* interface layer types */
 
 enum {
-   LI_TYPE_RAW  =    0,
    LI_TYPE_ETH  =    DLT_EN10MB,
-   LI_TYPE_WIFI =   DLT_IEEE802_11,
+   LI_TYPE_WIFI =    DLT_IEEE802_11,
 };
    
 /* link layer types */

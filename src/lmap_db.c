@@ -71,22 +71,29 @@ void db_bucket_free(struct bucket *p)
 
 void db_bucket_send(struct bucket *b)
 {
-   char tmp[50]; /* XXX -- ONLY FOR DEBUGGING PURPOSE */
+   char tmp[50];     /* XXX -- ONLY FOR DEBUGGING PURPOSE */
+   char details[50]; /* XXX -- ONLY FOR DEBUGGING PURPOSE */
    
    USER_MSG("db_bucket_send -- NOT YET IMPLEMENTED\n");
 
    USER_MSG("--- L2 INFO ---\n");
-
    eth_addr_ntoa(b->L2->mac_src, tmp);
    USER_MSG(" --> source  %s", tmp);
    eth_addr_ntoa(b->L2->mac_dst, tmp);
    USER_MSG(" --> dest    %s", tmp);
    USER_MSG(" --> ESSID   %s", b->L2->ESSID);
-   
    SAFE_FREE(b->L2->ESSID);
    SAFE_FREE(b->L2);
    
-   USER_MSG("L3 INFO\n");
+   USER_MSG("--- L3 INFO ---\n");
+   ip_addr_ntoa(&b->L3->ip_src, tmp);
+   ip_addr_details(&b->L3->ip_src, details);
+   USER_MSG(" --> source  %s %s", tmp, details);
+   ip_addr_ntoa(&b->L3->ip_dst, tmp);
+   ip_addr_details(&b->L3->ip_dst, details);
+   USER_MSG(" --> dest    %s %s", tmp, details);
+   USER_MSG(" --> proto   0x%02x", b->L3->proto);
+   USER_MSG(" --> ttl     %d\n", b->L3->ttl);
    SAFE_FREE(b->L3);
    
    USER_MSG("L4 INFO\n");
