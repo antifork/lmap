@@ -5007,6 +5007,9 @@ else
      PCAPLIB="-lpcap"
   elif test -f /usr/include/pcap.h; then
      PCAPLIB="-lpcap"
+  elif test -f /usr/local/include/pcap.h; then
+     PCAPINC="-I/usr/local/include"
+     PCAPLIB="-lpcap"
   else
      echo "$as_me:$LINENO: result: no" >&5
 echo "${ECHO_T}no" >&6

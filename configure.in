@@ -221,6 +221,9 @@ AC_ARG_WITH(libpcap,
      PCAPLIB="-lpcap"
   elif test -f /usr/include/pcap.h; then
      PCAPLIB="-lpcap"
+  elif test -f /usr/local/include/pcap.h; then
+     PCAPINC="-I/usr/local/include"
+     PCAPLIB="-lpcap"
   else
      AC_MSG_RESULT(no)
      AC_ERROR(libpcap not found)
