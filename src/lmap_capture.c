@@ -30,7 +30,6 @@
 void capture_init(void);
 void capture_close(void);
 void capture(void);
-char * default_iface(void);
 
 /*******************************************/
 
@@ -48,8 +47,19 @@ void capture_init(void)
    
    DEBUG_MSG("capture_init");
 
-   if (GBL_OPTIONS->iface == NULL)
-      GBL_OPTIONS->iface = default_iface(); 
+   /*
+    * if the user didn't specified the interface,
+    * we have to found one...
+    */
+   
+   if (GBL_OPTIONS->iface == NULL) {
+      char *ifa = pcap_lookupdev(pcap_errbuf);
+      ON_ERROR(ifa, NULL, "No suitable interface found...");
+      
+      GBL_OPTIONS->iface = strdup(ifa);
+   }
+              
+   USER_MSG("Listening on on %s...\n\n", GBL_OPTIONS->iface);
    
    /*
     * set the snaplen to maximum
@@ -99,21 +109,6 @@ void capture_close(void)
       pcap_dump_close(GBL_PCAP->dump);
    
    DEBUG_MSG("capture_closed");
-}
-
-/*
- * return the name of the first iface 
- * UP and running
- */
-
-char * default_iface(void)
-{
-   /*
-    * XXX to be implemented....
-    * search the first up and running interface
-    */
-        
-   return "eth0";        
 }
 
 /*

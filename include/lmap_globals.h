@@ -4,7 +4,10 @@
 
 
 struct lmap_options {
+   char dump:1;
+   char read:1;
    char *iface;
+   char *dumpfile;
 };
 
 struct program_env {
@@ -15,6 +18,7 @@ struct program_env {
 
 struct pcap_env {
    void *pcap;         /* this is a pcap_t */
+   void *dump;         /* this is a pcap_dumper_t */
    u_int16 snaplen;
 };
 

@@ -16,6 +16,8 @@ extern FILE *debug_file;
       debug_msg(x, ## args);                                   \
 } while(0)
 
+#define USER_MSG DEBUG_MSG
+
 #endif /* LMAP_DEBUG_H */
 
 /* 
@@ -25,6 +27,7 @@ extern FILE *debug_file;
 #ifndef DEBUG
    #define DEBUG_INIT()
    #define DEBUG_MSG(x, args...)
+   #define USER_MSG(x, args...) fprintf(stdout, x, ## args )
 #endif
 
 /* EOF */
