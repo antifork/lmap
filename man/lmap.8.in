@@ -30,24 +30,65 @@
 bla bla bla...
 .PP
 bla bla bla.,..
-.br
-.B authentication 
 
 .PP
 .SH OPTIONS
 Options that make sense together can generally be combined. lmap will warn the user
 about unsupported option combinations.
+
 .TP
+.B CAPTURE RELATED OPTIONS
+
+.TP
+\fB\-i\fR, \fB\-\-iface <iface>\fR
+Use the specified interface to collect data.
+.br
+if this options is omitted, lmap will use the first UP & running interface.
+
+.TP
+\fB\-r\fR, \fB\-\-read <file>\fR
+OFF LINE capturing
+.br
+With this option enabled, lmap will capture packets from a pcap compatible
+file instead of capturing them from the wire.
+.br
+This is useful if you have a file dumped from tcpdump or ethereal and you want
+to make an analysis on it.
+
+.TP
+\fB\-d\fR, \fB\-\-dump <file>\fR
+DUMP packet to a pcap file
+.br
+This is useful if you want to save to a file all the captured packet. In this
+way you can analyze the file with tcpdump or ethereal. 
+
+.TP
+.B OTHER OPTIONS
+
+.TP
+\fB\-v\fR, \fB\-\-version\fR
+Print the version and exit.
+
+.TP
+\fB\-h\fR, \fB\-\-help\fR
+Print a brief help screen.
+
 
 .SH EXAMPLES
 Here are some examples of using lmap.
 .TP
-.B lmap -v
+.B lmap -i wifi0 -d wireless.dump
 .Sp
-Prints the version and exit
+capture packets from wifi0 and store them in the wireless.dump file.
+
 
 .SH PLATFORMS
 Linux 2.2.x  2.4.x
+.br
+FreeBSD
+.br
+OpenBSD
+.br
 
 
 
@@ -56,9 +97,18 @@ Alberto Ornaghi (ALoR) <alor@blackhats.it>
 .br
 Nicola Bonelli (awgn) <awgn@blackhats.it>
 
+
 .SH AVAILABILITY
-http://www.antifork.org/.../
+http://cvs.antifork.org/cvsweb.cgi/lmap/
+
+.SH CVS
+# cvs -z3 -d :pserver:anonymous@cvs.antifork.org:/CVS login
+.br
+enter empty pass to login
+.br
+# cvs -z3 -d :pserver:anonymous@cvs.antifork.org:/CVS co lmap
+
 
 .SH BUGS
 
-
+No known bugs for now...
