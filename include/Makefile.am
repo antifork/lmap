@@ -11,6 +11,7 @@ noinst_HEADERS = lmap_capture.h \
                  lmap_stdint.h \
                  lmap_decode.h \
                  lmap_version.h \
+                 lmap_threads.h \
                  neo_options.h
    
 EXTRA_DIST = missing/strlcpy.h \

@@ -33,3 +33,25 @@ ON_ERROR
 FATAL_MSG
    + print the message and execute an exit(1)
 
+
+-------
+  API
+-------
+
++ THREADS
+
+   the file lmap_threads.c provides all the necessary functions to create and
+   destroy new thread. other files should be not aware of the pthread.h include
+   file.
+
+   the thread list is intended to have a list of active thread that the user can
+   kill or create thru the user interface. obviously some thread can't be killed
+   such as the capturer, the euristic and the user interface. all the active
+   probing thread are stored in the list and can be killed at any time.
+
+
+
+
+/* EOF */
+
+vim:ts=3:expandtab

@@ -118,7 +118,7 @@ int set_L2_decoder(int dlt)
 
    SLIST_FOREACH (e, &decoders_table, next) {
       if (e->level == 2 && e->type == dlt) {
-         DEBUG_MSG("DLT %d decoder found !", dlt);
+         DEBUG_MSG("DLT = %d : decoder found !", dlt);
          l2_decoder = e->decoder;
          return ESUCCESS;
       }

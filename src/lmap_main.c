@@ -22,6 +22,7 @@
 #include <lmap_signal.h>
 #include <lmap_capture.h>
 #include <lmap_parser.h>
+#include <lmap_threads.h>
 
 
 /* global vars */
@@ -34,6 +35,7 @@
 
 int main(int argc, char *argv[])
 {
+        
    /*
     * Alloc the global structures
     * We can access these structs via the macro in sad_globals.h
@@ -50,6 +52,12 @@ int main(int argc, char *argv[])
    DEBUG_INIT();
    DEBUG_MSG("main -- here we go !!");
 
+   /* register the main thread in the thread list*/
+
+   lmap_thread_register(LMAP_SELF, "main", "");
+   
+   /* activate the signal handler */
+   
    signal_handler();
 
    /*
@@ -73,7 +81,7 @@ int main(int argc, char *argv[])
     */
    
    capture();
-  
+   
    /* NOT REACHED */      
 
    return 0;

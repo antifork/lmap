@@ -54,21 +54,26 @@ AH_TEMPLATE(OS_MACOSX, [compiling under macosx])
 case "$host_os" in
 *linux*)
    AC_DEFINE(OS_LINUX)
+   PTHREADLIB="-lpthread"
    ;;
 *freebsd*)
    AC_DEFINE(OS_BSD)
    AC_DEFINE(OS_BSD_FREE)
+   PTHREADLIB="-pthread"
    ;;
 *openbsd*)
    AC_DEFINE(OS_BSD)
    AC_DEFINE(OS_BSD_OPEN)
+   PTHREADLIB="-pthread"
    ;;
 *netbsd*)
    AC_DEFINE(OS_BSD)
    AC_DEFINE(OS_BSD_NET)
+   PTHREADLIB="-pthread"
    ;;
 *darwin*)
    AC_DEFINE(OS_MACOSX)
+   PTHREADLIB="-lpthread"
    ;;
 *)
    echo
@@ -232,7 +237,7 @@ AC_ARG_WITH(libpcap,
 )
 
 LMAP_CFLAGS="$CFLAGS $PCAPINC"
-LMAP_LIBS="$LIBS $PCAPLIB"
+LMAP_LIBS="$LIBS $PCAPLIB $PTHREADLIB"
 
 AC_SUBST(LMAP_CFLAGS)
 AC_SUBST(LMAP_LIBS)

@@ -18,6 +18,7 @@
 */
 
 #include <lmap.h>
+#include <lmap_threads.h>
 
 #include <ctype.h>
 
@@ -75,6 +76,8 @@ void debug_init(void)
 
 void debug_close(void)
 {
+   fprintf (debug_file, "\n\nDEVICE CLOSED FOR DEBUGGING\n\n");
+   fflush(debug_file);
    fclose (debug_file);
 }
 
@@ -85,7 +88,7 @@ void debug_msg(char *message, ...)
    va_list ap;
    char debug_message[strlen(message)+2];
 
-   fprintf (debug_file, "[%5d]\t", getpid());
+   fprintf (debug_file, "[%10s]\t", lmap_thread_getname(LMAP_SELF));
 
    strlcpy(debug_message, message, sizeof(debug_message));
    strlcat(debug_message, "\n", sizeof(debug_message));

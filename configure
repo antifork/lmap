@@ -1730,6 +1730,7 @@ case "$host_os" in
 #define OS_LINUX 1
 _ACEOF
 
+   PTHREADLIB="-lpthread"
    ;;
 *freebsd*)
    cat >>confdefs.h <<\_ACEOF
@@ -1740,6 +1741,7 @@ _ACEOF
 #define OS_BSD_FREE 1
 _ACEOF
 
+   PTHREADLIB="-pthread"
    ;;
 *openbsd*)
    cat >>confdefs.h <<\_ACEOF
@@ -1750,6 +1752,7 @@ _ACEOF
 #define OS_BSD_OPEN 1
 _ACEOF
 
+   PTHREADLIB="-pthread"
    ;;
 *netbsd*)
    cat >>confdefs.h <<\_ACEOF
@@ -1760,12 +1763,14 @@ _ACEOF
 #define OS_BSD_NET 1
 _ACEOF
 
+   PTHREADLIB="-pthread"
    ;;
 *darwin*)
    cat >>confdefs.h <<\_ACEOF
 #define OS_MACOSX 1
 _ACEOF
 
+   PTHREADLIB="-lpthread"
    ;;
 *)
    echo
@@ -5023,7 +5028,7 @@ echo "${ECHO_T}yes" >&6
 fi;
 
 LMAP_CFLAGS="$CFLAGS $PCAPINC"
-LMAP_LIBS="$LIBS $PCAPLIB"
+LMAP_LIBS="$LIBS $PCAPLIB $PTHREADLIB"
 
 
 
