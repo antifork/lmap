@@ -60,6 +60,9 @@ int scr_topology(void)
          case KEY_TAB:
             break;
       }
+ 
+      /* flush the messages */
+      ui_msg_flush(-1);
       
    } while ( inputkey > 12 );
   
