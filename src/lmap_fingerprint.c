@@ -107,7 +107,7 @@ int fingerprint_init(void)
 
       LOAD_ENTRY(p, finger, os);
 
-      SLIST_INSERT_HEAD(&(finger_head[fnv_hash(finger, FINGER_LEN) & TABMASK]), p, entries);
+      SLIST_INSERT_HEAD(&(finger_head[fnv_32(finger, FINGER_LEN) & TABMASK]), p, entries);
 
       i++;
 
@@ -128,7 +128,7 @@ char * fingerprint_search(char *f)
 {
    struct entry *l;
 
-   SLIST_FOREACH(l, &finger_head[fnv_hash(f, FINGER_LEN) & TABMASK], entries) {
+   SLIST_FOREACH(l, &finger_head[fnv_32(f, FINGER_LEN) & TABMASK], entries) {
       if (!memcmp(l->finger, f, FINGER_LEN))
          return (l->os);
    }

@@ -136,7 +136,7 @@ int manuf_init(void)
 
       LOAD_ENTRY(p, mac, name);
 
-      SLIST_INSERT_HEAD(&(manuf_head[fnv_hash(mac, 4) & TABMASK]), p, entries);
+      SLIST_INSERT_HEAD(&(manuf_head[fnv_32(mac, 4) & TABMASK]), p, entries);
 
       i++;
 
@@ -163,7 +163,7 @@ char * manuf_search(char *m)
    mac[2] = *m;
    mac[3] = 0;
 
-   SLIST_FOREACH(l, &manuf_head[fnv_hash(mac, 4) & TABMASK], entries) {
+   SLIST_FOREACH(l, &manuf_head[fnv_32(mac, 4) & TABMASK], entries) {
       if (l->mac == *(int *) mac)
          return (l->vendor);
    }

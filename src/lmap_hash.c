@@ -1,33 +1,4 @@
-/*
-    lmap -- hash function
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-
-    $Header$
-*/
-
-#include <lmap.h>
-
-
-/* protos */
-
-inline unsigned long fnv_hash (const char *p, int s);
-
-/*******************************************/
-
-/*
+/***
  *
  * Fowler/Noll/Vo hash
  *
@@ -52,7 +23,18 @@ inline unsigned long fnv_hash (const char *p, int s);
  *      http://www.isthe.com/chongo/tech/comp/fnv/index.html
  *
  * for more details as well as other forms of the FNV hash.
+ ***
  *
+ * NOTE: The FNV-0 historic hash is not recommended.  One should use
+ *	 the FNV-1 hash instead.
+ *
+ * To use the 32 bit FNV-0 historic hash, pass FNV0_32_INIT as the
+ * Fnv32_t hashval argument to fnv_32_buf() or fnv_32_str().
+ *
+ * To use the recommended 32 bit FNV-1 hash, pass FNV1_32_INIT as the
+ * Fnv32_t hashval argument to fnv_32_buf() or fnv_32_str().
+ *
+ ***
  *
  * Please do not copyright this code.  This code is in the public domain.
  *
@@ -65,25 +47,62 @@ inline unsigned long fnv_hash (const char *p, int s);
  * PERFORMANCE OF THIS SOFTWARE.
  *
  * By:
- *      chongo <Landon Curt Noll> /\oo/\
+ *	chongo <Landon Curt Noll> /\oo/\
  *      http://www.isthe.com/chongo/
  *
- * Share and Enjoy!     :-)
+ * Share and Enjoy!	:-)
  */
 
-#define FNV_prime 16777619
+#include <lmap.h>
+#include <lmap_hash.h>
 
-inline unsigned long fnv_hash (const char *p, int s)
+#define FNV_32_PRIME ((Fnv32_t)0x01000193)
+#define FNV_64_PRIME ((Fnv64_t)0x100000001b3ULL)
+
+Fnv32_t
+fnv_32(void *buf, size_t len)
 {
-   unsigned long h = 2166136261UL;	/* FNV-1a hash */
-   int i = 0;
+    unsigned char *bp = (unsigned char *)buf;	/* start of buffer */
+    unsigned char *be = bp + len;		/* beyond end of buffer */
+    Fnv32_t hval      = FNV1_32_INIT;
 
-   for (; i < s; i++)
-	   h = ((h ^ p[i]) * FNV_prime);
+    /*
+     * FNV-1 hash each octet in the buffer
+     */
+    while (bp < be) {
 
-   return h;
+	/* multiply by the 32 bit FNV magic prime mod 2^64 */
+	hval *= FNV_32_PRIME;
+
+	/* xor the bottom with the current octet */
+	hval ^= (Fnv32_t)*bp++;
+    }
+
+    /* return our new hash value */
+    return hval;
 }
 
+Fnv64_t
+fnv_64(void *buf, size_t len)
+{
+    unsigned char *bp = (unsigned char *)buf;	/* start of buffer */
+    unsigned char *be = bp + len;		/* beyond end of buffer */
+    Fnv64_t hval      = FNV1_64_INIT;
+    /*
+     * FNV-1 hash each octet of the buffer
+     */
+    while (bp < be) {
+
+	/* multiply by the 64 bit FNV magic prime mod 2^64 */
+	hval *= FNV_64_PRIME;
+
+	/* xor the bottom with the current octet */
+	hval ^= (Fnv64_t)*bp++;
+    }
+ 
+   /* return our new hash value */
+    return hval;
+}
 
 /* EOF */
 
