@@ -20,6 +20,9 @@ dnl
 
 AC_INIT(include/lmap.h)
 
+dnl Force autoconf 2.5 
+AC_PREREQ(2.5)
+
 VERSION=`grep LMAP_VERSION ./include/lmap_version.h | cut -f2 -d"\""`
 
 AC_CONFIG_SRCDIR(src/missing)

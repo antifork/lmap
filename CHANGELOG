@@ -9,8 +9,13 @@ Legenda:
 0.0.2 -- 
 
 + thread support
++ bucket handling in decoders
++ preliminary ipv6 support
++ ip_addr functions
 + preliminary UI engine
 ! fixed automake issue with missing functions
+! fixed signal handling (nested signals)
+! code cleanup
 
 
 0.0.1 -- 20021021
