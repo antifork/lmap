@@ -5,6 +5,14 @@ The whole thing... ;)
 TODO for the lmap 
 -------------------
 
+   !! menu not displayed correctly switching between screens
+   !! reading from file has a race condition with the interface
+      (sometime user messages are not displayed)
+   !! fix the segfault (display statistics and switch screen)
+   !! UI_LOCK is not safe... implemet a message queue for the USER_MSG()
+         function
+
+
    + WIFI decoder
       + extract more infos (ESSID BSSID, ecc ecc)
       + test the wifi decoder under wifi card different from cisco
@@ -31,8 +39,6 @@ TODO for the lmap
    + euristic engine
 
    + active probing engine
-
-   + user interface
 
 ---------------
 EURISTIC issue
