@@ -1,13 +1,16 @@
 #ifndef LMAP_DB_H
 #define LMAP_DB_H
 
+#include <lmap_if.h>
 #include <lmap_inet.h>
 
 /* bucket content */
 
 struct L2_info {
-   u_int8 mac_src[6];
-   u_int8 mac_dst[6];
+   u_int8 mac_src[ETH_ADDR_LEN];
+   u_int8 mac_dst[ETH_ADDR_LEN];
+   /* wifi infos */
+   u_int8 BSSID[ETH_ADDR_LEN];
    char   *ESSID;
 };
 

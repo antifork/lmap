@@ -65,9 +65,6 @@ FUNC_DECODER(decode_eth)
    memcpy(BUCKET->L2->mac_src, eth->sha, ETH_ADDR_LEN);
    memcpy(BUCKET->L2->mac_dst, eth->dha, ETH_ADDR_LEN);
 
-   /* ESSSID for the eth is "lmap_wired" */
-   BUCKET->L2->ESSID = strdup("lmap_wired");
-  
    return get_decoder(NET_LAYER, ntohs(eth->proto));
 }
 

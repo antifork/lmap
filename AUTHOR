@@ -6,7 +6,7 @@ AUTHORS:
 
 CO-AUTHORS:
 
-   recidjvo		      <recidjvo@s0ftpj.org>
+   recidjvo                   <recidjvo@s0ftpj.org>
    Daniele Milan (tinybyte)   <tinybyte@box.it>
 
 
@@ -14,3 +14,7 @@ CO-AUTHORS:
 
 CONTRIBUTORS:
 
+
+
+
+vim ts=3:expandtab
