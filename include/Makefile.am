@@ -21,7 +21,7 @@ noinst_HEADERS = lmap_capture.h \
                  lmap_ncurses_menu.h \
                  lmap_version.h \
                  lmap_threads.h \
-				 lmap_stat.h 
+                 lmap_stat.h 
    
 EXTRA_DIST = missing/strlcpy.h \
              missing/strlcat.h \
@@ -30,4 +30,4 @@ EXTRA_DIST = missing/strlcpy.h \
 
 CLEANFILES = *.log *.out core.* *~
 
-# vim:ts=4:noexpandtab             
+# vim:ts=4:expandtab             

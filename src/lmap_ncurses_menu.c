@@ -62,15 +62,15 @@ WINDOW * menu_create(void)
 void menu_refresh(WINDOW *w_menu)
 {
    /* if total packet count hasn't changed, do nothing */
-   if (stats == get_stathead()->total)
+   if (stats == get_stat("TOTAL"))
       return;
   
    wattron(w_menu, A_REVERSE);
    mvwprintw(w_menu, 0, COLS - 26, "<F12>");     
    wattroff(w_menu, A_REVERSE);
-   mvwprintw(w_menu, 0, COLS - 20, "Packets: %8d ", get_stathead()->total );
+   mvwprintw(w_menu, 0, COLS - 20, "Packets: %8d ", get_stat("TOTAL") );
    SAFE_WREFRESH(w_menu);
-   stats = get_stathead()->total;
+   stats = get_stat("TOTAL");
    refresh_statistics();
    
 }
@@ -118,19 +118,24 @@ void show_statistics(void)
 void refresh_statistics(void)
 {
    int i = 1;
-   struct stat_env *curr = NULL;
+   
+   (void)i; 
 
    /* if statistics are not displayed, do nothing */
    if (w_stat == NULL)
       return;
+  
+#error NON COMPILA VOLUTAMENTE... vedere i commenti
+   /*
+    * ora e' tardi (01:05 am) e ho sonno...  quindi non la implemento ora...
+    *
+    * cmq bisognarebbe trovare un modo per stampare le stat
+    * senza sapere come e' fatta la stat_list in questo punto.
+    *
+    * una funzione che torna type e num successivamente andrebbe bene.
+    */
    
-   curr = get_stathead();
-
-   while (curr->next != NULL) {
-      curr = curr->next;
-      mvwprintw(w_stat, i, 2, "%5s  : %8d", curr->id, curr->total);
-      i++;
-   }
+   //   mvwprintw(w_stat, i++, 2, "%5s  : %8d", curr->type, curr->num);
    
    SAFE_WREFRESH(w_stat);
 }

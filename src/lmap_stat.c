@@ -21,48 +21,53 @@
 #include <lmap.h>
 
 /* NOTES: 
- * struct stat_env is defined in include/lmap_globals.h
- * IDs should always be uppercase for their use in interface printing 
+ * TYPEs should always be uppercase for their use in interface printing 
  */
-
-/* prototypes */
-
-struct stat_env *get_stathead(void);
-void register_stat(const char *id);
-u_int16 get_max_id_len(void);
-u_int32 get_stat_count(void);
-void update_stat(const char *id, const u_int32 count);
-void free_stats(void);
-
-static void create_stat(const char *id);
-static struct stat_env *find_stat(const char *id);
 
 /* global variables */
 
-static struct stat_env stathead = 
-   {"TOTAL", 0, NULL};
+struct stat_list {
+   char *type;
+   u_int32 num;
+   LIST_ENTRY (stat_list) next;
+};
+   
+LIST_HEAD(, stat_list) stat_list_head;
+
 static u_int32 stat_entries = 0;
-static u_int16 max_id_len = 0;
 
-struct stat_env *get_stathead(void)
+/* prototypes */
+
+void register_stat(const char *type);
+u_int32 get_stat_count(void);
+void update_stat(const char *type, const u_int32 count);
+u_int32 get_stat(const char *type);
+void free_stats(void);
+
+/***************************************/
+
+
+void register_stat(const char *type)
 {
-   return &stathead;
-}
+   struct stat_list *newelem, *current;
 
-void register_stat(const char *id)
-{
-   int i;
+   newelem = (struct stat_list *) calloc(1, sizeof(struct stat_list));
+   ON_ERROR(newelem, NULL, "can't allocate memory");
 
-   create_stat(id);
+   newelem->type = strdup(type);
+   newelem->num = 0;
+
+   LIST_FOREACH(current, &stat_list_head, next) {
+      if (!strcmp(current->type, type)) {
+         LIST_REPLACE(current, newelem, next);
+         SAFE_FREE(current);
+         return;
+      }
+   }
+   
+   LIST_INSERT_HEAD(&stat_list_head, newelem, next);
+   
    stat_entries++;
-   i = strlen(id);
-   if (max_id_len < i) 
-      max_id_len = i;
-}
-
-u_int16 get_max_id_len(void)
-{
-   return max_id_len;
 }
 
 u_int32 get_stat_count(void)
@@ -70,52 +75,42 @@ u_int32 get_stat_count(void)
    return stat_entries;
 }
 
-void create_stat(const char *id)
-{
-   struct stat_env *curr = &stathead;
-
-   while (curr->next)
-      curr = curr->next;
-
-   curr->next = (struct stat_env *) calloc(1, sizeof(struct stat_env));
-   curr = curr->next;
-
-   curr->id = (char *)calloc(1, sizeof(id));
-   strncpy(curr->id, id, sizeof(id));
-   curr->total = 0;
-   curr->next = NULL;
-}
    
-void update_stat(const char *id, const u_int32 count)
+void update_stat(const char *type, const u_int32 count)
 {
-   struct stat_env *curr = NULL;
+   struct stat_list *current;
 
-   curr = find_stat(id);
-
-   if (curr)
-      curr->total += count;
+   LIST_FOREACH(current, &stat_list_head, next) {
+      if (!strcmp(current->type, type))
+         current->num += count;
+   }
+   
 }
 
-struct stat_env *find_stat(const char *id)
+
+u_int32 get_stat(const char *type)
 {
-   struct stat_env *curr = &stathead;
+   struct stat_list *current;
 
-   while (strcmp(id, curr->id) != 0)
-      curr = curr->next;
-
-   return curr;
+   LIST_FOREACH(current, &stat_list_head, next) {
+      if (!strcmp(current->type, type))
+         return current->num;
+   }
+   
+   return 0; 
 }
 
 void free_stats(void)
 {
-   struct stat_env *curr = &stathead, *tmp = NULL;
+   struct stat_list *curr;
 
-   curr = curr->next;
+   DEBUG_MSG("free_stats");
    
-   while (curr->next) {
-      tmp = curr->next;
+   while (LIST_FIRST(&stat_list_head) != NULL) {
+      curr = LIST_FIRST(&stat_list_head);
+      LIST_REMOVE(curr, next);
+      SAFE_FREE(curr->type);
       SAFE_FREE(curr);
-      curr = tmp;
    }
 }
       

@@ -49,6 +49,7 @@ void eth_init(void);
 void __init eth_init(void)
 {
    add_decoder(LINK_LAYER, LI_TYPE_ETH, decode_eth);
+   register_stat("TOTAL");
 }
 
 

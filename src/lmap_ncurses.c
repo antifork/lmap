@@ -97,7 +97,6 @@ void ncurses_init(void)
    init_pair(C_FOCUS, COLOR_YELLOW, COLOR_BLACK);
    
    /* hide the cursor */
-   
    curs_set(0);
    
    atexit(ncurses_cleanup);

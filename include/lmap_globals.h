@@ -23,12 +23,6 @@ struct pcap_env {
    u_int16 snaplen;
 };
 
-struct stat_env {
-   char *id;
-   u_int32 total;
-   struct stat_env *next;
-};
-
 
 struct globals {
    struct lmap_options *options;
@@ -44,7 +38,6 @@ extern struct globals *gbls;
 #define GBL_OPTIONS        (GBLS->options)
 #define GBL_ENV            (GBLS->env)
 #define GBL_PCAP           (GBLS->pcap)
-#define GBL_STAT           (GBLS->stat)
 
 #define GBL_PROGRAM        (GBL_ENV->name)
 #define GBL_VERSION        (GBL_ENV->version)

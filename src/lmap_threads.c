@@ -101,8 +101,6 @@ void lmap_thread_register(u_int32 id, char *name, char *desc)
    LIST_FOREACH(current, &thread_list_head, next) {
       if (current->t.id == id) {
          LIST_REPLACE(current, newelem, next);
-         SAFE_FREE(current->t.name);
-         SAFE_FREE(current->t.description);
          SAFE_FREE(current);
          return;
       }

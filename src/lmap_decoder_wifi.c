@@ -56,6 +56,7 @@ void wifi_init(void);
 void __init wifi_init(void)
 {
    add_decoder(LINK_LAYER, LI_TYPE_WIFI, decode_wifi);
+   register_stat("TOTAL");
 }
 
 
