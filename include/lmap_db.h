@@ -4,23 +4,23 @@
 /* bucket content */
 
 struct L2_info {
-   char mac_src[6];
-   char mac_dst[6];
-   char *ESSID;
+   u_int8 mac_src[6];
+   u_int8 mac_dst[6];
+   char   *ESSID;
 };
 
 struct L3_info {
    u_int32  ip_src;
    u_int32  ip_dst;
-   int proto;
-   int ttl;
+   u_int16  proto;
+   u_int8   ttl;
 };
 
 struct L4_info {
    u_int16 port_src;
    u_int16 port_dst;
-   int proto;
-   char *fingerprint;
+   u_int16 proto;
+   char    *fingerprint;
 };
  
 struct L5_info {
