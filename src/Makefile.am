@@ -15,6 +15,7 @@ lmap_SOURCES = lmap_main.c \
                lmap_data.c \
                lmap_hash.c \
                lmap_manuf.c \
+               lmap_fingerprint.c \
                lmap_ui.c \
                lmap_ncurses.c \
                lmap_ncurses_info.c \

@@ -20,8 +20,6 @@
 */
 
 /*
- * $Id$
- *
  * MFDBL: mac fingerprint batabase library.
  *
  * Copyright (c) 2002 Bonelli Nicola <bonelli@blackhats.it>

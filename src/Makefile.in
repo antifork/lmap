@@ -98,6 +98,7 @@ lmap_SOURCES = lmap_main.c \
                lmap_data.c \
                lmap_hash.c \
                lmap_manuf.c \
+               lmap_fingerprint.c \
                lmap_ui.c \
                lmap_ncurses.c \
                lmap_ncurses_info.c \
@@ -131,8 +132,8 @@ am_lmap_OBJECTS = lmap-lmap_main.$(OBJEXT) lmap-lmap_debug.$(OBJEXT) \
 	lmap-lmap_capture.$(OBJEXT) lmap-lmap_inet.$(OBJEXT) \
 	lmap-lmap_threads.$(OBJEXT) lmap-lmap_data.$(OBJEXT) \
 	lmap-lmap_hash.$(OBJEXT) lmap-lmap_manuf.$(OBJEXT) \
-	lmap-lmap_ui.$(OBJEXT) lmap-lmap_ncurses.$(OBJEXT) \
-	lmap-lmap_ncurses_info.$(OBJEXT) \
+	lmap-lmap_fingerprint.$(OBJEXT) lmap-lmap_ui.$(OBJEXT) \
+	lmap-lmap_ncurses.$(OBJEXT) lmap-lmap_ncurses_info.$(OBJEXT) \
 	lmap-lmap_ncurses_menu.$(OBJEXT) lmap-lmap_decode.$(OBJEXT) \
 	lmap-lmap_decoder_raw.$(OBJEXT) lmap-lmap_decoder_eth.$(OBJEXT) \
 	lmap-lmap_decoder_wifi.$(OBJEXT) lmap-lmap_decoder_ip.$(OBJEXT) \
@@ -170,6 +171,7 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/lmap-lmap_decoder_udp.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/lmap-lmap_decoder_wifi.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/lmap-lmap_error.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/lmap-lmap_fingerprint.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/lmap-lmap_globals.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/lmap-lmap_hash.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/lmap-lmap_inet.Po \
@@ -238,6 +240,7 @@ lmap-lmap_threads.$(OBJEXT): lmap_threads.c
 lmap-lmap_data.$(OBJEXT): lmap_data.c
 lmap-lmap_hash.$(OBJEXT): lmap_hash.c
 lmap-lmap_manuf.$(OBJEXT): lmap_manuf.c
+lmap-lmap_fingerprint.$(OBJEXT): lmap_fingerprint.c
 lmap-lmap_ui.$(OBJEXT): lmap_ui.c
 lmap-lmap_ncurses.$(OBJEXT): lmap_ncurses.c
 lmap-lmap_ncurses_info.$(OBJEXT): lmap_ncurses_info.c
@@ -281,6 +284,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lmap-lmap_decoder_udp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lmap-lmap_decoder_wifi.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lmap-lmap_error.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lmap-lmap_fingerprint.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lmap-lmap_globals.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lmap-lmap_hash.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lmap-lmap_inet.Po@am__quote@
@@ -452,6 +456,18 @@ lmap-lmap_manuf.obj: lmap_manuf.c
 @AMDEP_TRUE@	depfile='$(DEPDIR)/lmap-lmap_manuf.Po' tmpdepfile='$(DEPDIR)/lmap-lmap_manuf.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(lmap_CFLAGS) $(CFLAGS) -c -o lmap-lmap_manuf.obj `cygpath -w lmap_manuf.c`
+
+lmap-lmap_fingerprint.o: lmap_fingerprint.c
+@AMDEP_TRUE@	source='lmap_fingerprint.c' object='lmap-lmap_fingerprint.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/lmap-lmap_fingerprint.Po' tmpdepfile='$(DEPDIR)/lmap-lmap_fingerprint.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(lmap_CFLAGS) $(CFLAGS) -c -o lmap-lmap_fingerprint.o `test -f 'lmap_fingerprint.c' || echo '$(srcdir)/'`lmap_fingerprint.c
+
+lmap-lmap_fingerprint.obj: lmap_fingerprint.c
+@AMDEP_TRUE@	source='lmap_fingerprint.c' object='lmap-lmap_fingerprint.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/lmap-lmap_fingerprint.Po' tmpdepfile='$(DEPDIR)/lmap-lmap_fingerprint.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(lmap_CFLAGS) $(CFLAGS) -c -o lmap-lmap_fingerprint.obj `cygpath -w lmap_fingerprint.c`
 
 lmap-lmap_ui.o: lmap_ui.c
 @AMDEP_TRUE@	source='lmap_ui.c' object='lmap-lmap_ui.o' libtool=no @AMDEPBACKSLASH@

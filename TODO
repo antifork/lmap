@@ -14,6 +14,8 @@ TODO for the lmap
    
    + pa_ntoa & co.  needs to be "thread safe"tize
 
+   + passive fingerprint
+   
    + set the iface config and default gw
 
    + db && relative API

@@ -26,6 +26,7 @@
 #include <lmap_threads.h>
 #include <lmap_ui.h>
 #include <lmap_manuf.h>
+#include <lmap_fingerprint.h>
 
 
 /* global vars */
@@ -56,33 +57,28 @@ int main(int argc, char *argv[])
    DEBUG_MSG("main -- here we go !!");
    
    /* register the main thread in the thread list*/
-
    lmap_thread_register(LMAP_SELF, "main", "");
    
    /* activate the signal handler */
-   
    signal_handler();
 
-   /*
-    * getopt related parsing...
-    */
-   
+   /* getopt related parsing...  */
    parse_options(argc, argv);
   
    /* initialize the user interface */
-   
    ui_init();
    
    USER_MSG("\n\033[01m\033[1m%s %s\033[0m\n\n", GBL_PROGRAM, GBL_VERSION);
 
    /* initialize libpcap */
-   
    capture_init();
 
    /* load the mac-fingerprints */
-
    manuf_init();
 
+   /* load the mac-fingerprints */
+   fingerprint_init();
+   
    /* INITIALIZATION PHASE TERMINATED */
    
    /*
