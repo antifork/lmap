@@ -151,8 +151,9 @@ FUNC_DECODER(decode_tcp)
    } else {
       fingerprint_destroy(&BUCKET->L4->fingerprint);
    }
-   
-   return NULL;
+
+   /* return the next decoder */
+   return get_decoder(APP_LAYER, ntohs(tcp->dport));
 }
 
 /* EOF */

@@ -66,8 +66,9 @@ FUNC_DECODER(decode_udp)
 
    /* this is UDP */
    BUCKET->L4->proto = htons(LN_TYPE_UDP);
-   
-   return NULL;
+
+   /* return the next decoder */
+   return get_decoder(APP_LAYER, ntohs(udp->dport));
 }
 
 /* EOF */
