@@ -94,6 +94,9 @@
 /* Define to 1 if you have the `vprintf' function. */
 #undef HAVE_VPRINTF
 
+/* where can I find my conf file ? */
+#undef INSTALL_PREFIX
+
 /* compiling under bsd */
 #undef OS_BSD
 

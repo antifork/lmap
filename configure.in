@@ -97,6 +97,9 @@ if test "$prefix" = "NONE"; then
    prefix="/usr/local"
 fi
 
+AH_TEMPLATE(INSTALL_PREFIX, [where can I find my conf file ?])
+
+AC_DEFINE_UNQUOTED(INSTALL_PREFIX, "${prefix}")
 
 dnl ========================
 dnl   Check the C compiler

@@ -95,6 +95,9 @@
 /* Define to 1 if you have the `vprintf' function. */
 #define HAVE_VPRINTF 1
 
+/* where can I find my conf file ? */
+#define INSTALL_PREFIX "/usr/local"
+
 /* compiling under bsd */
 /* #undef OS_BSD */
 

@@ -107,6 +107,8 @@ EXTRA_DIST = missing/strlcpy.h \
              missing/getopt.h \
              missing/queue.h
 
+
+CLEANFILES = *.log *.out core.* *~
 subdir = include
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = config.h
@@ -228,6 +230,7 @@ install-strip:
 mostlyclean-generic:
 
 clean-generic:
+	-test -z "$(CLEANFILES)" || rm -f $(CLEANFILES)
 
 distclean-generic:
 	-rm -f Makefile $(CONFIG_CLEAN_FILES)

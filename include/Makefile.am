@@ -11,6 +11,7 @@ noinst_HEADERS = lmap_capture.h \
                  lmap_signal.h \
                  lmap_stdint.h \
                  lmap_decode.h \
+                 lmap_data.h \
                  lmap_ui.h \
                  lmap_ncurses.h \
                  lmap_ncurses_info.h \
