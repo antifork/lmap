@@ -68,7 +68,7 @@ FUNC_DECODER(decode_ip6)
    struct ip6_header *ip6;
    int opt; /* -1 means no options defined, if 0 an option is present */
    
-   update_stat("IPv6", 1);
+   update_stat("IP", 1);
    
    ip6 = (struct ip6_header *)DECODE_DATA;
   
