@@ -20,11 +20,13 @@
 
 #include <lmap.h>
 #include <lmap_db.h>
+#include <lmap_ui.h>
 
 /* protos */
 
 struct bucket * db_bucket_alloc(void);
-void bd_bucket_free(struct bucket *);
+void db_bucket_free(struct bucket *);
+void db_bucket_send(struct bucket *);
 
 /*******************************************/
 
@@ -41,10 +43,10 @@ struct bucket * db_bucket_alloc(void)
    p = (struct bucket *) calloc(1, sizeof(struct bucket));
    ON_ERROR(p, NULL, "can't allocate bucket");
 
-   p->L2 = (struct L2_info *) calloc(1,sizeof(struct L2_info));
-   p->L3 = (struct L3_info *) calloc(1,sizeof(struct L3_info));
-   p->L4 = (struct L4_info *) calloc(1,sizeof(struct L4_info));
-   p->L5 = (struct L5_info *) calloc(1,sizeof(struct L5_info));
+   p->L2 = (struct L2_info *) calloc(1, sizeof(struct L2_info));
+   p->L3 = (struct L3_info *) calloc(1, sizeof(struct L3_info));
+   p->L4 = (struct L4_info *) calloc(1, sizeof(struct L4_info));
+   p->L5 = (struct L5_info *) calloc(1, sizeof(struct L5_info));
 
    if ( p->L2 == NULL || p->L3 == NULL || p->L4 == NULL || p->L5 == NULL )
       ERROR_MSG("can't allocate memory");
@@ -56,9 +58,29 @@ struct bucket * db_bucket_alloc(void)
  * dealloc space of bucket, keeping the content allocated
  */
  
-void bd_bucket_free(struct bucket *p)
+void db_bucket_free(struct bucket *p)
 {
    SAFE_FREE(p);
+}
+
+/* 
+ * send the bucket to the database */
+
+void db_bucket_send(struct bucket *p)
+{
+   USER_MSG("db_bucket_send -- NOT YET IMPLEMENTED\n");
+
+   USER_MSG("L2 INFO\n");
+   SAFE_FREE(p->L2);
+   
+   USER_MSG("L3 INFO\n");
+   SAFE_FREE(p->L3);
+   
+   USER_MSG("L4 INFO\n");
+   SAFE_FREE(p->L4);
+   
+   USER_MSG("L5 INFO\n");
+   SAFE_FREE(p->L5);
 }
 
 

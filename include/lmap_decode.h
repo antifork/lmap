@@ -5,20 +5,22 @@
 #include <pcap.h>
 #include <netinet/in.h>
 
-/* XXX - remove me ! */
+#include <lmap_db.h>
+
+/* XXX - remove me ! (USER_MSG in decoders) */
 #include <lmap_ui.h>
 
-#define FUNC_DECODER(func) void * func(u_char *buf, u_int16 buflen, int *len)
-#define FUNC_DECODER_PTR(func) void * (*func)(u_char *buf, u_int16 buflen, int *len)
+#define FUNC_DECODER(func) void * func(u_char *buf, u_int16 buflen, int *len, struct bucket *b)
+#define FUNC_DECODER_PTR(func) void * (*func)(u_char *buf, u_int16 buflen, int *len, struct bucket *b)
 
 #define DECODE_DATALEN   buflen
 #define DECODE_DATA      buf
 #define DECODED_LEN      *len
+#define BUCKET           b
 
 
 extern void lmap_decode(u_char *u, const struct pcap_pkthdr *pkthdr, const u_char *pkt);
 extern int set_L2_decoder(int dlt);
-void add_L2_decoder(int dlt, FUNC_DECODER_PTR(decoder)); /* XXX add_L2_decoder(): da implementare? */
 void add_decoder(int level, int type, FUNC_DECODER_PTR(decoder));
 void * get_decoder(int level, int type);
 

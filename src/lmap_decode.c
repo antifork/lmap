@@ -21,6 +21,7 @@
 #include <lmap.h>
 #include <lmap_decode.h>
 #include <lmap_threads.h>
+#include <lmap_db.h>
 
 #include <pcap.h>
 
@@ -52,6 +53,7 @@ void * get_decoder(int level, int type);
 void lmap_decode(u_char *u, const struct pcap_pkthdr *pkthdr, const u_char *pkt)
 {
    FUNC_DECODER_PTR(decoder);
+   struct bucket *b;
    void *next_decoder;
    int len;
    u_char *data;
@@ -77,6 +79,9 @@ void lmap_decode(u_char *u, const struct pcap_pkthdr *pkthdr, const u_char *pkt)
    data = (u_char *)pkt;
    datalen = pkthdr->caplen;
    
+   /* alloc the bucket structure to be passet through decoders */
+   b = db_bucket_alloc();
+   
    do {
            
       lmap_thread_testcancel();
@@ -88,7 +93,7 @@ void lmap_decode(u_char *u, const struct pcap_pkthdr *pkthdr, const u_char *pkt)
        * the len of decoded data is also returned.
        */
            
-      next_decoder = decoder(data, datalen, &len);
+      next_decoder = decoder(data, datalen, &len, b);
       
       /* 
        * update the amount of data left undecoded
@@ -107,6 +112,11 @@ void lmap_decode(u_char *u, const struct pcap_pkthdr *pkthdr, const u_char *pkt)
       
    } while (decoder != NULL);
 
+   /* send the collected infos to the database */
+   db_bucket_send(b);
+   
+   /* free the structure */
+   db_bucket_free(b);
    
    return;
 }

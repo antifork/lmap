@@ -83,6 +83,11 @@ struct bucket {
  
 /* extern prototypes */
 
+extern struct bucket * db_bucket_alloc(void);
+extern void db_bucket_free(struct bucket *);
+extern void db_bucket_send(struct bucket *);
+
+
 #endif
 
 /* EOF */
