@@ -68,12 +68,12 @@ FUNC_DECODER(decode_icmp)
    DECODED_LEN = sizeof(struct icmp_header);
 
    
-   DEBUG_MSG("ICMP : 0x%04x bytes\n%s", 
+   USER_MSG("ICMP : 0x%04x bytes\n%s", 
                    DECODE_DATALEN, 
                    hex_format(DECODE_DATA, DECODED_LEN));
    
 
-   DEBUG_MSG(" --> type   0x%02x\n", icmp->type);
+   USER_MSG(" --> type   0x%02x\n", icmp->type);
 
       
    return NULL;

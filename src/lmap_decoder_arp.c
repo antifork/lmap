@@ -73,11 +73,11 @@ FUNC_DECODER(decode_arp)
 
 
    
-   DEBUG_MSG("ARP : 0x%04x bytes\n%s", 
+   USER_MSG("ARP : 0x%04x bytes\n%s", 
                    DECODE_DATALEN, 
                    hex_format(DECODE_DATA, DECODED_LEN));
    
-   DEBUG_MSG(" --> op   0x%04x\n", ntohs(arp->ar_op));
+   USER_MSG(" --> op   0x%04x\n", ntohs(arp->ar_op));
    
    if (arp->ar_hln == ETH_ADDR_LEN && arp->ar_pln == IP_ADDR_LEN) {
    
@@ -85,10 +85,10 @@ FUNC_DECODER(decode_arp)
 
       earp = (struct arp_eth_header *)(arp + 1);
            
-      DEBUG_MSG(" --> sha  %s", ha_ntoa(earp->arp_sha));
-      DEBUG_MSG(" --> spa  %s", pa_ntoa(earp->arp_spa));
-      DEBUG_MSG(" --> tha  %s", ha_ntoa(earp->arp_tha));
-      DEBUG_MSG(" --> tpa  %s\n", pa_ntoa(earp->arp_tpa));
+      USER_MSG(" --> sha  %s", ha_ntoa(earp->arp_sha));
+      USER_MSG(" --> spa  %s", pa_ntoa(earp->arp_spa));
+      USER_MSG(" --> tha  %s", ha_ntoa(earp->arp_tha));
+      USER_MSG(" --> tpa  %s\n", pa_ntoa(earp->arp_tpa));
            
    }
    

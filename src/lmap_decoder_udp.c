@@ -56,14 +56,14 @@ FUNC_DECODER(decode_udp)
 
    DECODED_LEN = sizeof(struct udp_header);
    
-   DEBUG_MSG("UDP : 0x%04x bytes\n%s\n", 
+   USER_MSG("UDP : 0x%04x bytes\n%s\n", 
                    DECODE_DATALEN, 
                    hex_format(DECODE_DATA, DECODED_LEN));
    
-   DEBUG_MSG(" --> source  %d", ntohs(udp->sport));
-   DEBUG_MSG(" --> dest    %d", ntohs(udp->dport));
+   USER_MSG(" --> source  %d", ntohs(udp->sport));
+   USER_MSG(" --> dest    %d", ntohs(udp->dport));
 
-   DEBUG_MSG(" --> data    %d bytes\n", ntohs(udp->ulen) - DECODED_LEN);
+   USER_MSG(" --> data    %d bytes\n", ntohs(udp->ulen) - DECODED_LEN);
    
    return NULL;
 }

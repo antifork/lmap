@@ -71,17 +71,17 @@ FUNC_DECODER(decode_ip)
    DECODED_LEN = ip->ihl * 4;
 
    
-   DEBUG_MSG("IP : 0x%04x bytes\n%s", 
+   USER_MSG("IP : 0x%04x bytes\n%s", 
                    DECODE_DATALEN, 
                    hex_format(DECODE_DATA, DECODED_LEN));
    
 
-   DEBUG_MSG(" --> source  %s", pa_ntoa((char *)&ip->saddr));
-   DEBUG_MSG(" --> dest    %s", pa_ntoa((char *)&ip->daddr));
-   DEBUG_MSG(" --> proto   0x%02x\n", ip->protocol);
+   USER_MSG(" --> source  %s", pa_ntoa((char *)&ip->saddr));
+   USER_MSG(" --> dest    %s", pa_ntoa((char *)&ip->daddr));
+   USER_MSG(" --> proto   0x%02x\n", ip->protocol);
 
    if (ip->ihl * 4 != sizeof(struct ip_header))
-      DEBUG_MSG(" --> IP OPTIONS PRESENT (%d byte)\n", (ip->ihl * 4) - sizeof(struct ip_header));
+      USER_MSG(" --> IP OPTIONS PRESENT (%d byte)\n", (ip->ihl * 4) - sizeof(struct ip_header));
       
    return get_decoder(PROTO_LAYER, ip->protocol);
 }

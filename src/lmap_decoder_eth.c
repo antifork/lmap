@@ -59,13 +59,13 @@ FUNC_DECODER(decode_eth)
    
    eth = (struct eth_header *)DECODE_DATA;
    
-   DEBUG_MSG("ETH : 0x%04x bytes\n%s", 
+   USER_MSG("ETH : 0x%04x bytes\n%s", 
                    DECODE_DATALEN,
                    hex_format(DECODE_DATA, DECODED_LEN));
    
-   DEBUG_MSG(" --> source  %s", ha_ntoa(eth->sha));
-   DEBUG_MSG(" --> dest    %s", ha_ntoa(eth->dha));
-   DEBUG_MSG(" --> type    0x%04x\n", ntohs(eth->proto));
+   USER_MSG(" --> source  %s", ha_ntoa(eth->sha));
+   USER_MSG(" --> dest    %s", ha_ntoa(eth->dha));
+   USER_MSG(" --> type    0x%04x\n", ntohs(eth->proto));
    
    return get_decoder(NET_LAYER, ntohs(eth->proto));
 }

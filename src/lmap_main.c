@@ -66,7 +66,7 @@ int main(int argc, char *argv[])
    
    parse_options(argc, argv);
   
-   fprintf (stdout, "\n\033[01m\033[1m%s %s\033[0m\n\n", GBL_PROGRAM, GBL_VERSION);
+   USER_MSG("\n\033[01m\033[1m%s %s\033[0m\n\n", GBL_PROGRAM, GBL_VERSION);
 
    /*
     * initialize libpcap

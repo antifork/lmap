@@ -48,7 +48,7 @@ FUNC_DECODER(decode_raw)
    DECODED_LEN = DECODE_DATALEN;
    
    
-   DEBUG_MSG("RAW : 0x%04x bytes\n%s", 
+   USER_MSG("RAW : 0x%04x bytes\n%s", 
                    DECODE_DATALEN,
                    hex_format(DECODE_DATA, DECODED_LEN));
    

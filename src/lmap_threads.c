@@ -163,7 +163,7 @@ void lmap_thread_init(void)
     * cancellation  request  is received
     */
         
-   pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS);
+   pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
 
 }
 

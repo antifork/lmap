@@ -76,8 +76,13 @@ FUNC_DECODER(decode_wifi)
       next_decoder = get_decoder(NET_LAYER, ntohs(wifi_ll->type));
    }
 
+   if (ntohs(wifi->type) == 0x0800) {
+      DECODED_LEN = DECODE_DATALEN;
+      next_decoder = NULL;
+      USER_MSG("WIFI: BACON (or unsupported message)");
+   }
    
-   DEBUG_MSG("WIFI : 0x%04x bytes\n%s\n", 
+   USER_MSG("WIFI : 0x%04x bytes\n%s\n", 
                    DECODE_DATALEN, 
                    hex_format(DECODE_DATA, DECODED_LEN));
 
