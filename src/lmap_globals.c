@@ -64,6 +64,7 @@ void globals_free(void)
    GBL_FREE(gbls->env->debug_file);
    GBL_FREE(gbls->env);
    
+   GBL_FREE(gbls->options->dumpfile);
    GBL_FREE(gbls->options->iface);
    GBL_FREE(gbls->options);
    

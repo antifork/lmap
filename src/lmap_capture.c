@@ -42,6 +42,7 @@ char * default_iface(void);
 void capture_init(void)
 {
    pcap_t *pd;
+   pcap_dumper_t *pdump;
    int dlt;
    char pcap_errbuf[PCAP_ERRBUF_SIZE];
    
@@ -59,11 +60,21 @@ void capture_init(void)
    /* 
     * open the interface from GBL_OPTIONS (user specified)
     */
-   
-   pd = pcap_open_live(GBL_OPTIONS->iface, GBL_PCAP->snaplen, PCAP_PROMISC, 
+
+   if (GBL_OPTIONS->read)
+      pd = pcap_open_offline(GBL_OPTIONS->dumpfile, pcap_errbuf);
+   else
+      pd = pcap_open_live(GBL_OPTIONS->iface, GBL_PCAP->snaplen, PCAP_PROMISC, 
                    PCAP_TIMEOUT, pcap_errbuf);
+   
    ON_ERROR(pd, NULL, "%s", pcap_errbuf);
 
+
+   if (GBL_OPTIONS->dump) {
+      pdump = pcap_dump_open(pd, GBL_OPTIONS->dumpfile);
+      GBL_PCAP->dump = pdump;               
+   }
+   
    /*
     * set the right decoder for L2
     */
@@ -84,6 +95,8 @@ void capture_init(void)
 void capture_close(void)
 {
    pcap_close(GBL_PCAP->pcap);
+   if (GBL_OPTIONS->dump)
+      pcap_dump_close(GBL_PCAP->dump);
    
    DEBUG_MSG("capture_closed");
 }

@@ -37,8 +37,8 @@ void error_msg(char *file, char *function, int line, char *message, ...)
    vsnprintf(errmsg, ERROR_MSG_LEN, message, ap);
    va_end(ap);
 
-   DEBUG_MSG("ERROR : [%s:%s:%d] %s | ERRNO %d | %s", file, function,
-                   line, errmsg, errno, strerror(errno));
+   DEBUG_MSG("ERROR : %d, %s\n[%s:%s:%d]\n\n %s \n\n",  errno, strerror(errno),
+                   file, function, line, errmsg );
 
    exit(-1);
 }

@@ -39,7 +39,9 @@ void lmap_usage(void)
    fprintf (stdout, "\nUsage: %s [OPTIONS] \n", GBL_PROGRAM);
 
    fprintf (stdout, "\nGeneral options:\n");
-   fprintf (stdout, "  -i, --iface <iface>          use this interface\n\n");
+   fprintf (stdout, "  -i, --iface <iface>          use this interface\n");
+   fprintf (stdout, "  -d, --dump <file>            dump sniffed data to <file>\n");
+   fprintf (stdout, "  -r, --read <file>            loac data from <file>\n\n");
    fprintf (stdout, "  -v, --version                prints the version and exit\n");
    fprintf (stdout, "  -h, --help                   this help screen\n");
 
@@ -57,6 +59,8 @@ void parse_options(int argc, char **argv)
       { "help", no_argument, NULL, 'h' },
       { "version", no_argument, NULL, 'v' },
       { "iface", required_argument, NULL, 'i' },
+      { "dump", required_argument, NULL, 'd' },
+      { "read", required_argument, NULL, 'r' },
       { 0 , 0 , 0 , 0}
    };
 
@@ -65,12 +69,22 @@ void parse_options(int argc, char **argv)
 
    optind = 0;
 
-   while ((c = getopt_long (argc, argv, "hvi:", long_options, (int *)0)) != EOF) {
+   while ((c = getopt_long (argc, argv, "hvi:r:d:", long_options, (int *)0)) != EOF) {
 
       switch (c) {
 
          case 'i':
                   GBL_OPTIONS->iface = strdup(optarg);
+                  break;
+                  
+         case 'r':
+                  GBL_OPTIONS->read = 1;
+                  GBL_OPTIONS->dumpfile = strdup(optarg);
+                  break;
+                  
+         case 'd':
+                  GBL_OPTIONS->dump = 1;
+                  GBL_OPTIONS->dumpfile = strdup(optarg);
                   break;
                   
          case 'h':
@@ -94,6 +108,10 @@ void parse_options(int argc, char **argv)
       }
    }
 
+   if (GBL_OPTIONS->dump && GBL_OPTIONS->read)
+      FATAL_MSG("You cannote dump and read at the same time...");
+
+   
    return;
 }
 

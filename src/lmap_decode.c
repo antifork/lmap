@@ -61,6 +61,11 @@ void lmap_decode(u_char *u, const struct pcap_pkthdr *pkthdr, const u_char *pkt)
    DEBUG_MSG("CAPTURED: 0x%04x bytes\n%s\n", pkthdr->caplen,
                                              hex_format(pkt, pkthdr->caplen));
 
+   /* dump packet to file if specified on command line */
+
+   if (GBL_OPTIONS->dump)
+      pcap_dump((u_char *)GBL_PCAP->dump, pkthdr, pkt);
+   
    /* we always start decoding from L2 */
    
    decoder = l2_decoder;
