@@ -19,6 +19,8 @@ lmap_SOURCES = lmap_main.c \
                lmap_decoder_arp.c \
                lmap_decoder_udp.c \
                lmap_decoder_tcp.c \
+               missing/getopt.c \
+               missing/getopt_long.c \
                missing/strlcat.c \
                missing/strlcpy.c
 
