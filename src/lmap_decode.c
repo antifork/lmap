@@ -122,11 +122,15 @@ int set_L2_decoder(int dlt)
          l2_decoder = e->decoder;
          return ESUCCESS;
       }
+      /* get the raw decoder if the options is specified */
+      if (GBL_OPTIONS->raw && e->level == 2 && e->type == 0) {
+         l2_decoder = e->decoder;
+         return ESUCCESS;              
+      }
    }
-  
+
    /* error NOT FOUND */
    return -ENOTFOUND;
-   
 }
 
 /*

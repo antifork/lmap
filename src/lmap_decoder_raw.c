@@ -1,5 +1,5 @@
 /*
-    lmap -- ETH decoder module
+    lmap -- RAW decoder module
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -24,19 +24,10 @@
 
 /* globals */
 
-
-struct eth_header
-{
-   u_int8   dha[ETH_ADDR_LEN];       /* destination eth addr */
-   u_int8   sha[ETH_ADDR_LEN];       /* source ether addr */
-   u_int16  proto;               /* packet type ID field */
-};
-
-
 /* protos */
 
-FUNC_DECODER(decode_eth);
-void eth_init(void);
+FUNC_DECODER(decode_raw);
+void raw_init(void);
 
 /*******************************************/
 
@@ -45,29 +36,23 @@ void eth_init(void);
  * it adds the entry in the table of registered decoder
  */
 
-void __init eth_init(void)
+void __init raw_init(void)
 {
-   add_decoder(LINK_LAYER, LI_TYPE_ETH, decode_eth);
+   add_decoder(LINK_LAYER, 0, decode_raw);
 }
 
 
-FUNC_DECODER(decode_eth)
+FUNC_DECODER(decode_raw)
 {
-   struct eth_header *eth;
    
-   DECODED_LEN = sizeof(struct eth_header);
+   DECODED_LEN = DECODE_DATALEN;
    
-   eth = (struct eth_header *)DECODE_DATA;
    
-   DEBUG_MSG("ETH : 0x%04x bytes\n%s", 
+   DEBUG_MSG("RAW : 0x%04x bytes\n%s", 
                    DECODE_DATALEN,
                    hex_format(DECODE_DATA, DECODED_LEN));
    
-   DEBUG_MSG(" --> source  %s", ha_ntoa(eth->sha));
-   DEBUG_MSG(" --> dest    %s", ha_ntoa(eth->dha));
-   DEBUG_MSG(" --> type    0x%04x\n", ntohs(eth->proto));
-   
-   return get_decoder(NET_LAYER, ntohs(eth->proto));
+   return NULL;
 }
 
 /* EOF */

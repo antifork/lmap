@@ -63,6 +63,13 @@ This is useful if you want to save to a file all the captured packet. In this
 way you can analyze the file with tcpdump or ethereal. 
 
 .TP
+\fB\-w\fR, \fB\-\-raw\fR
+use the raw decoder
+.br
+Use the raw decoder on unknown link layer. Useful for data analisys.
+
+
+.TP
 .B OTHER OPTIONS
 
 .TP

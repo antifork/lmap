@@ -42,6 +42,8 @@ void lmap_usage(void)
    fprintf (stdout, "  -i, --iface <iface>          use this interface\n");
    fprintf (stdout, "  -d, --dump <file>            dump sniffed data to <file>\n");
    fprintf (stdout, "  -r, --read <file>            load data from <file>\n\n");
+   fprintf (stdout, "  -w, --raw                    execute the raw decoder if the link\n");
+   fprintf (stdout, "                               layer is not recognized\n\n");
    fprintf (stdout, "  -v, --version                prints the version and exit\n");
    fprintf (stdout, "  -h, --help                   this help screen\n");
 
@@ -58,6 +60,7 @@ void parse_options(int argc, char **argv)
    static struct option long_options[] = {
       { "help", no_argument, NULL, 'h' },
       { "version", no_argument, NULL, 'v' },
+      { "raw", no_argument, NULL, 'w' },
       { "iface", required_argument, NULL, 'i' },
       { "dump", required_argument, NULL, 'd' },
       { "read", required_argument, NULL, 'r' },
@@ -69,7 +72,7 @@ void parse_options(int argc, char **argv)
 
    optind = 0;
 
-   while ((c = getopt_long (argc, argv, "hvi:r:d:", long_options, (int *)0)) != EOF) {
+   while ((c = getopt_long (argc, argv, "hvi:r:d:w", long_options, (int *)0)) != EOF) {
 
       switch (c) {
 
@@ -85,6 +88,10 @@ void parse_options(int argc, char **argv)
          case 'd':
                   GBL_OPTIONS->dump = 1;
                   GBL_OPTIONS->dumpfile = strdup(optarg);
+                  break;
+                  
+         case 'w':
+                  GBL_OPTIONS->raw = 1;
                   break;
                   
          case 'h':

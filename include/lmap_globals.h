@@ -6,6 +6,7 @@
 struct lmap_options {
    char dump:1;
    char read:1;
+   char raw:1;
    char *iface;
    char *dumpfile;
 };

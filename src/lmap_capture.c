@@ -91,8 +91,12 @@ void capture_init(void)
    
    dlt = pcap_datalink(pd);
    
-   if (set_L2_decoder(dlt) != ESUCCESS)
-      FATAL_MSG("Inteface %s not supported (DLT = %d)", GBL_OPTIONS->iface, dlt);
+   if (set_L2_decoder(dlt) != ESUCCESS) {
+      if (GBL_OPTIONS->read)
+         FATAL_MSG("Dump file not supported (DLT = %d)", dlt);
+      else
+         FATAL_MSG("Inteface %s not supported (DLT = %d)", GBL_OPTIONS->iface, dlt);
+   }
    
    
    GBL_PCAP->pcap = pd;               
