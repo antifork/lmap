@@ -20,8 +20,6 @@ TODO for the lmap
          + if ICMP TTL excedeed it can be a ruoter
       + add to the bucket structure these infos
 
-   + passive fingerprint
-   
    + set the iface config and default gw
 
    + db && relative API
