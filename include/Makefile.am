@@ -15,4 +15,5 @@ noinst_HEADERS = lmap_capture.h \
    
 EXTRA_DIST = missing/strlcpy.h \
              missing/strlcat.h \
+             missing/getopt.h \
              missing/queue.h
