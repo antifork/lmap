@@ -59,7 +59,7 @@ void ip6_init(void);
 void __init ip6_init(void)
 {
    add_decoder(NET_LAYER, LL_TYPE_IP6, decode_ip6);
-   register_stat("IPv6");
+   register_stat("IP");
 }
 
 
