@@ -45,6 +45,7 @@ int get_iface_ip(char *iface, u_int32 *ip_addr);
 int get_iface_ll(char *iface, char *ll_addr);
 int get_iface_mask(char *iface, u_int32 *netmask);
 int get_default_gw(u_int32 *gw_addr);
+int get_default_dns(u_int32 *dns_addr);
 
 
 /*******************************************/
@@ -243,6 +244,24 @@ int get_default_gw(u_int32 *gw_addr)
 #endif
 }
 
+int get_default_dns(u_int32 *dns_addr)
+{
+   FILE *dns_fp = (FILE *)NULL;
+   char line[1024], key[1024], val[1024];
+
+   if((dns_fp = fopen(RESOLV_FILE, "r")) == (FILE *)NULL) {
+      return(EINVALID);
+   }
+
+   while(fgets(line, sizeof(line) - 1, dns_fp) != (char *)NULL) {
+     if((sscanf(line, "%s %s", key, val) == 2) && (!strcmp(key, "nameserver")) && ((*dns_addr = inet_addr(val)) != -1)) {
+        fclose(dns_fp);
+        return(ESUCCESS);
+     }
+   }
+   fclose(dns_fp);
+   return(ENOTFOUND);
+}
 
 /* EOF */
 

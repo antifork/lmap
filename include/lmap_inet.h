@@ -9,6 +9,7 @@
 #define IP_ASCII_ADDR_LEN 15   /* ip address len in asci format */
 
 #define LINUX_ROUTE_FILE "/proc/net/route"
+#define RESOLV_FILE "/etc/resolv.conf"
 
 /*  XXX remove this.... they are not thread safe !! */
 extern char * ha_ntoa(const u_char *ll_addr);
@@ -24,6 +25,7 @@ extern int get_iface_ip(char *iface, u_int32 *ip_addr);
 extern int get_iface_ll(char *iface, char *ll_addr);
 extern int get_iface_mask(char *iface, u_int32 *netmask);
 extern int get_default_gw(u_int32 *gw_addr);
+extern int get_default_dns(u_int32 *gw_addr);
 
 #endif
 

@@ -2,7 +2,7 @@
 /* include/config.h.in.  Generated from configure.in by autoheader.  */
 
 /* debug support */
-#define DEBUG 1
+/* #undef DEBUG */
 
 /* Define to 1 if you have the <ctype.h> header file. */
 #define HAVE_CTYPE_H 1

@@ -130,12 +130,13 @@ void ncurses_msg(const char *fmt, va_list ap)
 
 void print_ifaceconfig(LMAP_WIN *win)
 {
-   u_int32 ip_addr, netmask, gw_addr;
+   u_int32 ip_addr, netmask, gw_addr, dns_addr;
    u_int8 ll_addr[ETH_ADDR_LEN];
    char ip_ascii[IP_ASCII_ADDR_LEN];
    char net_ascii[IP_ASCII_ADDR_LEN];
    char ll_ascii[ETH_ASCII_ADDR_LEN];
    char gw_ascii[IP_ASCII_ADDR_LEN];
+   char dns_ascii[IP_ASCII_ADDR_LEN];
    
    /* get and convert iface infos */
    if (get_iface_ip(GBL_OPTIONS->iface, &ip_addr) == ESUCCESS)
@@ -150,6 +151,11 @@ void print_ifaceconfig(LMAP_WIN *win)
            
    if (get_default_gw(&gw_addr) == ESUCCESS)                                                        
       pa_ntoa_r(gw_addr, gw_ascii);                                                                 
+   else                                                                                             
+      sprintf(gw_ascii, "(none)");
+       
+   if (get_default_dns(&dns_addr) == ESUCCESS)                                                        
+      pa_ntoa_r(dns_addr, dns_ascii);                                                                 
    else                                                                                             
       sprintf(gw_ascii, "(none)");
        
@@ -213,6 +219,17 @@ void print_ifaceconfig(LMAP_WIN *win)
    wattron(W(win), A_BOLD);
    waddstr(W(win), gw_ascii);
    wattroff(W(win), A_BOLD);
+
+   /* default dns */
+
+   wmove(W(win), 4, 25);
+   wattron(W(win), COLOR_PAIR(C_TITLE));
+   waddstr(W(win), "DNS     : ");
+   wattroff(W(win), COLOR_PAIR(C_TITLE));
+
+   wattron(W(win), A_BOLD);
+   waddstr(W(win), dns_ascii);
+   wattroff(W(win), A_BOLD);
 }
 
 
@@ -271,6 +288,17 @@ void print_suggconfig(LMAP_WIN *win)
    wmove(W(win), 4, 2);
    wattron(W(win), COLOR_PAIR(C_TITLE));
    waddstr(W(win), "GW   : ");
+   wattroff(W(win), COLOR_PAIR(C_TITLE));
+
+   wattron(W(win), A_BOLD);
+   waddstr(W(win), "(none)");
+   wattroff(W(win), A_BOLD);
+
+   /* default gateway */
+
+   wmove(W(win), 4, 25);
+   wattron(W(win), COLOR_PAIR(C_TITLE));
+   waddstr(W(win), "DNS     : ");
    wattroff(W(win), COLOR_PAIR(C_TITLE));
 
    wattron(W(win), A_BOLD);
