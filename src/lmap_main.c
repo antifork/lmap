@@ -25,6 +25,7 @@
 #include <lmap_parser.h>
 #include <lmap_threads.h>
 #include <lmap_ui.h>
+#include <lmap_manuf.h>
 
 
 /* global vars */
@@ -53,7 +54,7 @@ int main(int argc, char *argv[])
    
    DEBUG_INIT();
    DEBUG_MSG("main -- here we go !!");
-
+   
    /* register the main thread in the thread list*/
 
    lmap_thread_register(LMAP_SELF, "main", "");
@@ -78,6 +79,11 @@ int main(int argc, char *argv[])
    
    capture_init();
 
+   /* load the mac-fingerprints */
+
+   manuf_init();
+
+   /* INITIALIZATION PHASE TERMINATED */
    
    /*
     * go !

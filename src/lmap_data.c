@@ -37,7 +37,7 @@ char * get_full_path(char *file)
 {
    char *filename;
 
-   filename = calloc(1, strlen(INSTALL_PREFIX)+strlen(GBL_PROGRAM)+strlen(file)+3);
+   filename = calloc(strlen(INSTALL_PREFIX)+strlen(GBL_PROGRAM)+strlen(file)+3, sizeof(char));
    ON_ERROR(filename, NULL, "out of memory");
    
    sprintf(filename, "%s/%s/%s", INSTALL_PREFIX, GBL_PROGRAM, file);
@@ -55,10 +55,10 @@ char * get_local_path(char *file)
 {
    char *filename;
 
-   filename = calloc(1, strlen("./share/") + strlen(file) + 1);
+   filename = calloc(strlen("../share/") + strlen(file) + 1, sizeof(char));
    ON_ERROR(filename, NULL, "out of memory");
    
-   sprintf(filename, "./share/%s", file);
+   sprintf(filename, "../share/%s", file);
    
    DEBUG_MSG("get_local_path -- %s", filename);
    
@@ -87,7 +87,7 @@ FILE * open_data(char *file, char *mode)
       DEBUG_MSG("open_data dropping to %s", filename);
       
       fd = fopen(filename, mode);
-      ON_ERROR(filename, NULL, "can't find %s in %s/%s or ./", filename, INSTALL_PREFIX, GBL_PROGRAM);
+      ON_ERROR(fd, NULL, "can't find %s in %s/%s or ./", filename);
    }
  
    SAFE_FREE(filename);
