@@ -92,11 +92,15 @@ void db_bucket_send(struct bucket *b)
    ip_addr_ntoa(&b->L3->ip_dst, tmp);
    ip_addr_details(&b->L3->ip_dst, details);
    USER_MSG(" --> dest    %s %s", tmp, details);
-   USER_MSG(" --> proto   0x%02x", b->L3->proto);
+   USER_MSG(" --> proto   0x%04x", ntohs(b->L3->proto));
    USER_MSG(" --> ttl     %d\n", b->L3->ttl);
    SAFE_FREE(b->L3);
    
-   USER_MSG("L4 INFO\n");
+   USER_MSG("--- L4 INFO ---\n");
+   USER_MSG(" --> source  %d", ntohs(b->L4->port_src));
+   USER_MSG(" --> dest    %d", ntohs(b->L4->port_dst));
+   USER_MSG(" --> proto   0x%04x", ntohs(b->L4->proto));
+   USER_MSG(" --> finger  %s\n", b->L4->fingerprint);
    SAFE_FREE(b->L4);
    
    USER_MSG("L5 INFO\n");

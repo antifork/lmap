@@ -71,12 +71,9 @@ FUNC_DECODER(decode_icmp)
   
    DECODED_LEN = sizeof(struct icmp_header);
 
+   /* XXX - to be implemented */
    
-   USER_MSG("ICMP : 0x%04x bytes\n%s", 
-                   DECODE_DATALEN, 
-                   hex_format(DECODE_DATA, DECODED_LEN));
-   
-
+   USER_MSG("ICMP : 0x%04x bytes\n", DECODE_DATALEN); 
    USER_MSG(" --> type   0x%02x\n", icmp->type);
 
       

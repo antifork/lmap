@@ -85,6 +85,9 @@ FUNC_DECODER(decode_arp)
     *
     *    1) differentiate between request and reply
     */
+
+   BUCKET->L3->proto = htons(LL_TYPE_ARP);
+   BUCKET->L3->ttl = 1;
    
    if (arp->ar_hln == ETH_ADDR_LEN && arp->ar_pln == IP_ADDR_LEN) {
    

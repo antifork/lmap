@@ -64,8 +64,7 @@ void lmap_decode(u_char *u, const struct pcap_pkthdr *pkthdr, const u_char *pkt)
    USER_MSG("\n***************************************************************\n");
    USER_MSG("lmap_get_packets (one packet dispatched from pcap)");
 
-   USER_MSG("CAPTURED: 0x%04x bytes\n%s\n", pkthdr->caplen,
-                                             hex_format(pkt, pkthdr->caplen));
+   USER_MSG("CAPTURED: 0x%04x bytes\n", pkthdr->caplen);
    
    /* dump packet to file if specified on command line */
 

@@ -79,7 +79,8 @@ ip_addr_details(struct ip_addr *sa, char *dst)
 {
    switch (sa->type) {
       case AF_INET:
-         /* DO NOTHING */
+         /* DO NOTHING (empty the string) */
+         strcpy(dst, "");
          break;
       case AF_INET6:
          inet_details6(sa->addr, dst, IP6_DETAILS_SIZE);

@@ -67,8 +67,7 @@ FUNC_DECODER(decode_eth)
 
    /* ESSSID for the eth is "lmap_wired" */
    BUCKET->L2->ESSID = strdup("lmap_wired");
-   
-   
+  
    return get_decoder(NET_LAYER, ntohs(eth->proto));
 }
 

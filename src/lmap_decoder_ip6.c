@@ -79,7 +79,7 @@ FUNC_DECODER(decode_ip6)
    ip_addr_init(&BUCKET->L3->ip_dst, AF_INET6, (u_char *)&ip6->daddr);
    
    /* other relevant infos */
-   BUCKET->L3->proto = ip6->next_hdr;
+   BUCKET->L3->proto = htons(LL_TYPE_IP6);
    BUCKET->L3->ttl = ip6->hop_limit;
 
    switch (ip6->next_hdr) {

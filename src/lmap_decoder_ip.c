@@ -79,7 +79,7 @@ FUNC_DECODER(decode_ip)
    ip_addr_init(&BUCKET->L3->ip_dst, AF_INET, (char *)&ip->daddr);
    
    /* other relevant infos */
-   BUCKET->L3->proto = ip->protocol;
+   BUCKET->L3->proto = htons(LL_TYPE_IP);
    BUCKET->L3->ttl = ip->ttl;
 
 #if 0

@@ -77,23 +77,22 @@ FUNC_DECODER(decode_tcp)
    tcp = (struct tcp_header *)DECODE_DATA;
 
    DECODED_LEN = (tcp->off * 4);
-   
-   USER_MSG("TCP : 0x%04x bytes\n%s\n", 
-                   DECODE_DATALEN, 
-                   hex_format(DECODE_DATA, DECODED_LEN));
-   
-   USER_MSG(" --> source  %d", ntohs(tcp->sport));
-   USER_MSG(" --> dest    %d", ntohs(tcp->dport));
-   USER_MSG(" --> seq     %lu", ntohl(tcp->seq));
-   USER_MSG(" --> ack     %lu", ntohl(tcp->ack));
-   USER_MSG(" --> flags   0x%02x", tcp->flags);
-   
+
+   /* source and dest port */
+   BUCKET->L4->port_src = tcp->sport;
+   BUCKET->L4->port_dst = tcp->dport;
+  
+   /* this is TCP */
+   BUCKET->L4->proto = htons(LN_TYPE_TCP);
+
+#if 0
    if (tcp->off * 4 != sizeof(struct tcp_header))
       USER_MSG(" --> TCP OPTIONS PRESENT (%d bytes)\n", 
                       (tcp->off * 4) - sizeof(struct tcp_header) );
    
    USER_MSG(" --> data    %d bytes\n", DECODE_DATALEN - DECODED_LEN);
-   
+#endif
+
    return NULL;
 }
 
