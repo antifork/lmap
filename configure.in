@@ -172,7 +172,7 @@ AC_CHECK_FUNCS([strlcat], , AC_LIBOBJ(missing/strlcat) )
 AC_CHECK_FUNCS([strsep], , AC_LIBOBJ(missing/strsep) )
 AC_CHECK_FUNCS([memmem], , AC_LIBOBJ(missing/memmem) )
 AC_CHECK_FUNCS([memcmp], , AC_LIBOBJ(missing/memcmp) )
-AC_CHECK_FUNCS([getopt_long], , AC_LIBOBJ(missing/getopt missing/getopt_long) )
+AC_CHECK_FUNCS([getopt_long], , AC_LIBOBJ(missing/getopt) AC_LIBOBJ(missing/getopt_long) )
 
 
 dnl =======================================
