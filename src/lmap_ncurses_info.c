@@ -184,8 +184,6 @@ void print_ifaceconfig(LMAP_WIN *win)
    
    /* draw the window */
    
-   /* XXX remove me! */
-   
    /* name */
    
    wmove(W(win), 2, 2);

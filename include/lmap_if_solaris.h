@@ -6,6 +6,7 @@
  * IT'S UNDERGOING REVISION AND ACTUALLY DOES NOT WORK!
  */
 
+#include <stropts.h>
 #include <ctype.h>
 #include <sys/ioctl.h>
 #include <fcntl.h>
@@ -24,9 +25,7 @@
 #endif
 
 #include <sys/stream.h>
-#ifdef HAVE_SYS_BUFMOD_H
 #include <sys/systeminfo.h>
-#endif
 
 #include <sys/stropts.h>
 #include <inet/nd.h>
@@ -42,11 +41,23 @@
 #include <stropts.h>
 #include <unistd.h>
 
+enum {
+   MAXDLBUF = 8192,
+};
+
+#ifndef DLPI_DEV_PREFIX
+#define DLPI_DEV_PREFIX "/dev"
+#endif
+
+char ebuf[100];
+
+int bufsize, offset;
+int SocketBuffer = -1;
+int dlpi_in_use;
+
 /* XXX NOT TESTED! had to fix the whole solaris if management code! */
 
 int if_open_raw(char *iface);
-int recv_ack(int fd, int size, const char *what, char *bufp, char *ebuf);
-int send_request(int fd, char *ptr, int len, char *what, char *ebuf);
 
 static int dlattachreq(int, u_int, char *);
 static int dlbindack(int, char *, char *);
@@ -57,17 +68,11 @@ static int dlokack(int, const char *, char *, char *);
 static int send_request(int, char *, int, char *, char *);
 static int recv_ack(int, int, const char *, char *, char *);
 static int dlpromisconreq(int, u_int, char *);
-#if defined(SOLARIS) && defined(HAVE_SYS_BUFMOD_H)
-static char *get_release(u_int *, u_int *, u_int *);
-#endif
-#ifdef HAVE_SYS_BUFMOD_H
 static int strioctl(int, int, int, char *);
-#endif
 #ifdef HAVE_DEV_DLPI
 static int get_dlpi_ppa(int, const char *, int, char *);
 #endif
 static char * split_dname(char *device, int *unitp);
-
 
 int if_open_raw(char *iface)
 {
@@ -75,7 +80,6 @@ int if_open_raw(char *iface)
    int fd;
    int ppa;
    register dl_info_ack_t *infop;
-   struct timeval to;
 #ifdef HAVE_SYS_BUFMOD_H
    u_int32 flag, ss;
    char *release;
@@ -138,7 +142,7 @@ int if_open_raw(char *iface)
    */
    cp = split_dname(iface, &ppa);
    if (cp == NULL)
-      Error_msg("ec_inet_solaris:%d dlpi: %s missing or bad unit number\n", __LINE__, iface);
+      ERROR_MSG("ec_inet_solaris:%d dlpi: %s missing or bad unit number\n", __LINE__, iface);
 
    if (*iface == '/')
       strlcpy(dname, iface, sizeof(dname));
@@ -211,7 +215,7 @@ int if_open_raw(char *iface)
          break;
 
       default:
-         Error_msg("Interface not supported ( only DLT_EN10MB) | %d", infop->dl_mac_type);
+         ERROR_MSG("Interface not supported ( only DLT_EN10MB) | %d", infop->dl_mac_type);
    }
 
 #ifdef DLIOCRAW
@@ -449,7 +453,6 @@ dlinfoack(int fd, char *bufp, char *ebuf)
     return (recv_ack(fd, DL_INFO_ACK_SIZE, "info", bufp, ebuf));
 }
 
-#ifdef HAVE_SYS_BUFMOD_H
 static int
 strioctl(int fd, int cmd, int len, char *dp)
 {
@@ -468,6 +471,7 @@ strioctl(int fd, int cmd, int len, char *dp)
       return (str.ic_len);
 }
 
+/*
 static char *
 get_release(u_int *majorp, u_int *minorp, u_int *microp)
 {
@@ -491,8 +495,7 @@ get_release(u_int *majorp, u_int *minorp, u_int *microp)
    *microp =  strtol(cp, &cp, 10);
    return (buf);
 }
-#endif
-
+*/
 
 static char *
 split_dname(char *device, int *unitp)

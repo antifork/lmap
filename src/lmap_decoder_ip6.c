@@ -23,6 +23,10 @@
 #include <lmap_inet.h>
 #include <lmap_fingerprint.h>
 
+enum {
+   IP6_HDR_LEN = 40,
+};
+
 /* globals */
 
 struct ip6_header {
@@ -73,7 +77,7 @@ FUNC_DECODER(decode_ip6)
    ip6 = (struct ip6_header *)DECODE_DATA;
   
    
-   DECODED_LEN = 0 /* XXX calculate this */ ;
+   DECODED_LEN = ip6->payload_len + IP6_HDR_LEN;
 
    /* IP addresses */
    ip_addr_init(&BUCKET->L3->ip_src, AF_INET6, (u_char *)&ip6->saddr);

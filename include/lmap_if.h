@@ -2,6 +2,8 @@
 #define LMAP_IF_H
  
 #include <lmap_inet.h>
+#include <sys/types.h>
+#include <sys/socket.h>
 
 #define LINUX_ROUTE_FILE "/proc/net/route"
 #define RESOLV_FILE "/etc/resolv.conf"

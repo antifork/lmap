@@ -73,6 +73,7 @@ int eth_addr_ntoa(const u_int8 *ll_addr, u_char *ascii)
 
 int get_iface_idx(const char *iface)
 {
+#if !defined OS_SOLARIS /* XXX fix this */
    int sock;
    struct ifreq ifr;
 
@@ -85,10 +86,13 @@ int get_iface_idx(const char *iface)
       ERROR_MSG("ioctl(SIOCGIFINDEX)");
 
    return ifr.ifr_ifindex;
+#else
+   return 0;
+#endif
 }
 
 /* return the IP address for the specified iface */
-/* XXX convert to ip_addr and support IPv6 */
+/* XXX get_iface_ip: complete IPv6 support */
 
 int get_iface_ip(const char *iface, struct ip_addr *ipa, const int type)
 {
@@ -132,7 +136,7 @@ int get_iface_ip(const char *iface, struct ip_addr *ipa, const int type)
 }
 
 /* set the IP address for the specified iface */
-/* XXX convert to ip_addr and support IPv6 */
+/* XXX set_iface_ip: complete IPv6 support */
 
 int set_iface_ip(const char *iface, const struct ip_addr *ipa, const int type)
 {
@@ -284,11 +288,11 @@ int get_iface_ll(const char *iface, char *ll_addr)
       
    SAFE_FREE(buf);
 #elif defined OS_SOLARIS
-   int sock, dlpi;
+   int dlpi;
    char buf[2048];
    union DL_primitives *dlp;
 
-   dlpi = if_open_raw(iface);
+   dlpi = if_open_raw((char *)iface);
 
    dlp = (union DL_primitives*) buf;
 
@@ -296,12 +300,12 @@ int get_iface_ll(const char *iface, char *ll_addr)
    dlp->physaddr_req.dl_addr_type = DL_CURR_PHYS_ADDR;
 
    if (send_request(dlpi, (char *)dlp, DL_PHYS_ADDR_REQ_SIZE, "physaddr", ebuf) < 0)
-      Error_msg("send_request(DL_PHYS_ADDR_REQ_SIZE) | %s \n", ebuf);
+      ERROR_MSG("send_request(DL_PHYS_ADDR_REQ_SIZE) | %s \n", ebuf);
 
    if (recv_ack(dlpi, DL_PHYS_ADDR_ACK_SIZE, "physaddr", (char *)dlp, ebuf) < 0)
-      Error_msg("recv_ack(DL_PHYS_ADDR_ACK_SIZE) | %s \n", ebuf);
+      ERROR_MSG("recv_ack(DL_PHYS_ADDR_ACK_SIZE) | %s \n", ebuf);
 
-   memcpy( MyMAC,(struct ether_addr *) ((char *) dlp + dlp->physaddr_ack.dl_addr_offset), ETHER_ADDR_LEN);
+   memcpy( ll_addr,(struct ether_addr *) ((char *) dlp + dlp->physaddr_ack.dl_addr_offset), ETH_ADDR_LEN);
 
    /* raw sock fd is closed on exit */
 #else
@@ -334,9 +338,9 @@ int set_iface_ll(const char *iface, const char *ll_addr)
       ERROR_MSG("ioctl(SIOCSIFHWADDR");
 
 #elif defined OS_BSD
-   #error set_iface_ll is WIP under BSD
+   return -EINVALID;
 #elif defined OS_SOLARIS
-   #error set_iface_ll is WIP under SOLARIS
+   return -EINVALID;
 #else
    #error get_iface_ll not implemented under this os
 #endif
@@ -371,8 +375,12 @@ int get_default_gw(u_int32 *gw_addr)
    fclose(rf_fp);
    return(ENOTFOUND);
 
+#elif defined OS_BSD
+   return ENOTFOUND;
+#elif defined OS_SOLARIS
+   return ENOTFOUND;
 #else
-   #error get_default_gw implemented only under linux
+   #error get_default_gw not implemented under this os
 #endif
 }
 
@@ -392,7 +400,7 @@ int get_default_dns(u_int32 *dns_addr)
          struct in_addr ina;
          
          p = strtok(NULL, "\n");
-         inet_aton(p, &ina);
+         inet_pton(AF_INET, p, &ina);
          memcpy(dns_addr, &ina, sizeof(u_int32));
          
          return ESUCCESS;
