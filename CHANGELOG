@@ -1,0 +1,15 @@
+
+Legenda:
+         + new feature
+         - old feature removed
+         ! bug fixed
+
+=========================================
+
+0.0.0 -- 20021020
+
+* Here we go...
+
++ Makefiles and configure ready (with autoconf and automake)
++ directory structure
+
