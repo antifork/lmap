@@ -24,6 +24,7 @@
 
 /* prototypes */
 int ip_addr_init(struct ip_addr *sa, int type, char *addr);
+int ip_addr_cmp(struct ip_addr *sa, struct ip_addr *sb);
 const char *ip_addr_ntoa(struct ip_addr *sa, char *dst);
 const char *ip_addr_details(struct ip_addr *sa, char *dst);
 
@@ -46,13 +47,32 @@ ip_addr_init(struct ip_addr *sa, int type, char *addr)
          sa->addr_size = IP6_ADDR_LEN;
          break;
       default:
-         return EINVALID;
+         return -EINVALID;
    }
    
    memcpy(&sa->addr, addr, sa->addr_size);
    
    return ESUCCESS;
 };
+
+/* 
+ * compare two ip_addr structure.
+ * returns 1 if equal, else 0
+ */
+
+int ip_addr_cmp(struct ip_addr *sa, struct ip_addr *sb)
+{  
+   /* different type are incompatible */
+   if (sa->type != sb->type)
+   return 0;
+
+   if (!memcmp(sa->addr, sb->addr, sa->addr_size))
+      return 1;
+   else
+      return 0;
+
+}
+
 
 const char *
 ip_addr_ntoa(struct ip_addr *sa, char *dst)
