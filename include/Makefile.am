@@ -8,6 +8,7 @@ noinst_HEADERS = lmap_capture.h \
                  lmap.h \
                  lmap_inet.h \
                  lmap_if.h \
+                 lmap_if_solaris.h \
                  lmap_parser.h \
                  lmap_signal.h \
                  lmap_stdint.h \

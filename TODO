@@ -10,13 +10,17 @@ TODO for the lmap
       + test the wifi decoder under wifi card different from cisco
 
    + IPv6 decoder
-      + implement NDIS
       + passive fingerprint does not support IPv6
 
    + ICMP decoder
       + what information can we catch from this ?
          + if ICMP TTL excedeed it can be a ruoter
       + add to the bucket structure these infos
+
+   + ICMPv6 decoder
+      + what information can we catch from this?
+      + add to the bucket structure these infos
+      + implement NDIS decoder
 
    + port interface management to BSD and Solaris
 
