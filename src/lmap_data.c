@@ -87,7 +87,7 @@ FILE * open_data(char *file, char *mode)
       DEBUG_MSG("open_data dropping to %s", filename);
       
       fd = fopen(filename, mode);
-      ON_ERROR(fd, NULL, "can't find %s in %s/%s or ./", filename);
+      ON_ERROR(fd, NULL, "can't find %s", filename);
    }
  
    SAFE_FREE(filename);
