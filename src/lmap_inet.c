@@ -58,8 +58,6 @@ const char *
 ip_addr_ntoa(struct ip_addr *sa, char *dst)
 {
 
-   /* XXX make a check on dst length */
-   
    switch (sa->type) {
       case AF_INET:
          inet_ntop4(sa->addr, dst, IP_ASCII_ADDR_LEN);
@@ -190,8 +188,9 @@ inet_ntop6(const char *src, char *dst, size_t size)
 		__set_errno (ENOSPC);
 		return (NULL);
 	}
-   /* XXX use strlcpy instead */
-	return strcpy(dst, tmp);
+
+   strlcpy(dst, tmp, size);
+   return dst;
 }
 
 const char *inet_details6(const char *src, char *dst, size_t size)
@@ -241,8 +240,8 @@ const char *inet_details6(const char *src, char *dst, size_t size)
 
    tmp[n] = '\0';
    
-   /* XXX use strlcpy instead */
-   return strncpy(dst, tmp, size);
+   strlcpy(dst, tmp, size);
+   return dst;
 }
 
 /* EOF */

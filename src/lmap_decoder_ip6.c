@@ -83,18 +83,7 @@ FUNC_DECODER(decode_ip6)
    BUCKET->L3->proto = htons(LL_TYPE_IP6);
    BUCKET->L3->ttl = ip6->hop_limit;
 
-   /* if there is a TCP packet, try to passive fingerprint it */
-   if (ip6->next_hdr == LN_TYPE_TCP) {
-      /* initialize passive fingerprint */
-      BUCKET->L4->fingerprint = fingerprint_alloc();
-  
-      /* collect ifos for passive fingerprint */
-      fingerprint_push(BUCKET->L4->fingerprint, FINGER_TTL, ip6->hop_limit);
-      /* XXX - where is don't fragment flag in IPv6 ? */
-      fingerprint_push(BUCKET->L4->fingerprint, FINGER_DF, 0);
-      /* XXX - how to calculate the header + options length in IPv6 ? */
-      fingerprint_push(BUCKET->L4->fingerprint, FINGER_LT, 0);
-   }
+   /* XXX had to implement passive fingerprint for IPv6 */
    
    switch (ip6->next_hdr) {
       case 0:

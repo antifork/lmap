@@ -1,8 +1,7 @@
 #ifndef LMAP_IF_H
 #define LMAP_IF_H
  
-
-#include <lmap_inet.h> /* XXX should be removed when done separating! */
+#include <lmap_inet.h>
 
 #define LINUX_ROUTE_FILE "/proc/net/route"
 #define RESOLV_FILE "/etc/resolv.conf"
