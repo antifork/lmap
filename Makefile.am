@@ -6,6 +6,7 @@ SUBDIRS = man src include
 EXTRA_DIST = LICENSE \
              AUTHOR \
              CHANGELOG \
+             DEVELOPERS.README \
              Makefile.am.common \
              shtool 
 			 

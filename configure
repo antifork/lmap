@@ -4952,14 +4952,14 @@ echo "${ECHO_T}yes" >&6
       ;;
    no)  echo "$as_me:$LINENO: result: no." >&5
 echo "${ECHO_T}no." >&6
-      CFLAGS="$CFLAGS -O3 -funroll-loops -fomit-frame-pointer -Wall"
+      CFLAGS="$CFLAGS -O2 -funroll-loops -fomit-frame-pointer -Wall"
       ac_cv_lmap_debug=no
       ;;
 esac
 else
   echo "$as_me:$LINENO: result: no. disabled by default." >&5
 echo "${ECHO_T}no. disabled by default." >&6
-   CFLAGS="$CFLAGS -O3 -funroll-loops -fomit-frame-pointer -Wall"
+   CFLAGS="$CFLAGS -O2 -funroll-loops -fomit-frame-pointer -Wall"
    ac_cv_lmap_debug=no
 
 fi;
