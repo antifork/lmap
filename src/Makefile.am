@@ -12,6 +12,8 @@ lmap_SOURCES = lmap_main.c \
                lmap_capture.c \
                lmap_inet.c \
                lmap_threads.c \
+               lmap_ui.c \
+               lmap_ncurses.c \
                lmap_decode.c \
                lmap_decoder_raw.c \
                lmap_decoder_eth.c \

@@ -128,6 +128,7 @@ AC_CHECK_HEADERS(queue.h)
 AC_CHECK_HEADERS(fcntl.h ctype.h)
 AC_CHECK_HEADERS(sys/types.h stdint.h)
 AC_CHECK_HEADERS(sys/time.h sys/utsname.h)
+AC_CHECK_HEADERS(termios.h)
 
 
 dnl ==================================================================
@@ -188,9 +189,9 @@ esac ],
    ac_cv_lmap_debug=no
 )
 
-dnl ==================================================
-dnl   Check for libpcap , libnet, libnetlink, libssl
-dnl ==================================================
+dnl ==================
+dnl   Check for libs
+dnl ==================
 ac_cv_lmap_libpcap=default
 
 AC_MSG_CHECKING(for libpcap)
@@ -236,8 +237,51 @@ AC_ARG_WITH(libpcap,
   AC_MSG_RESULT(yes) ]
 )
 
-LMAP_CFLAGS="$CFLAGS $PCAPINC"
-LMAP_LIBS="$LIBS $PCAPLIB $PTHREADLIB"
+
+ac_cv_lmap_libncurses=default
+
+AC_MSG_CHECKING(for libncurses)
+AC_ARG_WITH(libncurses,
+[  --with-libncurses=DIR      use libncurses in DIR],
+[ case "$withval" in
+  yes|no)
+     AC_MSG_RESULT(no)
+     ;;
+  *)
+     AC_MSG_RESULT($withval)
+     if test -f $withval/ncurses.h -a -f $withval/libncurses.a; then
+        owd=`pwd`
+        if cd $withval; then withval=`pwd`; cd $owd; fi
+        NCURSINC="-I$withval"
+        NCURSLIB="-L$withval -lncurses"
+        ac_cv_sad_libncurses=$withval
+     elif test -f $withval/include/ncurses.h -a \
+               -f $withval/lib/libncurses.a; then
+        owd=`pwd`
+        if cd $withval; then withval=`pwd`; cd $owd; fi
+        NCURSINC="-I$withval/include"
+        NCURSLIB="-L$withval/lib -lncurses"
+        ac_cv_sad_libncurses=$withval
+     else
+        AC_ERROR(ncurses.h or libncurses.a not found in $withval)
+     fi
+     ;;
+  esac ],
+[ if test -f /usr/include/ncurses/ncurses.h; then
+     NCURSINC="-I/usr/include/ncurses"
+     NCURSLIB="-lncurses"
+  elif test -f /usr/include/ncurses.h; then
+     NCURSLIB="-lncurses"
+  else
+     AC_MSG_RESULT(no)
+     AC_ERROR(libncurses not found)
+  fi
+  AC_MSG_RESULT(yes) ]
+)
+
+
+LMAP_CFLAGS="$CFLAGS $PCAPINC $NCURSINC"
+LMAP_LIBS="$LIBS $PCAPLIB $NCURSLIB $PTHREADLIB"
 
 AC_SUBST(LMAP_CFLAGS)
 AC_SUBST(LMAP_LIBS)
@@ -266,6 +310,7 @@ echo
 echo
    LMAP_CHECK_OPTION(" DEBUG mode ....... ",${ac_cv_lmap_debug})
    LMAP_CHECK_OPTION(" LIBPCAP .......... ",${ac_cv_lmap_libpcap})
+   LMAP_CHECK_OPTION(" LIBNCURSES ....... ",${ac_cv_lmap_libncurses})
 echo
 echo "=================================================="
 echo

@@ -19,6 +19,8 @@
 
 #include <lmap.h>
 #include <lmap_decode.h>
+#include <lmap_threads.h>
+#include <lmap_ui.h>
 
 #include <sys/socket.h>
 
@@ -29,7 +31,7 @@
 
 void capture_init(void);
 void capture_close(void);
-void capture(void);
+LMAP_THREAD_FUNC(capture);
 
 /*******************************************/
 
@@ -119,7 +121,7 @@ void capture_close(void)
  * start capturing packets
  */
 
-void capture(void)
+LMAP_THREAD_FUNC(capture)
 {
    DEBUG_MSG("neverending loop (capture)");
    
@@ -129,6 +131,8 @@ void capture(void)
     */
         
    pcap_loop(GBL_PCAP->pcap, -1, lmap_decode, NULL);
+
+   return NULL;
 }
 
 

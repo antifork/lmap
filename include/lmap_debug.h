@@ -3,7 +3,7 @@
 #define LMAP_DEBUG_H
 
 extern void debug_init(void);
-extern void debug_msg(char *message, ...);
+extern void debug_msg(const char *message, ...);
 extern char * hex_format(const u_char *buffer, int buff_len);
 
 extern FILE *debug_file;
@@ -16,8 +16,6 @@ extern FILE *debug_file;
       debug_msg(x, ## args);                                   \
 } while(0)
 
-#define USER_MSG DEBUG_MSG
-
 #endif /* LMAP_DEBUG_H */
 
 /* 
@@ -27,7 +25,6 @@ extern FILE *debug_file;
 #ifndef DEBUG
    #define DEBUG_INIT()
    #define DEBUG_MSG(x, args...)
-   #define USER_MSG(x, args...) fprintf(stdout, x, ## args )
 #endif
 
 /* EOF */

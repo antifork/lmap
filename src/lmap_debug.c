@@ -38,7 +38,7 @@ FILE *debug_file = NULL;
 
 void debug_init(void);
 void debug_close(void);
-void debug_msg(char *message, ...);
+void debug_msg(const char *message, ...);
 
 char * hex_format(const u_char *buffer, int buff_len);
 
@@ -83,7 +83,7 @@ void debug_close(void)
 
 
 
-void debug_msg(char *message, ...)
+void debug_msg(const char *message, ...)
 {
    va_list ap;
    char debug_message[strlen(message)+2];

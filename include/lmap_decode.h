@@ -5,6 +5,9 @@
 #include <pcap.h>
 #include <netinet/in.h>
 
+/* XXX - remove me ! */
+#include <lmap_ui.h>
+
 #define FUNC_DECODER(func) void * func(u_char *buf, u_int16 buflen, int *len)
 #define FUNC_DECODER_PTR(func) void * (*func)(u_char *buf, u_int16 buflen, int *len)
 

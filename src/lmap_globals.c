@@ -58,7 +58,7 @@ void globals_free(void)
 {
  
    GBL_FREE(gbls->pcap);
-        
+   
    GBL_FREE(gbls->env->name);
    GBL_FREE(gbls->env->version);
    GBL_FREE(gbls->env->debug_file);

@@ -18,6 +18,7 @@
 */
 
 #include <lmap.h>
+#include <lmap_ui.h>
 
 #include <signal.h>
 #include <sys/resource.h>
@@ -37,7 +38,6 @@ void signal_handler(void)
    signal(SIGSEGV,  signal_SEGV);
    signal(SIGINT,   signal_TERM);
    signal(SIGTERM,  signal_TERM);
-   signal(SIGCHLD,  SIG_IGN);       /* if I kill a forked process it doesn't become a zombie... */
 }
 
 
@@ -47,6 +47,8 @@ RETSIGTYPE signal_SEGV(int sig)
 
    struct rlimit corelimit = {RLIM_INFINITY, RLIM_INFINITY};
 
+   ui_cleanup();
+   
    DEBUG_MSG("Segmentation Fault...");
    
    fprintf (stderr, "\n\033[01m\033[1m Ooops !! This shouldn't happen...\n\n");
@@ -75,7 +77,11 @@ RETSIGTYPE signal_SEGV(int sig)
    setrlimit(RLIMIT_CORE, &corelimit);
    signal(sig, SIG_DFL);
    raise(sig);
+
 #else
+   
+   ui_cleanup();
+   
    fprintf(stderr, "Ooops ! This shouldn't happen...");
    fprintf(stderr, "Segmentation fault !");
    fprintf(stderr, "Please recompile in debug mode and send a bugreport");
@@ -88,12 +94,13 @@ RETSIGTYPE signal_SEGV(int sig)
 
 RETSIGTYPE signal_TERM(int sig)
 {
-#ifdef HAVE_STRSIGNAL
-   DEBUG_MSG("Signal handler... (caught SIGNAL: %d) | %s", sig, strsignal(sig));
-#else
-   DEBUG_MSG("Signal handler... (caught SIGNAL: %d)", sig);
-#endif
-
+   ui_cleanup();
+   
+   #ifdef HAVE_STRSIGNAL
+      DEBUG_MSG("Signal handler... (caught SIGNAL: %d) | %s", sig, strsignal(sig));
+   #else
+      DEBUG_MSG("Signal handler... (caught SIGNAL: %d)", sig);
+   #endif
 
    #ifdef HAVE_STRSIGNAL
       fprintf(stderr, "\n\n Shutting down %s (received SIGNAL: %d | %s)\n\n", GBL_PROGRAM, sig, strsignal(sig));

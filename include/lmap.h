@@ -41,6 +41,9 @@
 
 #endif   /*  LMAP_H */
 
+extern void do_nothing(void);
+
+
 /* EOF */
 
 // vim:ts=3:expandtab

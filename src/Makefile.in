@@ -129,6 +129,8 @@ lmap_SOURCES = lmap_main.c \
                lmap_capture.c \
                lmap_inet.c \
                lmap_threads.c \
+               lmap_ui.c \
+               lmap_ncurses.c \
                lmap_decode.c \
                lmap_decoder_raw.c \
                lmap_decoder_eth.c \
@@ -160,7 +162,8 @@ am_lmap_OBJECTS = lmap-lmap_main.$(OBJEXT) lmap-lmap_debug.$(OBJEXT) \
 	lmap-lmap_error.$(OBJEXT) lmap-lmap_signal.$(OBJEXT) \
 	lmap-lmap_globals.$(OBJEXT) lmap-lmap_parser.$(OBJEXT) \
 	lmap-lmap_capture.$(OBJEXT) lmap-lmap_inet.$(OBJEXT) \
-	lmap-lmap_threads.$(OBJEXT) lmap-lmap_decode.$(OBJEXT) \
+	lmap-lmap_threads.$(OBJEXT) lmap-lmap_ui.$(OBJEXT) \
+	lmap-lmap_ncurses.$(OBJEXT) lmap-lmap_decode.$(OBJEXT) \
 	lmap-lmap_decoder_raw.$(OBJEXT) lmap-lmap_decoder_eth.$(OBJEXT) \
 	lmap-lmap_decoder_wifi.$(OBJEXT) lmap-lmap_decoder_ip.$(OBJEXT) \
 	lmap-lmap_decoder_icmp.$(OBJEXT) \
@@ -192,9 +195,11 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/lmap-lmap_globals.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/lmap-lmap_inet.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/lmap-lmap_main.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/lmap-lmap_ncurses.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/lmap-lmap_parser.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/lmap-lmap_signal.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/lmap-lmap_threads.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/lmap-lmap_ui.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/lmap-strlcat.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/lmap-strlcpy.Po
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
@@ -247,6 +252,8 @@ lmap-lmap_parser.$(OBJEXT): lmap_parser.c
 lmap-lmap_capture.$(OBJEXT): lmap_capture.c
 lmap-lmap_inet.$(OBJEXT): lmap_inet.c
 lmap-lmap_threads.$(OBJEXT): lmap_threads.c
+lmap-lmap_ui.$(OBJEXT): lmap_ui.c
+lmap-lmap_ncurses.$(OBJEXT): lmap_ncurses.c
 lmap-lmap_decode.$(OBJEXT): lmap_decode.c
 lmap-lmap_decoder_raw.$(OBJEXT): lmap_decoder_raw.c
 lmap-lmap_decoder_eth.$(OBJEXT): lmap_decoder_eth.c
@@ -287,9 +294,11 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lmap-lmap_globals.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lmap-lmap_inet.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lmap-lmap_main.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lmap-lmap_ncurses.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lmap-lmap_parser.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lmap-lmap_signal.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lmap-lmap_threads.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lmap-lmap_ui.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lmap-strlcat.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lmap-strlcpy.Po@am__quote@
 
@@ -515,6 +524,50 @@ lmap-lmap_threads.obj: lmap_threads.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/lmap-lmap_threads.Po' tmpdepfile='$(DEPDIR)/lmap-lmap_threads.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(lmap_CFLAGS) $(CFLAGS) -c -o lmap-lmap_threads.obj `if test -f 'lmap_threads.c'; then $(CYGPATH_W) 'lmap_threads.c'; else $(CYGPATH_W) '$(srcdir)/lmap_threads.c'`
+
+lmap-lmap_ui.o: lmap_ui.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(lmap_CFLAGS) $(CFLAGS) -MT lmap-lmap_ui.o -MD -MP -MF "$(DEPDIR)/lmap-lmap_ui.Tpo" \
+@am__fastdepCC_TRUE@	  -c -o lmap-lmap_ui.o `test -f 'lmap_ui.c' || echo '$(srcdir)/'`lmap_ui.c; \
+@am__fastdepCC_TRUE@	then mv "$(DEPDIR)/lmap-lmap_ui.Tpo" "$(DEPDIR)/lmap-lmap_ui.Po"; \
+@am__fastdepCC_TRUE@	else rm -f "$(DEPDIR)/lmap-lmap_ui.Tpo"; exit 1; \
+@am__fastdepCC_TRUE@	fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='lmap_ui.c' object='lmap-lmap_ui.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/lmap-lmap_ui.Po' tmpdepfile='$(DEPDIR)/lmap-lmap_ui.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(lmap_CFLAGS) $(CFLAGS) -c -o lmap-lmap_ui.o `test -f 'lmap_ui.c' || echo '$(srcdir)/'`lmap_ui.c
+
+lmap-lmap_ui.obj: lmap_ui.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(lmap_CFLAGS) $(CFLAGS) -MT lmap-lmap_ui.obj -MD -MP -MF "$(DEPDIR)/lmap-lmap_ui.Tpo" \
+@am__fastdepCC_TRUE@	  -c -o lmap-lmap_ui.obj `if test -f 'lmap_ui.c'; then $(CYGPATH_W) 'lmap_ui.c'; else $(CYGPATH_W) '$(srcdir)/lmap_ui.c'`; \
+@am__fastdepCC_TRUE@	then mv "$(DEPDIR)/lmap-lmap_ui.Tpo" "$(DEPDIR)/lmap-lmap_ui.Po"; \
+@am__fastdepCC_TRUE@	else rm -f "$(DEPDIR)/lmap-lmap_ui.Tpo"; exit 1; \
+@am__fastdepCC_TRUE@	fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='lmap_ui.c' object='lmap-lmap_ui.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/lmap-lmap_ui.Po' tmpdepfile='$(DEPDIR)/lmap-lmap_ui.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(lmap_CFLAGS) $(CFLAGS) -c -o lmap-lmap_ui.obj `if test -f 'lmap_ui.c'; then $(CYGPATH_W) 'lmap_ui.c'; else $(CYGPATH_W) '$(srcdir)/lmap_ui.c'`
+
+lmap-lmap_ncurses.o: lmap_ncurses.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(lmap_CFLAGS) $(CFLAGS) -MT lmap-lmap_ncurses.o -MD -MP -MF "$(DEPDIR)/lmap-lmap_ncurses.Tpo" \
+@am__fastdepCC_TRUE@	  -c -o lmap-lmap_ncurses.o `test -f 'lmap_ncurses.c' || echo '$(srcdir)/'`lmap_ncurses.c; \
+@am__fastdepCC_TRUE@	then mv "$(DEPDIR)/lmap-lmap_ncurses.Tpo" "$(DEPDIR)/lmap-lmap_ncurses.Po"; \
+@am__fastdepCC_TRUE@	else rm -f "$(DEPDIR)/lmap-lmap_ncurses.Tpo"; exit 1; \
+@am__fastdepCC_TRUE@	fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='lmap_ncurses.c' object='lmap-lmap_ncurses.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/lmap-lmap_ncurses.Po' tmpdepfile='$(DEPDIR)/lmap-lmap_ncurses.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(lmap_CFLAGS) $(CFLAGS) -c -o lmap-lmap_ncurses.o `test -f 'lmap_ncurses.c' || echo '$(srcdir)/'`lmap_ncurses.c
+
+lmap-lmap_ncurses.obj: lmap_ncurses.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(lmap_CFLAGS) $(CFLAGS) -MT lmap-lmap_ncurses.obj -MD -MP -MF "$(DEPDIR)/lmap-lmap_ncurses.Tpo" \
+@am__fastdepCC_TRUE@	  -c -o lmap-lmap_ncurses.obj `if test -f 'lmap_ncurses.c'; then $(CYGPATH_W) 'lmap_ncurses.c'; else $(CYGPATH_W) '$(srcdir)/lmap_ncurses.c'`; \
+@am__fastdepCC_TRUE@	then mv "$(DEPDIR)/lmap-lmap_ncurses.Tpo" "$(DEPDIR)/lmap-lmap_ncurses.Po"; \
+@am__fastdepCC_TRUE@	else rm -f "$(DEPDIR)/lmap-lmap_ncurses.Tpo"; exit 1; \
+@am__fastdepCC_TRUE@	fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='lmap_ncurses.c' object='lmap-lmap_ncurses.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/lmap-lmap_ncurses.Po' tmpdepfile='$(DEPDIR)/lmap-lmap_ncurses.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(lmap_CFLAGS) $(CFLAGS) -c -o lmap-lmap_ncurses.obj `if test -f 'lmap_ncurses.c'; then $(CYGPATH_W) 'lmap_ncurses.c'; else $(CYGPATH_W) '$(srcdir)/lmap_ncurses.c'`
 
 lmap-lmap_decode.o: lmap_decode.c
 @am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(lmap_CFLAGS) $(CFLAGS) -MT lmap-lmap_decode.o -MD -MP -MF "$(DEPDIR)/lmap-lmap_decode.Tpo" \

@@ -84,13 +84,13 @@ void lmap_thread_register(u_int32 id, char *name, char *desc)
 {
    struct thread_list *current, *newelem;
 
-   DEBUG_MSG("lmap_thread_register -- %s", name);
+   if (id == LMAP_SELF)
+      id = pthread_self();
+   
+   DEBUG_MSG("lmap_thread_register -- [%d] %s", id, name);
 
    newelem = (struct thread_list *) calloc(1, sizeof(struct thread_list));
    ON_ERROR(newelem, NULL, "cant allocate memory");
-
-   if (id == LMAP_SELF)
-      id = pthread_self();
               
    newelem->t.id = id;
    newelem->t.name = strdup(name);
@@ -99,6 +99,9 @@ void lmap_thread_register(u_int32 id, char *name, char *desc)
    LIST_FOREACH(current, &thread_list_head, next) {
       if (current->t.id == id) {
          LIST_REPLACE(current, newelem, next);
+         SAFE_FREE(current->t.name);
+         SAFE_FREE(current->t.description);
+         SAFE_FREE(current);
          return;
       }
    }

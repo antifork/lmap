@@ -23,6 +23,7 @@
 #include <lmap_capture.h>
 #include <lmap_parser.h>
 #include <lmap_threads.h>
+#include <lmap_ui.h>
 
 
 /* global vars */
@@ -30,12 +31,12 @@
 
 /* protos */
 
+void do_nothing(void);
 
 /*******************************************/
 
 int main(int argc, char *argv[])
 {
-        
    /*
     * Alloc the global structures
     * We can access these structs via the macro in sad_globals.h
@@ -66,25 +67,48 @@ int main(int argc, char *argv[])
    
    parse_options(argc, argv);
   
+   /* initialize the user interface */
+   
+   ui_init();
+   
    USER_MSG("\n\033[01m\033[1m%s %s\033[0m\n\n", GBL_PROGRAM, GBL_VERSION);
 
-   /*
-    * initialize libpcap
-    */
+   /* initialize libpcap */
    
    capture_init();
 
+   
    /*
     * go !
     * start capturing packets.
     * this fuction will never return until shutdown
+    * make it a thread
     */
    
-   capture();
+   lmap_thread_new("capture", "pcap handler and packet decoder", 
+                   &capture, NULL);
    
-   /* NOT REACHED */      
+   /* display the User Interface */
+   
+   lmap_thread_register(LMAP_SELF, "UI", "the user interface");
+   ui_start();
+
+   /* reached only whent the UI is shutted down */
+
+   ui_cleanup();
 
    return 0;
+}
+
+/* 
+ * this function does nothing.
+ * useful to assign a value to a function pointer
+ * that MUST NOT be null, but you want to do nothing
+ */
+
+void do_nothing(void)
+{
+   return;
 }
 
 /* EOF */

@@ -18,6 +18,7 @@
 */
 
 #include <lmap.h>
+#include <lmap_ui.h>
 
 #include <stdarg.h>
 #include <errno.h>
@@ -37,7 +38,9 @@ void error_msg(char *file, char *function, int line, char *message, ...)
    vsnprintf(errmsg, ERROR_MSG_LEN, message, ap);
    va_end(ap);
 
-   DEBUG_MSG("ERROR : %d, %s\n[%s:%s:%d]\n\n %s \n\n",  errno, strerror(errno),
+   ui_cleanup();
+   
+   fprintf(stderr, "ERROR : %d, %s\n[%s:%s:%d]\n\n %s \n\n",  errno, strerror(errno),
                    file, function, line, errmsg );
 
    exit(-1);
