@@ -68,7 +68,7 @@ void menu_refresh(WINDOW *w_menu)
    wattron(w_menu, A_REVERSE);
    mvwprintw(w_menu, 0, COLS - 26, "<F12>");     
    wattroff(w_menu, A_REVERSE);
-   mvwprintw(w_menu, 0, COLS - 20, "Packets: %8d ", GET_STAT(total) );
+   mvwprintw(w_menu, 0, COLS - 20, "Packets: %8d ", get_stathead()->total );
    SAFE_WREFRESH(w_menu);
    stats = get_stathead()->total;
    refresh_statistics();
@@ -128,7 +128,7 @@ void refresh_statistics(void)
 
    while (curr->next != NULL) {
       curr = curr->next;
-      mvwprintw(w_stat, i, 2, "%s  : %8d", curr->id, curr->total);
+      mvwprintw(w_stat, i, 2, "%5s  : %8d", curr->id, curr->total);
       i++;
    }
    

@@ -15,6 +15,7 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
+    $Header$
 */
 
 #include <lmap.h>
@@ -81,6 +82,7 @@ void create_stat(const char *id)
 
    curr->id = (char *)calloc(1, sizeof(id));
    strncpy(curr->id, id, sizeof(id));
+   curr->total = 0;
    curr->next = NULL;
 }
    
@@ -92,7 +94,6 @@ void update_stat(const char *id, const u_int32 count)
 
    if (curr)
       curr->total += count;
-   stathead.total += count;
 }
 
 struct stat_env *find_stat(const char *id)
