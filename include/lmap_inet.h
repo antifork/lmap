@@ -31,7 +31,7 @@ struct ip_addr {
 
 extern int ip_addr_init(struct ip_addr *sa, int type, char *addr);
 extern const char *ip_addr_ntoa(struct ip_addr *sa, char *dst);
-extern const char *ip_addr_details(struct ip_addr *sa, char *dst, size_t size);
+extern const char *ip_addr_details(struct ip_addr *sa, char *dst);
 
 #endif
 

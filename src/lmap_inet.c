@@ -25,7 +25,7 @@
 /* prototypes */
 int ip_addr_init(struct ip_addr *sa, int type, char *addr);
 const char *ip_addr_ntoa(struct ip_addr *sa, char *dst);
-const char *ip_addr_details(struct ip_addr *sa, char *dst, size_t size);
+const char *ip_addr_details(struct ip_addr *sa, char *dst);
 
 static const char *inet_ntop4(const char *src, char *dst, size_t size);
 static const char *inet_ntop6(const char *src, char *dst, size_t size);
@@ -75,14 +75,14 @@ ip_addr_ntoa(struct ip_addr *sa, char *dst)
 }
 
 const char * 
-ip_addr_details(struct ip_addr *sa, char *dst, size_t size)
+ip_addr_details(struct ip_addr *sa, char *dst)
 {
    switch (sa->type) {
       case AF_INET:
          /* DO NOTHING */
          break;
       case AF_INET6:
-         inet_details6(sa->addr, dst, size);
+         inet_details6(sa->addr, dst, IP6_DETAILS_SIZE);
          break;
    };
 
