@@ -47,12 +47,14 @@ AC_CANONICAL_HOST
 AH_TEMPLATE(OS_LINUX, [compiling under linux])    
 
 AH_TEMPLATE(OS_BSD, [compiling under bsd])
-dnl the subtypo for BSD only used if there are significant differences
+dnl the subtype for BSD only used if there are significant differences
 AH_TEMPLATE(OS_BSD_FREE, [compiling under free bsd])
 AH_TEMPLATE(OS_BSD_OPEN, [compiling under open bsd])
 AH_TEMPLATE(OS_BSD_NET, [compiling under net bsd])
 
 AH_TEMPLATE(OS_MACOSX, [compiling under macosx])
+
+AH_TEMPLATE(OS_SOLARIS, [compiling under solaris])
 
 case "$host_os" in
 *linux*)
@@ -76,6 +78,10 @@ case "$host_os" in
    ;;
 *darwin*)
    AC_DEFINE(OS_MACOSX)
+   PTHREADLIB="-lpthread"
+   ;;
+*solaris*)
+   AC_DEFINE(OS_SOLARIS)
    PTHREADLIB="-lpthread"
    ;;
 *)

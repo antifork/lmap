@@ -1723,6 +1723,9 @@ host_os=`echo $ac_cv_host | sed 's/^\([^-]*\)-\([^-]*\)-\(.*\)$/\3/'`
 
 
 
+
+
+
 case "$host_os" in
 *linux*)
    cat >>confdefs.h <<\_ACEOF
@@ -1767,6 +1770,13 @@ _ACEOF
 *darwin*)
    cat >>confdefs.h <<\_ACEOF
 #define OS_MACOSX 1
+_ACEOF
+
+   PTHREADLIB="-lpthread"
+   ;;
+*solaris*)
+   cat >>confdefs.h <<\_ACEOF
+#define OS_SOLARIS 1
 _ACEOF
 
    PTHREADLIB="-lpthread"

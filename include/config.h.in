@@ -115,6 +115,9 @@
 /* compiling under macosx */
 #undef OS_MACOSX
 
+/* compiling under solaris */
+#undef OS_SOLARIS
+
 /* Name of package */
 #undef PACKAGE
 
