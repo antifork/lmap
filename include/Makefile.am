@@ -7,7 +7,7 @@ noinst_HEADERS = lmap_capture.h \
                  lmap_globals.h \
                  lmap.h \
                  lmap_inet.h \
-                 lmap_inet6.h \
+                 lmap_if.h \
                  lmap_parser.h \
                  lmap_signal.h \
                  lmap_stdint.h \

@@ -21,7 +21,6 @@
 #include <lmap.h>
 #include <lmap_decode.h>
 #include <lmap_inet.h>
-#include <lmap_inet6.h>
 
 /* globals */
 
@@ -67,7 +66,8 @@ FUNC_DECODER(decode_ip6)
 {
    struct ip6_header *ip6;
    int opt; /* -1 means no options defined, if 0 an option is present */
-   char paddr[IP6_ASCII_ADDR_LEN];
+   struct ip_addr ipa_src, ipa_dst;
+   char tmp[IP6_ASCII_ADDR_LEN];
    char details[IP6_DETAILS_SIZE];
    
    update_stat("IPv6", 1);
@@ -82,13 +82,15 @@ FUNC_DECODER(decode_ip6)
                    hex_format(DECODE_DATA, DECODED_LEN));
    
 
-   inet_ntop6((char *)&ip6->saddr, paddr, sizeof (paddr)); 
-   inet_details6((char *)&ip6->saddr, details, sizeof(details));
-   USER_MSG(" --> source  %s %s", paddr, details);
+   ip_addr_init(&ipa_src, AF_INET6, (u_char *)&ip6->saddr);
+   ip_addr_ntoa(&ipa_src, tmp); 
+   ip_addr_details(&ipa_src, details, IP6_DETAILS_SIZE);
+   USER_MSG(" --> source  %s %s", tmp, details);
 
-   inet_ntop6((char *)&ip6->daddr, paddr, sizeof (paddr));
-   inet_details6((char *)&ip6->saddr, details, sizeof(details));
-   USER_MSG(" --> dest    %s %s", paddr, details);
+   ip_addr_init(&ipa_dst, AF_INET6, (u_char *)&ip6->daddr);
+   ip_addr_ntoa(&ipa_dst, tmp);
+   ip_addr_details(&ipa_dst, details, IP6_DETAILS_SIZE);
+   USER_MSG(" --> dest    %s %s", tmp, details);
    
    USER_MSG(" --> proto   0x%x ", ip6->next_hdr);
 

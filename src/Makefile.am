@@ -11,7 +11,7 @@ lmap_SOURCES = lmap_main.c \
                lmap_parser.c \
                lmap_capture.c \
                lmap_inet.c \
-			   lmap_inet6.c \
+			   lmap_if.c \
                lmap_threads.c \
                lmap_data.c \
                lmap_hash.c \

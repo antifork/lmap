@@ -20,7 +20,7 @@
 
 #include <lmap.h>
 #include <lmap_decode.h>
-#include <lmap_inet.h>
+#include <lmap_if.h>
 
 
 /* globals */

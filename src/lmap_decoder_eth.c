@@ -20,11 +20,9 @@
 
 #include <lmap.h>
 #include <lmap_decode.h>
-#include <lmap_inet.h>
-
+#include <lmap_if.h>
 
 /* globals */
-
 
 struct eth_header
 {
@@ -56,6 +54,7 @@ void __init eth_init(void)
 FUNC_DECODER(decode_eth)
 {
    struct eth_header *eth;
+   char tmp[20]; /* XXX no magic numbers! */
 
    update_stat("TOTAL", 1);
   
@@ -66,9 +65,10 @@ FUNC_DECODER(decode_eth)
    USER_MSG("ETH : 0x%04x bytes\n%s", 
                    DECODE_DATALEN,
                    hex_format(DECODE_DATA, DECODED_LEN));
-   
-   USER_MSG(" --> source  %s", ha_ntoa(eth->sha));
-   USER_MSG(" --> dest    %s", ha_ntoa(eth->dha));
+   eth_addr_ntoa(eth->sha, tmp);
+   USER_MSG(" --> source  %s", tmp);
+   eth_addr_ntoa(eth->dha, tmp);
+   USER_MSG(" --> dest    %s", tmp);
    USER_MSG(" --> type    0x%04x\n", ntohs(eth->proto));
    
    return get_decoder(NET_LAYER, ntohs(eth->proto));

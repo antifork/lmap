@@ -20,6 +20,7 @@
 
 #include <lmap.h>
 #include <lmap_decode.h>
+#include <lmap_if.h>
 #include <lmap_inet.h>
 
 /* globals */
@@ -91,17 +92,19 @@ FUNC_DECODER(decode_arp)
       
       earp = (struct arp_eth_header *)(arp + 1);
       
-      USER_MSG(" --> sha  %s", ha_ntoa(earp->arp_sha));
+      eth_addr_ntoa(earp->arp_sha, tmp);
+      USER_MSG(" --> sha  %s", tmp);
       
-      init_addr(&ipa_spa, AF_INET, 4, (char *)&earp->arp_spa);
-      print_addr(&ipa_spa, tmp, IP_ASCII_ADDR_LEN);
-      USER_MSG(" --> spa  %s", pa_ntoa(earp->arp_spa));
+      ip_addr_init(&ipa_spa, AF_INET, (char *)&earp->arp_spa);
+      ip_addr_ntoa(&ipa_spa, tmp);
+      USER_MSG(" --> spa  %s", tmp);
       
-      USER_MSG(" --> tha  %s", ha_ntoa(earp->arp_tha));
+      eth_addr_ntoa(earp->arp_sha, tmp);
+      USER_MSG(" --> tha  %s", tmp);
       
-      init_addr(&ipa_tpa, AF_INET, 4, (char *)&earp->arp_tpa);
-      print_addr(&ipa_tpa, tmp, IP_ASCII_ADDR_LEN);
-      USER_MSG(" --> tpa  %s\n", pa_ntoa(earp->arp_tpa));
+      ip_addr_init(&ipa_tpa, AF_INET, (char *)&earp->arp_tpa);
+      ip_addr_ntoa(&ipa_tpa, tmp);
+      USER_MSG(" --> tpa  %s\n", tmp);
            
    }
    

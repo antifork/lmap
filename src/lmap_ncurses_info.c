@@ -19,7 +19,7 @@
 */
 
 #include <lmap.h>
-#include <lmap_inet.h>
+#include <lmap_if.h>
 #include <lmap_ui.h>
 #include <lmap_ncurses.h>
 #include <lmap_ncurses_menu.h>
@@ -130,7 +130,8 @@ void ncurses_msg(const char *fmt, va_list ap)
 
 void print_ifaceconfig(LMAP_WIN *win)
 {
-   u_int32 ip_addr, netmask, gw_addr, dns_addr;
+   u_int32 tmp;
+   struct ip_addr ipa, netmask, gw_addr, dns_addr;
    u_int8 ll_addr[ETH_ADDR_LEN];
    char ip_ascii[IP_ASCII_ADDR_LEN];
    char net_ascii[IP_ASCII_ADDR_LEN];
@@ -139,28 +140,36 @@ void print_ifaceconfig(LMAP_WIN *win)
    char dns_ascii[IP_ASCII_ADDR_LEN];
    
    /* get and convert iface infos */
-   if (get_iface_ip(GBL_OPTIONS->iface, &ip_addr) == ESUCCESS)
-      pa_ntoa_r(ip_addr, ip_ascii);
-   else
+   if (get_iface_ip(GBL_OPTIONS->iface, &tmp) == ESUCCESS) {
+      ip_addr_init(&ipa, AF_INET, (char *)&tmp);      
+      ip_addr_ntoa(&ipa, ip_ascii);
+   } else {
       sprintf(ip_ascii, "(none)");
-           
-   if (get_iface_mask(GBL_OPTIONS->iface, &netmask) == ESUCCESS)
-      pa_ntoa_r(netmask, net_ascii);
-   else
+   }     
+      
+   if (get_iface_mask(GBL_OPTIONS->iface, &tmp) == ESUCCESS) {
+      ip_addr_init(&netmask, AF_INET, (char *)&tmp);
+      ip_addr_ntoa(&netmask, net_ascii);
+   } else {
       sprintf(net_ascii, "(none)");
-           
-   if (get_default_gw(&gw_addr) == ESUCCESS)                                                        
-      pa_ntoa_r(gw_addr, gw_ascii);                                                                 
-   else                                                                                             
+   }
+
+   if (get_default_gw(&tmp) == ESUCCESS) {
+      ip_addr_init(&gw_addr, AF_INET, (char *)&tmp);
+      ip_addr_ntoa(&gw_addr, gw_ascii);
+   } else {                                                                    
       sprintf(gw_ascii, "(none)");
-       
-   if (get_default_dns(&dns_addr) == ESUCCESS)                                                        
-      pa_ntoa_r(dns_addr, dns_ascii);                                                                 
-   else                                                                                             
-      sprintf(gw_ascii, "(none)");
-       
+   } 
+
+   if (get_default_dns(&tmp) == ESUCCESS) {
+      ip_addr_init(&dns_addr, AF_INET, (char *)&tmp);
+      ip_addr_ntoa(&dns_addr, dns_ascii);
+   } else {
+      sprintf(dns_ascii, "(none)");
+   }  
+
    get_iface_ll(GBL_OPTIONS->iface, ll_addr);
-   ha_ntoa_r(ll_addr, ll_ascii);
+   eth_addr_ntoa(ll_addr, ll_ascii);
    
    
    /* draw the window */

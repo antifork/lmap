@@ -21,7 +21,6 @@
 #include <lmap.h>
 #include <lmap_decode.h>
 #include <lmap_inet.h>
-#include <lmap_addr.h>
 
 /* globals */
 
@@ -40,8 +39,8 @@ struct ip_header {
    u_int8   ttl;
    u_int8   protocol;
    u_int16  check;
-   u_int8   saddr[IP_ADDR_LEN];
-   u_int8   daddr[IP_ADDR_LEN];
+   u_int32  saddr;
+   u_int32  daddr;
 /*The options start here. */
 };
 
@@ -83,12 +82,12 @@ FUNC_DECODER(decode_ip)
                    hex_format(DECODE_DATA, DECODED_LEN));
    
    
-   init_addr(&ipa_src, AF_INET, 4, (char *)&ip->saddr);
-   print_addr(&ipa_src, tmp, IP_ASCII_ADDR_LEN);
+   ip_addr_init(&ipa_src, AF_INET, (char *)&ip->saddr);
+   ip_addr_ntoa(&ipa_src, tmp);
    USER_MSG(" --> source  %s", tmp);
    
-   init_addr(&ipa_dst, AF_INET, 4, (char *)&ip->daddr);
-   print_addr(&ipa_dst, tmp, IP_ASCII_ADDR_LEN);
+   ip_addr_init(&ipa_dst, AF_INET, (char *)&ip->daddr);
+   ip_addr_ntoa(&ipa_dst, tmp);
    USER_MSG(" --> dest    %s", tmp);
 
    USER_MSG(" --> proto   0x%02x\n", ip->protocol);

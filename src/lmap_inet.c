@@ -1,5 +1,5 @@
 /*
-    lmap -- inet stuff
+    lmap -- IP address management
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -19,264 +19,229 @@
 */
 
 #include <lmap.h>
+#include <lmap_if.h>
 #include <lmap_inet.h>
 
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <sys/socket.h>
-#include <sys/ioctl.h>
-#include <net/if.h>
-#include <net/route.h>
+/* prototypes */
+int ip_addr_init(struct ip_addr *sa, int type, char *addr);
+const char *ip_addr_ntoa(struct ip_addr *sa, char *dst);
+const char *ip_addr_details(struct ip_addr *sa, char *dst, size_t size);
 
-/* protos... */
+static const char *inet_ntop4(const char *src, char *dst, size_t size);
+static const char *inet_ntop6(const char *src, char *dst, size_t size);
+static const char *inet_details6(const char *src, char *dst, size_t size);
 
-const char *inet_ntop4(const char *src, char *dst, size_t size);
+/***********************************************************************/
 
-/* XXX remove these */
-char * ha_ntoa(const u_char *ll_addr);
-char * ha_aton(const u_char *ll_addr);
-char * pa_ntoa(const u_char *ip_addr);
-u_int32 pa_aton(const u_char *ip_addr);
-/********************/
+int 
+ip_addr_init(struct ip_addr *sa, int type, char *addr)
+{
+   sa->type = type;
+   
+   switch (type) {
+      case AF_INET:
+         sa->addr_size = IP_ADDR_LEN;
+         break;
+      case AF_INET6:
+         sa->addr_size = IP6_ADDR_LEN;
+         break;
+      default:
+         return EINVALID;
+   }
+   
+   memcpy(&sa->addr, addr, sa->addr_size);
+   
+   return ESUCCESS;
+};
 
-int pa_ntoa_r(u_int32 ip_addr, u_char *ascii);
-int ha_ntoa_r(u_int8 *ll_addr, u_char *ascii);
+const char *
+ip_addr_ntoa(struct ip_addr *sa, char *dst)
+{
 
-int get_iface_ip(char *iface, u_int32 *ip_addr);
-int get_iface_ll(char *iface, char *ll_addr);
-int get_iface_mask(char *iface, u_int32 *netmask);
-int get_default_gw(u_int32 *gw_addr);
-int get_default_dns(u_int32 *dns_addr);
+   /* XXX make a check on dst length */
+   
+   switch (sa->type) {
+      case AF_INET:
+         inet_ntop4(sa->addr, dst, IP_ASCII_ADDR_LEN);
+         return dst;
+         break;
+      case AF_INET6:
+         inet_ntop6(sa->addr, dst, IP6_ASCII_ADDR_LEN);
+         return dst;
+         break;
+   };
+   
+   return NULL;
+}
 
+const char * 
+ip_addr_details(struct ip_addr *sa, char *dst, size_t size)
+{
+   switch (sa->type) {
+      case AF_INET:
+         /* DO NOTHING */
+         break;
+      case AF_INET6:
+         inet_details6(sa->addr, dst, size);
+         break;
+   };
 
-/*******************************************/
-
+   return dst;
+}
+         
 const char *
 inet_ntop4(const char *src, char *dst, size_t size)
 {
-	static const char fmt[] = "%u.%u.%u.%u";
-	char tmp[sizeof("255.255.255.255")+1];
+   char str[IP_ASCII_ADDR_LEN];
    int n;
+   u_char *tmp = (u_char *)src;
    
-	n = sprintf(tmp, fmt, (char)src[0], src[1], src[2], src[3]);
+	n = sprintf(str, "%u.%u.%u.%u", tmp[0], tmp[1], tmp[2], tmp[3]);
    
-   tmp[n] = '\0';
+   str[n] = '\0';
  
-   strlcpy(dst, tmp, size);
+   strlcpy(dst, str, size);
    
    return dst;
 }
 
-/*
- * convert a ip address to a printable dot notation
- */
-
-char * pa_ntoa(const u_char *ip)
+const char *
+inet_ntop6(const char *src, char *dst, size_t size)
 {
-   return inet_ntoa(*(struct in_addr *)ip);
+	/*
+	 * Note that int32_t and int16_t need only be "at least" large enough
+	 * to contain a value of the specified size.  On some systems, like
+	 * Crays, there is no such thing as an integer variable with 16 bits.
+	 * Keep this in mind if you think this function should have been coded
+	 * to use pointer overlays.  All the world's not a VAX.
+	 */
+	char tmp[IP6_ASCII_ADDR_LEN], *tp;
+	struct { int base, len; } best, cur;
+	u_int words[NS_IN6ADDRSZ / NS_INT16SZ];
+	int i;
+
+	/*
+	 * Preprocess:
+	 *	Copy the input (bytewise) array into a wordwise array.
+	 *	Find the longest run of 0x00's in src[] for :: shorthanding.
+	 */
+	memset(words, '\0', sizeof words);
+	for (i = 0; i < NS_IN6ADDRSZ; i += 2)
+		words[i / 2] = (src[i] << 8) | src[i + 1];
+	best.base = -1;
+	cur.base = -1;
+	for (i = 0; i < (NS_IN6ADDRSZ / NS_INT16SZ); i++) {
+		if (words[i] == 0) {
+			if (cur.base == -1)
+				cur.base = i, cur.len = 1;
+			else
+				cur.len++;
+		} else {
+			if (cur.base != -1) {
+				if (best.base == -1 || cur.len > best.len)
+					best = cur;
+				cur.base = -1;
+			}
+		}
+	}
+	if (cur.base != -1) {
+		if (best.base == -1 || cur.len > best.len)
+			best = cur;
+	}
+	if (best.base != -1 && best.len < 2)
+		best.base = -1;
+
+	/*
+	 * Format the result.
+	 */
+	tp = tmp;
+	for (i = 0; i < (NS_IN6ADDRSZ / NS_INT16SZ); i++) {
+		/* Are we inside the best run of 0x00's? */
+		if (best.base != -1 && i >= best.base &&
+		    i < (best.base + best.len)) {
+			if (i == best.base)
+				*tp++ = ':';
+			continue;
+		}
+		/* Are we following an initial run of 0x00s or any real hex? */
+		if (i != 0)
+			*tp++ = ':';
+		/* Is this address an encapsulated IPv4? */
+		if (i == 6 && best.base == 0 &&
+		    (best.len == 6 || (best.len == 5 && words[5] == 0xffff))) {
+			if (pa_ntoa_r(*(src+12), tp) != 0)
+				return (NULL);
+			tp += strlen(tp);
+			break;
+		}
+		tp += sprintf(tp, "%x", words[i]);
+	}
+	/* Was it a trailing run of 0x00's? */
+	if (best.base != -1 && (best.base + best.len) == 
+	    (NS_IN6ADDRSZ / NS_INT16SZ))
+		*tp++ = ':';
+	*tp++ = '\0';
+
+  	/*
+	 * Check for overflow, copy, and we're done.
+	 */
+	if ((socklen_t)(tp - tmp) > size) {
+		__set_errno (ENOSPC);
+		return (NULL);
+	}
+   /* XXX use strlcpy instead */
+	return strcpy(dst, tmp);
 }
 
-/*
- * convert a ip address in dot notation to interger
- */
-
-u_int32 pa_aton(const u_char *ip)
+const char *inet_details6(const char *src, char *dst, size_t size)
 {
-   return inet_addr(ip);
-}
-
-/*
- * convert a link layer address to a printable colon separated format
- */
-
-char * ha_ntoa(const u_char *ll_addr)
-{
-   static char printable[18];
-
-   sprintf(printable, "%02X:%02X:%02X:%02X:%02X:%02X", ll_addr[0], ll_addr[1],
-                   ll_addr[2], ll_addr[3], ll_addr[4], ll_addr[5]);
+   char tmp[IP6_DETAILS_SIZE];
+   int n = 0;
    
-   return printable;
-}
-
-/*
- * convert a link layer address from ascii to network
- */
-
-char * ha_aton(const u_char *ll_addr)
-{
-   static char network[ETH_ADDR_LEN];
-   int m1,m2,m3,m4,m5,m6;
-
-   if (sscanf(ll_addr, "%02X:%02X:%02X:%02X:%02X:%02X", &m1, &m2, &m3, 
-                           &m4, &m5, &m6) != 6)
-      return NULL;
-   
-   network[0] = (char) m1;
-   network[1] = (char) m2;
-   network[2] = (char) m3;
-   network[3] = (char) m4;
-   network[4] = (char) m5;
-   network[5] = (char) m6;
-   
-   return network;
-}
-
-
-/* convert a ip address to a printable dot notation */
-
-int pa_ntoa_r(u_int32 ip_addr, u_char *ascii)
-{
-   u_char *p;
-
-   p = (u_char *)&ip_addr;
-   
-   sprintf(ascii, "%u.%u.%u.%u", p[0], p[1], p[2], p[3]);
-        
-   return ESUCCESS;
-}
-
-/* convert a link layer address to a printable dot notation */
-
-int ha_ntoa_r(u_int8 *ll_addr, u_char *ascii)
-{
-   sprintf(ascii, "%02X:%02X:%02X:%02X:%02X:%02X", ll_addr[0], ll_addr[1],
-                   ll_addr[2], ll_addr[3], ll_addr[4], ll_addr[5]);
-   
-   return ESUCCESS;
-}
-
-
-/* return the IP address for the specified iface */
-
-int get_iface_ip(char *iface, u_int32 *ip_addr)
-{
-   int sock;
-   struct ifreq ifr;
-
-   if (ip_addr == NULL)
-      return -EINVALID;
-
-   sock = socket(AF_INET, SOCK_DGRAM, 0);
-
-   memset(&ifr, 0, sizeof(ifr));
-   strncpy(ifr.ifr_name, iface, sizeof(ifr.ifr_name));
-
-   if ( ioctl(sock, SIOCGIFADDR, &ifr) < 0 ) {
-      close(sock);
-      return -ENOADDRESS;
-   }
-   
-   memcpy((char *)ip_addr, ifr.ifr_addr.sa_data + 2, IP_ADDR_LEN);
-        
-   close(sock);
-   
-   return ESUCCESS;
-}
-
-/* return the NETMASK for the specified iface */
-
-int get_iface_mask(char *iface, u_int32 *netmask)
-{
-   int sock;
-   struct ifreq ifr;
-
-   if (netmask == NULL)
-      return -EINVALID;
-   
-   sock = socket(AF_INET, SOCK_DGRAM, 0);
-
-   memset(&ifr, 0, sizeof(ifr));
-   strncpy(ifr.ifr_name, iface, sizeof(ifr.ifr_name));
-
-   if ( ioctl(sock, SIOCGIFNETMASK, &ifr) < 0 ) {
-      close(sock);
-      return -ENOADDRESS;
-   }
-   
-   memcpy((char *)netmask, ifr.ifr_addr.sa_data + 2, IP_ADDR_LEN);
-   
-   close(sock);
-   
-   return ESUCCESS;
-}
-
-/* return the LINK LAYER address for the specified iface */
-
-int get_iface_ll(char *iface, char *ll_addr)
-{
-#ifdef OS_LINUX
-   int sock;
-   struct ifreq ifr;
-
-   if (ll_addr == NULL)
-      return -EINVALID;
-   
-   sock = socket(AF_INET, SOCK_DGRAM, 0);
-
-   memset(&ifr, 0, sizeof(ifr));
-   strncpy(ifr.ifr_name, iface, sizeof(ifr.ifr_name));
-
-   if ( ioctl(sock, SIOCGIFHWADDR, &ifr) < 0 )
-      ERROR_MSG("ioctl(SIOCGIFNETMASK)");
-   
-   memcpy(ll_addr, ifr.ifr_addr.sa_data, ETH_ADDR_LEN);
-   
-   close(sock);
-#else
-   #error get_iface_ll implemented only under linux
-#endif
-   
-   return ESUCCESS;
-}
-
-int get_default_gw(u_int32 *gw_addr)
-{
-#ifdef OS_LINUX
-   FILE *rf_fp = (FILE *)NULL;
-   char line[1024];
-   u_int32 dest;
-   u_int16 flags;
-
-   if((rf_fp = fopen(LINUX_ROUTE_FILE, "r")) == (FILE *)NULL) {
-      return(EINVALID);
-   }
-
-   fgets(line, sizeof(line) - 1, rf_fp);
-   while(fgets(line, sizeof(line) - 1, rf_fp) != (char *)NULL) {
-      if(sscanf(line + 8, "%x %x %hx", &dest, gw_addr, &flags) != 3) {
-	 continue;
+   if (dst) {
+      
+      if ( IN6_IS_ADDR_UNSPECIFIED((SI6A *)src) )
+         n = strlcpy(tmp, "unspec", size);
+      if ( IN6_IS_ADDR_LOOPBACK((SI6A *)src) )
+         n = strlcpy(tmp, "loopback", size);
+      if ( IN6_IS_ADDR_MULTICAST((SI6A *)src) ) 
+      {
+         /* There may be insufficient space left
+          * for multicast specific details to fit.
+          * Therefore the string may result trucated.
+          * It should never happen if you allocate at least
+          * 16 chars for the details string.
+          */
+         size_t mcsiz = size - sizeof("multic ");
+         
+         strncpy(tmp, "multic ", size);
+         
+         if ( IN6_IS_ADDR_MC_NODELOCAL((SI6A *)src) )
+            n += strlcpy(tmp+n, "nodeloc", mcsiz);
+         if ( IN6_IS_ADDR_MC_LINKLOCAL((SI6A *)src) )
+            n += strlcpy(tmp+n, "linkloc", mcsiz);
+         if ( IN6_IS_ADDR_MC_SITELOCAL((SI6A *)src) )
+            n += strlcpy(tmp+n, "siteloc", mcsiz);
+         if ( IN6_IS_ADDR_MC_ORGLOCAL((SI6A *)src) )
+            n += strlcpy(tmp+n, "orgloc", mcsiz);
+         if ( IN6_IS_ADDR_MC_GLOBAL((SI6A *)src) )
+            n += strlcpy(tmp+n, "global", mcsiz);
       }
-      if((flags & RTF_GATEWAY) && (dest == INADDR_ANY)) {
-         fclose(rf_fp);
-         return(ESUCCESS);
-      }
-   }
-   fclose(rf_fp);
-   return(ENOTFOUND);
-
-#else
-   #error get_default_gw implemented only under linux
-#endif
-}
-
-int get_default_dns(u_int32 *dns_addr)
-{
-   FILE *dns_fp = (FILE *)NULL;
-   char line[1024], key[1024], val[1024];
-
-   if((dns_fp = fopen(RESOLV_FILE, "r")) == (FILE *)NULL) {
-      return(EINVALID);
+         
+      if ( IN6_IS_ADDR_LINKLOCAL((SI6A *)src) )
+         n = strlcpy(tmp, "linkloc", size);
+      if ( IN6_IS_ADDR_SITELOCAL((SI6A *)src) )
+         n = strlcpy(tmp, "siteloc", size);
+      if ( IN6_IS_ADDR_V4MAPPED((SI6A *)src) )
+         n = strlcpy(tmp, "v4mapped", size);
+      if ( IN6_IS_ADDR_V4COMPAT((SI6A *)src) )
+         n = strlcpy(tmp, "v4compat", size);
    }
 
-   while(fgets(line, sizeof(line) - 1, dns_fp) != (char *)NULL) {
-     if((sscanf(line, "%s %s", key, val) == 2) && (!strcmp(key, "nameserver")) && ((*dns_addr = inet_addr(val)) != -1)) {
-        fclose(dns_fp);
-        return(ESUCCESS);
-     }
-   }
-   fclose(dns_fp);
-   return(ENOTFOUND);
+   tmp[n] = '\0';
+   
+   /* XXX use strlcpy instead */
+   return strncpy(dst, tmp, size);
 }
 
 /* EOF */
