@@ -11,14 +11,6 @@ enum {
    ETH_ADDR_LEN = 6,
 };
 
-/*  XXX remove this.... they are not thread safe !! */
-extern char * ha_ntoa(const u_char *ll_addr);
-extern char * ha_aton(const u_char *ll_addr);
-extern char * pa_ntoa(const u_char *ip_addr);
-extern u_int32 pa_aton(const u_char *ip_addr);
-/***************************************************/
-
-extern int pa_ntoa_r(u_int32 ip_addr, u_char *ascii);
 extern int eth_addr_ntoa(u_int8 *ll_addr, u_char *ascii);
 
 extern int get_iface_ip(char *iface, u_int32 *ip_addr);

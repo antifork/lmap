@@ -5,18 +5,12 @@ The whole thing... ;)
 TODO for the lmap 
 -------------------
 
-   + convert all errors codes and numeric costants to enum
-
-   + convert all unnecessary global functions to static
-
    + test the wifi decoder under wifi card different from cisco
 
    + fix the signal handling (pthread is very ugly for this)
 
    + remove the hex_format function !! it is NOT thread safe !!
    
-   + pa_ntoa & co.  needs to be "thread safe"tize
-
    + passive fingerprint
    
    + set the iface config and default gw

@@ -169,7 +169,7 @@ inet_ntop6(const char *src, char *dst, size_t size)
 		/* Is this address an encapsulated IPv4? */
 		if (i == 6 && best.base == 0 &&
 		    (best.len == 6 || (best.len == 5 && words[5] == 0xffff))) {
-			if (pa_ntoa_r(*(src+12), tp) != 0)
+			if (inet_ntop4(src+12, tp, IP_ASCII_ADDR_LEN) != 0)
 				return (NULL);
 			tp += strlen(tp);
 			break;

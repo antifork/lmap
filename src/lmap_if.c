@@ -30,7 +30,6 @@
 
 /* protos... */
 
-int pa_ntoa_r(u_int32 ip_addr, u_char *ascii); /* XXX should be no more needed! */
 int eth_addr_ntoa(u_int8 *ll_addr, u_char *ascii);
 
 int get_iface_ip(char *iface, u_int32 *ip_addr);
@@ -41,19 +40,6 @@ int get_default_dns(u_int32 *dns_addr);
 
 
 /*******************************************/
-
-/* convert a ip address to a printable dot notation */
-
-int pa_ntoa_r(u_int32 ip_addr, u_char *ascii)
-{
-   u_char *p;
-
-   p = (u_char *)&ip_addr;
-   
-   sprintf(ascii, "%u.%u.%u.%u", p[0], p[1], p[2], p[3]);
-        
-   return ESUCCESS;
-}
 
 /* convert a link layer address to a printable dot notation */
 
@@ -142,6 +128,8 @@ int get_iface_ll(char *iface, char *ll_addr)
    memcpy(ll_addr, ifr.ifr_addr.sa_data, ETH_ADDR_LEN);
    
    close(sock);
+#elif defined OS_BSD
+   #error get_iface_ll is WIP
 #else
    #error get_iface_ll implemented only under linux
 #endif
