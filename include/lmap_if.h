@@ -14,8 +14,8 @@ extern int eth_addr_ntoa(const u_int8 *ll_addr, u_char *ascii);
 
 extern int get_iface_idx(const char *iface);
 
-extern int get_iface_ip(const char *iface, u_int32 *ip_addr);
-extern int set_iface_ip(const char *iface, const u_int32 *ip_addr);
+extern int get_iface_ip(const char *iface, struct ip_addr *ipa, const int type);
+extern int set_iface_ip(const char *iface, const struct ip_addr *ipa, const int type);
 
 extern int get_iface_ll(const char *iface, char *ll_addr);
 extern int set_iface_ll(const char *iface, const char *ll_addr);

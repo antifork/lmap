@@ -48,6 +48,27 @@ int if_open_raw(char *iface);
 int recv_ack(int fd, int size, const char *what, char *bufp, char *ebuf);
 int send_request(int fd, char *ptr, int len, char *what, char *ebuf);
 
+static int dlattachreq(int, u_int, char *);
+static int dlbindack(int, char *, char *);
+static int dlbindreq(int, u_int, char *);
+static int dlinfoack(int, char *, char *);
+static int dlinforeq(int, char *);
+static int dlokack(int, const char *, char *, char *);
+static int send_request(int, char *, int, char *, char *);
+static int recv_ack(int, int, const char *, char *, char *);
+static int dlpromisconreq(int, u_int, char *);
+#if defined(SOLARIS) && defined(HAVE_SYS_BUFMOD_H)
+static char *get_release(u_int *, u_int *, u_int *);
+#endif
+#ifdef HAVE_SYS_BUFMOD_H
+static int strioctl(int, int, int, char *);
+#endif
+#ifdef HAVE_DEV_DLPI
+static int get_dlpi_ppa(int, const char *, int, char *);
+#endif
+static char * split_dname(char *device, int *unitp);
+
+
 int if_open_raw(char *iface)
 {
    register char *cp;
@@ -349,6 +370,155 @@ recv_ack(int fd, int size, const char *what, char *bufp, char *ebuf)
         return (-1);
     }
     return (ctl.len);
+}
+
+static int
+dlpromisconreq(int fd, u_int level, char *ebuf)
+{
+    dl_promiscon_req_t req;
+
+    req.dl_primitive = DL_PROMISCON_REQ;
+    req.dl_level     = level;
+
+    return (send_request(fd, (char *)&req, sizeof(req), "promiscon", ebuf));
+}
+
+static int
+dlattachreq(int fd, u_int ppa, char *ebuf)
+{
+    dl_attach_req_t req;
+
+    req.dl_primitive = DL_ATTACH_REQ;
+    req.dl_ppa       = ppa;
+
+    return (send_request(fd, (char *)&req, sizeof(req), "attach", ebuf));
+}
+
+static int
+dlbindreq(int fd, u_int sap, char *ebuf)
+{
+
+    dl_bind_req_t req;
+
+    memset((char *)&req, 0, sizeof(req));
+    req.dl_primitive = DL_BIND_REQ;
+#ifdef DL_HP_RAWDLS
+    req.dl_max_conind = 1;  /* XXX magic number */
+    /*
+     *  22 is INSAP as per the HP-UX DLPI Programmer's Guide
+     */
+    req.dl_sap = 22;
+    req.dl_service_mode = DL_HP_RAWDLS;
+#else
+    req.dl_sap = sap;
+#ifdef DL_CLDLS
+    req.dl_service_mode = DL_CLDLS;
+#endif
+#endif
+    return (send_request(fd, (char *)&req, sizeof(req), "bind", ebuf));
+}
+
+
+static int
+dlbindack(int fd, char *bufp, char *ebuf)
+{
+    return (recv_ack(fd, DL_BIND_ACK_SIZE, "bind", bufp, ebuf));
+}
+
+
+static int
+dlokack(int fd, const char *what, char *bufp, char *ebuf)
+{
+    return (recv_ack(fd, DL_OK_ACK_SIZE, what, bufp, ebuf));
+}
+
+
+static int
+dlinforeq(int fd, char *ebuf)
+{
+    dl_info_req_t req;
+
+    req.dl_primitive = DL_INFO_REQ;
+
+    return (send_request(fd, (char *)&req, sizeof(req), "info", ebuf));
+}
+
+static int
+dlinfoack(int fd, char *bufp, char *ebuf)
+{
+    return (recv_ack(fd, DL_INFO_ACK_SIZE, "info", bufp, ebuf));
+}
+
+#ifdef HAVE_SYS_BUFMOD_H
+static int
+strioctl(int fd, int cmd, int len, char *dp)
+{
+   struct strioctl str;
+   int rc;
+
+   str.ic_cmd = cmd;
+   str.ic_timout = -1;
+   str.ic_len = len;
+   str.ic_dp = dp;
+   rc = ioctl(fd, I_STR, &str);
+
+   if (rc < 0)
+      return (rc);
+   else
+      return (str.ic_len);
+}
+
+static char *
+get_release(u_int *majorp, u_int *minorp, u_int *microp)
+{
+   char *cp;
+   static char buf[32];
+
+   *majorp = 0;
+   *minorp = 0;
+   *microp = 0;
+   if (sysinfo(SI_RELEASE, buf, sizeof(buf)) < 0)
+      return ("?");
+   cp = buf;
+   if (!isdigit((int)*cp))
+      return (buf);
+   *majorp = strtol(cp, &cp, 10);
+   if (*cp++ != '.')
+      return (buf);
+   *minorp =  strtol(cp, &cp, 10);
+   if (*cp++ != '.')
+      return (buf);
+   *microp =  strtol(cp, &cp, 10);
+   return (buf);
+}
+#endif
+
+
+static char *
+split_dname(char *device, int *unitp)
+{
+	char *cp;
+	char *eos;
+	int unit;
+
+	/*
+	 * Look for a number at the end of the device name string.
+	 */
+	cp = device + strlen(device) - 1;
+
+	if (*cp < '0' || *cp > '9')
+		return (NULL);
+
+	/* Digits at end of string are unit number */
+	while (cp-1 >= device && *(cp-1) >= '0' && *(cp-1) <= '9')
+		cp--;
+
+	unit = strtol(cp, &eos, 10);
+	if (*eos != '\0')
+		return (NULL);
+
+	*unitp = unit;
+	return (cp);
 }
 
 #endif

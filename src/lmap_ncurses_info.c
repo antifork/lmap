@@ -131,22 +131,32 @@ void ncurses_msg(const char *fmt, va_list ap)
 void print_ifaceconfig(LMAP_WIN *win)
 {
    u_int32 tmp;
-   struct ip_addr ipa, netmask, gw_addr, dns_addr;
+   struct ip_addr ipa, ipa6, netmask, gw_addr, dns_addr;
    u_int8 ll_addr[ETH_ADDR_LEN];
    char ip_ascii[IP_ASCII_ADDR_LEN];
+   char ip6_ascii[IP6_ASCII_ADDR_LEN];
    char net_ascii[IP_ASCII_ADDR_LEN];
    char ll_ascii[ETH_ASCII_ADDR_LEN];
    char gw_ascii[IP_ASCII_ADDR_LEN];
    char dns_ascii[IP_ASCII_ADDR_LEN];
    
    /* get and convert iface infos */
-   if (get_iface_ip(GBL_OPTIONS->iface, &tmp) == ESUCCESS) {
-      ip_addr_init(&ipa, AF_INET, (char *)&tmp);      
+   if (get_iface_ip(GBL_OPTIONS->iface, &ipa, AF_INET) == ESUCCESS) {
       ip_addr_ntoa(&ipa, ip_ascii);
    } else {
       sprintf(ip_ascii, "(none)");
    }     
       
+   if (get_iface_ip(GBL_OPTIONS->iface, &ipa6, AF_INET6) == ESUCCESS) {
+      ip_addr_ntoa(&ipa6, ip6_ascii);
+   } else {
+      sprintf(ip6_ascii, "(none)");
+   }
+      
+   /* XXX remove me! */
+   DEBUG_MSG("inet6_addr: %s", ip6_ascii);
+
+   
    if (get_iface_mask(GBL_OPTIONS->iface, &tmp) == ESUCCESS) {
       ip_addr_init(&netmask, AF_INET, (char *)&tmp);
       ip_addr_ntoa(&netmask, net_ascii);
@@ -173,6 +183,8 @@ void print_ifaceconfig(LMAP_WIN *win)
    
    
    /* draw the window */
+   
+   /* XXX remove me! */
    
    /* name */
    
@@ -313,6 +325,7 @@ void print_suggconfig(LMAP_WIN *win)
    wattron(W(win), A_BOLD);
    waddstr(W(win), "(none)");
    wattroff(W(win), A_BOLD);
+
 }
 
 

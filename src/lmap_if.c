@@ -32,14 +32,20 @@
 #include <lmap_if_solaris.h>
 #endif
 
+struct in6_ifreq {
+   struct in6_addr ifr6_addr;
+   u_int32 if6_prefixlen;
+   unsigned int ifr6_ifindex;
+};
+
 /* protos... */
 
 int eth_addr_ntoa(const u_int8 *ll_addr, u_char *ascii);
 
 int get_iface_idx(const char *iface);
 
-int get_iface_ip(const char *iface, u_int32 *ip_addr);
-int set_iface_ip(const char *iface, const u_int32 *ip_addr);
+int get_iface_ip(const char *iface, struct ip_addr *ipa, const int type);
+int set_iface_ip(const char *iface, const struct ip_addr *ipa, const int type);
 
 int get_iface_ll(const char *iface, char *ll_addr);
 int set_iface_ll(const char *iface, const char *ll_addr);
@@ -82,55 +88,80 @@ int get_iface_idx(const char *iface)
 }
 
 /* return the IP address for the specified iface */
+/* XXX convert to ip_addr and support IPv6 */
 
-int get_iface_ip(const char *iface, u_int32 *ip_addr)
+int get_iface_ip(const char *iface, struct ip_addr *ipa, const int type)
 {
    int sock;
    struct ifreq ifr;
+   
+#ifdef OS_LINUX
 
-   if (ip_addr == NULL)
+#endif
+   
+   if (ipa == NULL)
       return -EINVALID;
 
-   sock = socket(AF_INET, SOCK_DGRAM, 0);
+   switch (type) {
+   case AF_INET:
+      sock = socket(AF_INET, SOCK_DGRAM, 0);
 
-   memset(&ifr, 0, sizeof(ifr));
-   strncpy(ifr.ifr_name, iface, sizeof(ifr.ifr_name));
+      memset(&ifr, 0, sizeof(ifr));
+      strncpy(ifr.ifr_name, iface, sizeof(ifr.ifr_name));
 
-   if ( ioctl(sock, SIOCGIFADDR, &ifr) < 0 ) {
-      close(sock);
-      return -ENOADDRESS;
-   }
+      if ( ioctl(sock, SIOCGIFADDR, &ifr) < 0 ) {
+         close(sock);
+         return -ENOADDRESS;
+      }
    
-   memcpy((char *)ip_addr, ifr.ifr_addr.sa_data + 2, IP_ADDR_LEN);
+      ip_addr_init(ipa, AF_INET, ifr.ifr_addr.sa_data + 2);
         
-   close(sock);
-   
+      close(sock);
+      break;
+   case AF_INET6:
+#ifdef OS_LINUX
+    
+#endif
+      break;
+   default:
+      ERROR_MSG("invalid address type");
+      break;
+   }
+
    return ESUCCESS;
 }
 
 /* set the IP address for the specified iface */
+/* XXX convert to ip_addr and support IPv6 */
 
-int set_iface_ip(const char *iface, const u_int32 *ip_addr)
+int set_iface_ip(const char *iface, const struct ip_addr *ipa, const int type)
 {
    int sock;
    struct ifreq ifr;
 
-   if (ip_addr == NULL)
+   if (ipa == NULL)
       return -EINVALID;
 
-   sock = socket(AF_INET, SOCK_DGRAM, 0);
+   switch (type) {
+   case AF_INET:
+         
+      sock = socket(AF_INET, SOCK_DGRAM, 0);
 
-   memset(&ifr, 0, sizeof(ifr));
-   strncpy(ifr.ifr_name, iface, sizeof(ifr.ifr_name));
-   ifr.ifr_addr.sa_family = AF_INET;
-   strncpy(ifr.ifr_addr.sa_data + 2, (char *)ip_addr, IP_ADDR_LEN);
+      memset(&ifr, 0, sizeof(ifr));
+      strncpy(ifr.ifr_name, iface, sizeof(ifr.ifr_name));
+      ifr.ifr_addr.sa_family = AF_INET;
+      strncpy(ifr.ifr_addr.sa_data + 2, (char *)&ipa->addr, IP_ADDR_LEN);
 
-   if ( ioctl(sock, SIOCSIFADDR, &ifr) < 0 ) {
+      if ( ioctl(sock, SIOCSIFADDR, &ifr) < 0 ) {
+         close(sock);
+         return -ENOADDRESS;
+      }
+
       close(sock);
+      break;
+   case AF_INET6:
       return -ENOADDRESS;
-   }
-
-   close(sock);
+   };
 
    return ESUCCESS;
 }
