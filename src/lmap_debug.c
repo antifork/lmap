@@ -106,6 +106,7 @@ void debug_msg(char *message, ...)
    fflush(debug_file);
 }
 
+#endif /* DEBUG */
 
 /* 
  * printf a binary string in a 
@@ -161,7 +162,6 @@ char * hex_format(const u_char *buffer, int buff_len)
    return hexdata;
 }
 
-#endif /* DEBUG */
 
 /* EOF */
 
