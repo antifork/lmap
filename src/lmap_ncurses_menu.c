@@ -121,8 +121,6 @@ void refresh_statistics(void)
    char *type;
    u_int32 num;
    
-   (void)i; 
-
    /* if statistics are not displayed, do nothing */
    if (w_stat == NULL)
       return;
