@@ -73,17 +73,24 @@ char * get_local_path(char *file)
 FILE * open_data(char *file, char *mode)
 {
    FILE *fd;
-   char *filename;
+   char *filename = NULL;
 
    filename = get_full_path(file);
+  
+   DEBUG_MSG("open_data (%s)", filename);
    
    fd = fopen(filename, mode);
    if (fd == NULL) {
       SAFE_FREE(filename);
       filename = get_local_path(file);
+
+      DEBUG_MSG("open_data dropping to %s", filename);
+      
       fd = fopen(filename, mode);
       ON_ERROR(filename, NULL, "can't find %s in %s/%s or ./", filename, INSTALL_PREFIX, GBL_PROGRAM);
    }
+ 
+   SAFE_FREE(filename);
    
    return fd;
 }

@@ -13,6 +13,7 @@ lmap_SOURCES = lmap_main.c \
                lmap_inet.c \
                lmap_threads.c \
                lmap_data.c \
+               lmap_hash.c \
                lmap_ui.c \
                lmap_ncurses.c \
                lmap_ncurses_info.c \
