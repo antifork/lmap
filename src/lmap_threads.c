@@ -39,6 +39,7 @@ char * lmap_thread_getdesc(u_int32 id);
 void lmap_thread_register(u_int32 id, char *name, char *desc);
 u_int32 lmap_thread_new(char *name, char *desc, void *(*function)(void *), void *args);
 void lmap_thread_destroy(u_int32 id);
+void lmap_thread_init(void);
 
 /*******************************************/
 
@@ -150,8 +151,23 @@ void lmap_thread_destroy(u_int32 id)
 
 }
 
-/* EOF */
+/* 
+ * set the state of a thread 
+ * all the new thread should call this on startup
+ */
 
+void lmap_thread_init(void)
+{
+   /* 
+    * allow a thread to be cancelled as soon as the
+    * cancellation  request  is received
+    */
+        
+   pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS);
+
+}
+
+/* EOF */
 
 // vim:ts=3:expandtab
 
