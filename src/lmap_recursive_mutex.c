@@ -28,7 +28,7 @@ struct recursive_mutex_list {
     pthread_mutex_t *mx;
     pthread_t       id;
     unsigned long   count;
-                    LIST_ENTRY(recursive_mutex_list) next;
+    LIST_ENTRY(recursive_mutex_list) next;
 };
 
 
@@ -40,58 +40,65 @@ LIST_HEAD_INITIALIZER(head);
 int
 recursive_mutex_lock(pthread_mutex_t * mutex)
 {
-    struct recursive_mutex_list *current,
+   struct recursive_mutex_list *current,
                    *newelem;
-    pthread_t       me;
+   pthread_t       me;
 
-    pthread_mutex_lock(&recursive_mutex_list_mx);
+   pthread_mutex_lock(&recursive_mutex_list_mx);
 
-    me = pthread_self();
+   me = pthread_self();
 
-    LIST_FOREACH(current, &recursive_mutex_list_head, next)
+   LIST_FOREACH(current, &recursive_mutex_list_head, next)
 	if (mutex == current->mx && pthread_equal(me, current->id) != 0) {
-	current->count++;
-	pthread_mutex_unlock(&recursive_mutex_list_mx);
-	return 0;
-    }
+	   current->count++;
+	   pthread_mutex_unlock(&recursive_mutex_list_mx);
+	   return 0;
+   }
 
-    newelem = malloc(sizeof(struct recursive_mutex_list));
-    if (!newelem)
-	return -1;
+   newelem = malloc(sizeof(struct recursive_mutex_list));
+   
+   if (!newelem)
+	   return -1;
 
-    newelem->mx = mutex;
-    newelem->id = me;
-    newelem->count = 1;
+   newelem->mx = mutex;
+   newelem->id = me;
+   newelem->count = 1;
 
-    LIST_INSERT_HEAD(&recursive_mutex_list_head, newelem, next);
+   LIST_INSERT_HEAD(&recursive_mutex_list_head, newelem, next);
 
-    pthread_mutex_unlock(&recursive_mutex_list_mx);
+   pthread_mutex_unlock(&recursive_mutex_list_mx);
 
-    pthread_mutex_lock(mutex);
+   pthread_mutex_lock(mutex);
 
-    return 0;
+   return 0;
 }
 
 
 int
 recursive_mutex_unlock(pthread_mutex_t * mutex)
 {
-    struct recursive_mutex_list *current;
-    pthread_t       me;
+   struct recursive_mutex_list *current;
+   pthread_t       me;
 
-    pthread_mutex_lock(&recursive_mutex_list_mx);
+   pthread_mutex_lock(&recursive_mutex_list_mx);
 
-    me = pthread_self();
+   me = pthread_self();
 
-    LIST_FOREACH(current, &recursive_mutex_list_head, next)
+   LIST_FOREACH(current, &recursive_mutex_list_head, next)
 	if (mutex == current->mx && pthread_equal(me, current->id) != 0)
 	if (--current->count == 0) {
-	    LIST_REMOVE(current, next);
-	    free(current);
-	    pthread_mutex_unlock(mutex);
-	    break;
+	   LIST_REMOVE(current, next);
+	   free(current);
+	   pthread_mutex_unlock(mutex);
+	   break;
 	}
 
-    pthread_mutex_unlock(&recursive_mutex_list_mx);
-    return 0;
+   pthread_mutex_unlock(&recursive_mutex_list_mx);
+   return 0;
 }
+
+
+/* EOF */
+
+// vim:ts=3:expandtab
+
