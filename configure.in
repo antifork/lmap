@@ -20,8 +20,8 @@ dnl
 
 AC_INIT(include/lmap.h)
 
-dnl Force autoconf 2.5 
-AC_PREREQ(2.5)
+dnl Force autoconf 2.50 
+AC_PREREQ(2.50)
 
 VERSION=`grep LMAP_VERSION ./include/lmap_version.h | cut -f2 -d"\""`
 
