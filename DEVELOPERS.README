@@ -1,0 +1,35 @@
+========================================================================
+   Coding style, some useful global MACROS and functions descriptions
+========================================================================
+
+
+--------
+ MACROS
+--------
+
+
+USER_MSG
+   + *every* output should be achieved thru the macro USER_MSG(x, ...)
+     in this way when the inteface will be coded, it is sufficient
+     to change this macro to redirect user messages to the right place.
+
+DEBUG_MSG
+   + to print a debug message use the macro DEBUG_MSG(x, ...)
+     to enable the debug you should use ./configure --enable-debug
+
+ERROR_MSG
+   + the macro ERROR_MSG(x, ...) print the file:function:line, errno, 
+     strerror and a the user message x.
+     useful on unexpected behaviours.
+
+ON_ERROR
+   + the macro ON_ERROR(x, y, f, ...) expands to :
+      if (x == y)
+         ERROR_MSG(f, ...)
+     useful to check null pointer as follow:
+     foo = malloc(10);
+     ON_ERROR(foo, NULL, "cant allocate memory");
+
+FATAL_MSG
+   + print the message and execute an exit(1)
+

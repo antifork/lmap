@@ -5,10 +5,11 @@ The whole thing... ;)
 TODO for the lmap 
 -------------------
 
+   + test the wifi decoder under wifi card different from cisco
 
+   + db && relative API
+   
    + euristic engine
-
-   + db
 
    + active probing engine
 
