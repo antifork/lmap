@@ -30,7 +30,7 @@
 
 /* global vars */
 
-static LMAP_SCROLLWIN *w_sys;
+static LMAP_SCROLLWIN *w_sys = NULL;
 
 /* protos */
 
@@ -69,20 +69,21 @@ int scr_info(void)
    SAFE_WIN_REFRESH(w_sugg);
    
    /* the system message window */
-   w_sys = lmap_newscrollwin(SYS_LINES, COLS, LINES - SYS_LINES, 0, "System messages", 150);
-   SAFE_SCROLL_REFRESH(w_sys);
-
+   if (w_sys == NULL) {    /* only the first time */
+      w_sys = lmap_newscrollwin(SYS_LINES, COLS, LINES - SYS_LINES, 0, "System messages", 150);
+      SAFE_SCROLL_REFRESH(w_sys);
+   }
   
    /* loop inside this screen */
    
    do {
-      inputkey = 0;
+      inputkey = 0xff;  /* unused value */
 
       POLL_WGETCH(inputkey, w_menu);
       
       menu_refresh(w_menu);
 
-      menu_event(w_menu, inputkey);
+      menu_event(w_menu, &inputkey);
       
       switch(inputkey) {
          case KEY_DOWN:    lmap_scroll(w_sys, +1); break;
@@ -93,19 +94,19 @@ int scr_info(void)
             lmap_redrawscrollwin(w_sys, 1);
             USER_MSG("TAB: redrawing window");
             break;
-         case 'q':         USER_MSG("Use capital Q to exit..."); break;
       }
       
-   } while (inputkey != 'Q');
-   
+   } while ( inputkey > 12 );
+  
    /* clean up the screen and return */
    
-   lmap_delscrollwin(&w_sys);
    lmap_delwin(&w_info);
    lmap_delwin(&w_sugg);
    menu_destroy(&w_menu);
-  
-   return 0;        
+
+   DEBUG_MSG("scr_info exits with code %d", inputkey);
+   
+   return inputkey;        
 }
 
 /*
@@ -115,15 +116,15 @@ int scr_info(void)
 void ncurses_msg(const char *fmt, va_list ap)
 {
    /* 
-    * if the window doesn't exist 
+    * if the window does not exist 
     */
-   if (w_sys == NULL) 
+   if (w_sys == NULL) {
       return;
- 
+   }
+
    wprintw(W(w_sys), "\n");
    vwprintw(W(w_sys), (char *)fmt, ap);
    SAFE_SCROLL_REFRESH(w_sys);
-   
 }
 
 /* retrives and print actual iface configuration */

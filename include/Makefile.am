@@ -21,6 +21,7 @@ noinst_HEADERS = lmap_capture.h \
                  lmap_db.h \
                  lmap_ncurses.h \
                  lmap_ncurses_info.h \
+                 lmap_ncurses_topology.h \
                  lmap_ncurses_menu.h \
                  lmap_version.h \
                  lmap_threads.h \

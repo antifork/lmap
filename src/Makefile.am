@@ -22,6 +22,7 @@ lmap_SOURCES = lmap_main.c \
                lmap_ncurses.c \
 			   lmap_db.c \
                lmap_ncurses_info.c \
+               lmap_ncurses_topology.c \
                lmap_ncurses_menu.c \
                lmap_decode.c \
                lmap_decoder_eth.c \

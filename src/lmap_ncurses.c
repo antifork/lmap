@@ -22,6 +22,7 @@
 #include <lmap_ui.h>
 #include <lmap_ncurses.h>
 #include <lmap_ncurses_info.h>
+#include <lmap_ncurses_topology.h>
 
 #include <ncurses.h>
 
@@ -142,18 +143,23 @@ void ncurses_start(void)
   
    do {
       switch (next = display_screen()) {
+         
+         /*
+          * add here new screens
+          */
+         
          case 1:
             display_screen = scr_info;
             break;
-//         case 9:
-//            display_screen = scr_info;
-//            break;
+         case 2:
+            display_screen = scr_topology;
+            break;
       }
    } while (next != 0);
 
    /* 
     * here we return in the main...       
-    * the ui_clenup is done there.
+    * the ui_clenup will be performed there.
     */
    
    return;

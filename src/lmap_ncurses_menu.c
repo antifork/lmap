@@ -34,7 +34,7 @@ void menu_refresh(WINDOW *w_menu);
 void menu_destroy(WINDOW **w_menu);
 void show_statistics(void);
 static void refresh_statistics(void);
-int menu_event(WINDOW *w_menu, int key);
+int menu_event(WINDOW *w_menu, int *key);
 
 /*******************************************/
 
@@ -66,9 +66,20 @@ void menu_refresh(WINDOW *w_menu)
       return;
   
    wattron(w_menu, A_REVERSE);
+   mvwprintw(w_menu, 0, 0, "<F1>");     
+   wattroff(w_menu, A_REVERSE);
+   mvwprintw(w_menu, 0, 5, "Info");
+  
+   wattron(w_menu, A_REVERSE);
+   mvwprintw(w_menu, 0, 10, "<F2>");     
+   wattroff(w_menu, A_REVERSE);
+   mvwprintw(w_menu, 0, 15, "Topology");
+   
+   wattron(w_menu, A_REVERSE);
    mvwprintw(w_menu, 0, COLS - 26, "<F12>");     
    wattroff(w_menu, A_REVERSE);
    mvwprintw(w_menu, 0, COLS - 20, "Packets: %8d ", get_stat("TOTAL") );
+   
    SAFE_WREFRESH(w_menu);
    stats = get_stat("TOTAL");
    refresh_statistics();
@@ -84,7 +95,9 @@ void menu_destroy(WINDOW **w_menu)
    werase(*w_menu);
    SAFE_WREFRESH(*w_menu);
    delwin(*w_menu);
+   delwin(w_stat);
    *w_menu = NULL;
+   w_menu = NULL;
 }
 
 
@@ -144,11 +157,15 @@ void refresh_statistics(void)
  *       -ENOTHANDLED if not in menu
  */
 
-int menu_event(WINDOW *w_menu, int key)
+int menu_event(WINDOW *w_menu, int *key)
 {
    
-   switch(key) {
+   switch(*key) {
+      case KEY_F(1):    *key = 1;            break;
+      case KEY_F(2):    *key = 2;            break;
       case KEY_F(12):   show_statistics();   break;
+      case 'q':         USER_MSG("Use capital Q to exit..."); break;
+      case 'Q':         *key = 0;            break;
       default:          return -ENOTHANDLED; break;
    }
         
