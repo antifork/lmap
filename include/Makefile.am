@@ -23,4 +23,6 @@ EXTRA_DIST = missing/strlcpy.h \
              missing/getopt.h \
              missing/queue.h
 
+CLEANFILES = *.log *.out core.* *~
+
 # vim:ts=4:noexpandtab             

@@ -31,7 +31,7 @@ lmap_CFLAGS = @LMAP_CFLAGS@
 
 lmap_LDADD = @LIBOBJS@ @LMAP_LIBS@ 
 
-CLEANFILES = *.log *.out core.* missing/*.o
+CLEANFILES = *.log *.out core.* missing/*.o *~
 
 ## MISSING FUNCTIONS
 
