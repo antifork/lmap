@@ -21,6 +21,7 @@
 #include <lmap.h>
 #include <lmap_decode.h>
 #include <lmap_inet.h>
+#include <lmap_fingerprint.h>
 
 /* globals */
 
@@ -36,6 +37,7 @@ struct ip_header {
    u_int16  tot_len;
    u_int16  id;
    u_int16  frag_off;
+#define IP_DF 0x4000
    u_int8   ttl;
    u_int8   protocol;
    u_int16  check;
@@ -82,6 +84,17 @@ FUNC_DECODER(decode_ip)
    BUCKET->L3->proto = htons(LL_TYPE_IP);
    BUCKET->L3->ttl = ip->ttl;
 
+   /* if there is a TCP packet, try to passive fingerprint it */
+   if (ip->protocol == LN_TYPE_TCP) {
+      /* initialize passive fingerprint */
+      BUCKET->L4->fingerprint = fingerprint_alloc();
+  
+      /* collect ifos for passive fingerprint */
+      fingerprint_push(BUCKET->L4->fingerprint, FINGER_TTL, ip->ttl);
+      fingerprint_push(BUCKET->L4->fingerprint, FINGER_DF, ntohs(ip->frag_off) & IP_DF);
+      fingerprint_push(BUCKET->L4->fingerprint, FINGER_LT, ip->ihl * 4);
+   }
+   
 #if 0
    if (ip->ihl * 4 != sizeof(struct ip_header))
       USER_MSG(" --> IP OPTIONS PRESENT (%d byte)\n", (ip->ihl * 4) - sizeof(struct ip_header));

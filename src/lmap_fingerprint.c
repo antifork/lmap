@@ -51,6 +51,10 @@ static void fingerprint_discard(void);
 int fingerprint_init(void);
 char * fingerprint_search(char *f);
 
+char * fingerprint_alloc(void);
+char * fingerprint_destroy(char **finger);
+void fingerprint_push(char *finger, int param, int value);
+static u_char TTL_PREDICTOR(u_char x);
 /*****************************************/
 
 
@@ -122,7 +126,9 @@ int fingerprint_init(void)
    return i;
 }
 
-
+/*
+ * search in the database for a given fingerprint
+ */
 
 char * fingerprint_search(char *f)
 {
@@ -136,6 +142,122 @@ char * fingerprint_search(char *f)
    return NULL;
 
 }
+
+/*
+ * initialize the fingerprint string
+ */
+
+char * fingerprint_alloc(void)
+{
+   char *q;
+
+   q = calloc(FINGER_LEN+1, sizeof(char));
+   ON_ERROR(q, NULL, "can't callocate memory");
+
+   /* 
+    * initialize the fingerprint 
+    *
+    * WWWW:_MSS:TT:WS:S:N:D:T:F:LT
+    */
+   strcpy(q,"0000:_MSS:TT:WS:0:0:0:0:F:LT");
+   
+   return q;
+}
+
+/*
+ * destroy a fingerprint
+ */
+
+char * fingerprint_destroy(char **finger)
+{
+   SAFE_FREE(*finger);
+   return NULL;
+}
+
+/*
+ * add a parameter to the finger string
+ */
+
+void fingerprint_push(char *finger, int param, int value)
+{
+   char tmp[10];
+   int lt_old = 0;
+
+   ON_ERROR(finger, NULL, "finger_push used on NULL string !!");
+   
+   switch (param) {
+      case FINGER_WINDOW:
+         snprintf(tmp, sizeof(tmp), "%04X", value);
+         strncpy(finger, tmp, 4);
+         break;
+      case FINGER_MSS:
+         snprintf(tmp, sizeof(tmp), "%04X", value);
+         strncpy(finger + 5, tmp, 4);
+         break;
+      case FINGER_TTL:
+         snprintf(tmp, sizeof(tmp), "%02X", TTL_PREDICTOR(value));
+         strncpy(finger + 10, tmp, 2);
+         break;
+      case FINGER_WS:
+         snprintf(tmp, sizeof(tmp), "%02X", value);
+         strncpy(finger + 13, tmp, 2);
+         break;
+      case FINGER_SACK:
+         snprintf(tmp, sizeof(tmp), "%d", value);
+         strncpy(finger + 16, tmp, 1);
+         break;
+      case FINGER_NOP:
+         snprintf(tmp, sizeof(tmp), "%d", value);
+         strncpy(finger + 18, tmp, 1);
+         break;
+      case FINGER_DF:
+         snprintf(tmp, sizeof(tmp), "%d", value);
+         strncpy(finger + 20, tmp, 1);
+         break;
+      case FINGER_TIMESTAMP:
+         snprintf(tmp, sizeof(tmp), "%d", value);
+         strncpy(finger + 22, tmp, 1);
+         break;
+      case FINGER_TCPFLAG:
+         if (value == 1)
+            strncpy(finger + 24, "A", 1);
+         else
+            strncpy(finger + 24, "S", 1);
+         break;
+      case FINGER_LT:
+         /*
+          * since the LENGHT is the sum of the IP header
+          * and the TCP header, we have to calculate it
+          * in two steps. (decoders are unaware of other layers)
+          */
+         lt_old = strtoul(finger + 26, NULL, 16);
+         snprintf(tmp, sizeof(tmp), "%02x", value + lt_old);
+         strncpy(finger + 26, tmp, 2);
+         break;                                 
+   }
+}
+
+/*
+ * round the TTL to the nearest power of 2 (ceiling)
+ */
+
+static u_char TTL_PREDICTOR(u_char x)
+{                            
+   register u_char i = x;
+   register u_char j = 1;
+   register u_char c = 0;
+
+   do {
+      c += i & 1;
+      j <<= 1;
+   } while ( i >>= 1 );
+
+   if ( c == 1 )
+      return x;
+   else
+      return ( j ? j : 0xff );
+}
+
 
 
 /* EOF */

@@ -33,6 +33,24 @@ extern int ip_addr_init(struct ip_addr *sa, int type, char *addr);
 extern const char *ip_addr_ntoa(struct ip_addr *sa, char *dst);
 extern const char *ip_addr_details(struct ip_addr *sa, char *dst);
 
+#ifdef WORDS_BIGENDIAN        
+   #define ptohs(x) ( (u_int16)                       \
+                      ((u_int16)*((u_int8 *)x+1)<<8|  \
+                      (u_int16)*((u_int8 *)x+0)<<0)   \
+                    )
+
+   #define ptohl(x) ( (u_int32)*((u_int8 *)x+3)<<24|  \
+                      (u_int32)*((u_int8 *)x+2)<<16|  \
+                      (u_int32)*((u_int8 *)x+1)<<8|   \
+                      (u_int32)*((u_int8 *)x+0)<<0    \
+                    )
+#else
+   #define ptohs(x) *(u_int16 *)(x)
+   #define ptohl(x) *(u_int32 *)(x)
+#endif
+      
+
+
 #endif
 
 /* EOF */

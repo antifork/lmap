@@ -20,6 +20,7 @@
 
 #include <lmap.h>
 #include <lmap_decode.h>
+#include <lmap_fingerprint.h>
 
 
 /* globals */
@@ -47,6 +48,14 @@ struct tcp_header {
    u_int16  sum;        /* checksum */
    u_int16  urp;        /* urgent pointer */
 };
+
+/* tcp options */
+#define TCPOPT_EOL              0
+#define TCPOPT_NOP              1
+#define TCPOPT_MAXSEG           2
+#define TCPOPT_WSCALE           3
+#define TCPOPT_SACKOK           4
+#define TCPOPT_TIMESTAMP        8
 
 
 /* protos */
@@ -85,14 +94,64 @@ FUNC_DECODER(decode_tcp)
    /* this is TCP */
    BUCKET->L4->proto = htons(LN_TYPE_TCP);
 
-#if 0
-   if (tcp->off * 4 != sizeof(struct tcp_header))
-      USER_MSG(" --> TCP OPTIONS PRESENT (%d bytes)\n", 
-                      (tcp->off * 4) - sizeof(struct tcp_header) );
-   
-   USER_MSG(" --> data    %d bytes\n", DECODE_DATALEN - DECODED_LEN);
-#endif
+   /* 
+    * complete the passive fingerprint
+    * we are intereste only in SYN or SYN+ACK packets 
+    * else we can destroy the fingerprint
+    */
 
+   if (tcp->flags & TH_SYN) {
+   
+      u_char *opt_start, *opt_end;
+
+      opt_start = (u_char *)(tcp + 1);
+      opt_end = (u_char *)((int)tcp + tcp->off * 4);
+      
+      fingerprint_push(BUCKET->L4->fingerprint, FINGER_WINDOW, ntohs(tcp->win));
+      fingerprint_push(BUCKET->L4->fingerprint, FINGER_TCPFLAG, (tcp->flags & TH_ACK) ? 1 : 0);
+      /* this should be added to the len of ip header */
+      fingerprint_push(BUCKET->L4->fingerprint, FINGER_LT, tcp->off * 4);
+   
+      while (opt_start < opt_end) {
+         switch (*opt_start) {
+            case TCPOPT_EOL: 
+               /* end option EXIT */
+               opt_start = opt_end;
+               break;
+            case TCPOPT_NOP:
+               fingerprint_push(BUCKET->L4->fingerprint, FINGER_NOP, 1);
+               opt_start++;
+               break;
+            case TCPOPT_SACKOK:
+               fingerprint_push(BUCKET->L4->fingerprint, FINGER_SACK, 1);
+               opt_start += 2;
+               break;
+            case TCPOPT_MAXSEG:
+               opt_start += 2;
+               fingerprint_push(BUCKET->L4->fingerprint, FINGER_MSS, ntohs(ptohs(opt_start)));
+               opt_start += 2;
+               break;
+            case TCPOPT_WSCALE:
+               opt_start += 2;
+               fingerprint_push(BUCKET->L4->fingerprint, FINGER_WS, *opt_start);
+               opt_start++;
+               break;
+            case TCPOPT_TIMESTAMP:
+               fingerprint_push(BUCKET->L4->fingerprint, FINGER_TIMESTAMP, 1);
+               opt_start++;
+               opt_start += (*opt_start - 1);
+               break;
+            default:
+               opt_start++;
+               opt_start += (*opt_start - 1);
+               break;
+         }
+      }
+      
+   } else {
+      fingerprint_destroy(&BUCKET->L4->fingerprint);
+   }
+   
    return NULL;
 }
 

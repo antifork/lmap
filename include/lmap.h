@@ -45,12 +45,7 @@
 
 #define SPRINTF(x) ((size_t)sprintf x)
 
-#define ADD_STAT(x)  (GBL_STAT->x)++
-#define GET_STAT(x)  (GBL_STAT->x)
-
-
 extern void do_nothing(void);
-
 
 #endif   /*  LMAP_H */
 

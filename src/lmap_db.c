@@ -101,10 +101,11 @@ void db_bucket_send(struct bucket *b)
    USER_MSG(" --> dest    %d", ntohs(b->L4->port_dst));
    USER_MSG(" --> proto   0x%04x", ntohs(b->L4->proto));
    USER_MSG(" --> finger  %s\n", b->L4->fingerprint);
+   SAFE_FREE(b->L4->fingerprint);
    SAFE_FREE(b->L4);
    
-   USER_MSG("L5 INFO\n");
-   SAFE_FREE(b->L5);
+//   USER_MSG("L5 INFO\n");
+//   SAFE_FREE(b->L5);
 }
 
 
