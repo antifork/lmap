@@ -15,4 +15,18 @@ TODO for the lmap
 
    + user interface
 
+---------------
+EURISTIC issue
+---------------
 
+     find a valid IP
+
+     find a gw
+
+     find a dns
+
+     find a dhcp server
+
+     find a gw for neighbour lan
+
+     set routes if needed.
