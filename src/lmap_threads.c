@@ -28,6 +28,8 @@ struct thread_list {
    LIST_ENTRY (thread_list) next;
 };
 
+//
+
 /* global data */
 
 static LIST_HEAD(, thread_list) thread_list_head;
@@ -59,8 +61,6 @@ char * lmap_thread_getname(pthread_t id)
 
    if (id == LMAP_SELF)
       id = pthread_self();
-
-   THREADS_LOCK;
 
    LIST_FOREACH(current, &thread_list_head, next) {
       if (current->t.id == id) {
