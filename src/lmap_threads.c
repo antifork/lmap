@@ -32,6 +32,12 @@ struct thread_list {
 
 static LIST_HEAD(, thread_list) thread_list_head;
 
+int tl = 0;
+
+pthread_mutex_t threads_mutex = PTHREAD_MUTEX_INITIALIZER;
+#define THREADS_LOCK     do{ pthread_mutex_lock(&threads_mutex); } while(0)
+#define THREADS_UNLOCK   do{ pthread_mutex_unlock(&threads_mutex); } while(0)
+   
 /* protos... */
 
 char * lmap_thread_getname(pthread_t id);
@@ -53,11 +59,17 @@ char * lmap_thread_getname(pthread_t id)
 
    if (id == LMAP_SELF)
       id = pthread_self();
-   
+
+   THREADS_LOCK;
+
    LIST_FOREACH(current, &thread_list_head, next) {
-      if (current->t.id == id)
+      if (current->t.id == id) {
+         THREADS_UNLOCK;
          return current->t.name;
+      }
    }
+
+   THREADS_UNLOCK;
 
    return "NR_THREAD";
 }
@@ -70,12 +82,18 @@ char * lmap_thread_getdesc(pthread_t id)
 
    if (id == LMAP_SELF)
       id = pthread_self();
+  
+   THREADS_LOCK;
    
    LIST_FOREACH(current, &thread_list_head, next) {
-      if (current->t.id == id)
+      if (current->t.id == id) {
+         THREADS_UNLOCK;
          return current->t.description;
+      }
    }
-
+   
+   THREADS_UNLOCK;
+   
    return "";
 }
 
@@ -98,15 +116,21 @@ void lmap_thread_register(pthread_t id, char *name, char *desc)
    newelem->t.name = strdup(name);
    newelem->t.description = strdup(desc);
 
+   THREADS_LOCK;
+   
    LIST_FOREACH(current, &thread_list_head, next) {
       if (current->t.id == id) {
          LIST_REPLACE(current, newelem, next);
          SAFE_FREE(current);
+         THREADS_UNLOCK;
          return;
       }
    }
 
    LIST_INSERT_HEAD(&thread_list_head, newelem, next);
+   
+   THREADS_UNLOCK;
+   
 }
 
 /*
@@ -143,16 +167,20 @@ void lmap_thread_destroy(pthread_t id)
 
    pthread_join((pthread_t)id, NULL);
 
+   THREADS_LOCK;
+   
    LIST_FOREACH(current, &thread_list_head, next) {
       if (current->t.id == id) {
-         DEBUG_MSG("lmap_thread_destroy -- %d [%s] terminated !", current->t.id, current->t.name);
          SAFE_FREE(current->t.name);
          SAFE_FREE(current->t.description);
          LIST_REMOVE(current, next);
          SAFE_FREE(current);
+         THREADS_UNLOCK;
          return;
       }
    }
+
+   THREADS_UNLOCK;
 
 }
 
@@ -191,9 +219,8 @@ void lmap_thread_kill_all(void)
          lmap_thread_destroy(current->t.id);      
       }
    }
-        
-}
 
+}
 
 /*
  * set a cancellation point

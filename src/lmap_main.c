@@ -68,7 +68,7 @@ int main(int argc, char *argv[])
    /* initialize the user interface */
    ui_init();
    
-   USER_MSG("\n\033[01m\033[1m%s %s\033[0m\n\n", GBL_PROGRAM, GBL_VERSION);
+   fprintf(stdout, "\n\033[01m\033[1m%s %s\033[0m\n\n", GBL_PROGRAM, GBL_VERSION);
 
    /* initialize libpcap */
    capture_init();

@@ -166,6 +166,9 @@ int ui_msg_flush(int max)
    if (SIMPLEQ_FIRST(&messages_queue) == NULL)
       return 0;
    
+   /* the queue is updated by other threads */
+   UI_MSG_LOCK;
+      
    while ( (msg = SIMPLEQ_FIRST(&messages_queue)) != NULL) {
 
       /* diplay the message */
@@ -174,18 +177,15 @@ int ui_msg_flush(int max)
       /* free the message */
       SAFE_FREE(msg->message);
       
-      /* the queue is updated by other threads */
-      UI_MSG_LOCK;
-      
       SIMPLEQ_REMOVE_HEAD(&messages_queue, msg, next);
       SAFE_FREE(msg);
-      
-      UI_MSG_UNLOCK;
       
       /* do not display more then 'max' messages */
       if (++i == max)
          break;
    }
+   
+   UI_MSG_UNLOCK;
    
    /* returns the number of displayed messages */
    return i;

@@ -13,8 +13,11 @@ Legenda:
 + preliminary ipv6 support
 + ip_addr functions
 + preliminary UI engine
++ message queue for the UI
 ! fixed automake issue with missing functions
 ! fixed signal handling (nested signals)
+! fixed race condition in UI
+! fixed thread locking in lmap_thread and _ui
 ! code cleanup
 
 
