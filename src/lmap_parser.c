@@ -41,7 +41,7 @@ void lmap_usage(void)
    fprintf (stdout, "\nGeneral options:\n");
    fprintf (stdout, "  -i, --iface <iface>          use this interface\n");
    fprintf (stdout, "  -d, --dump <file>            dump sniffed data to <file>\n");
-   fprintf (stdout, "  -r, --read <file>            loac data from <file>\n\n");
+   fprintf (stdout, "  -r, --read <file>            load data from <file>\n\n");
    fprintf (stdout, "  -v, --version                prints the version and exit\n");
    fprintf (stdout, "  -h, --help                   this help screen\n");
 
