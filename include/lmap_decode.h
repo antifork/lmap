@@ -53,9 +53,10 @@ enum {
 /* network layer types */
 
 enum {
-   LN_TYPE_ICMP = 0x01,
-   LN_TYPE_TCP  = 0x06,
-   LN_TYPE_UDP  = 0x11,
+   LN_TYPE_ICMP  = 0x01,
+   LN_TYPE_ICMP6 = 0x3a,
+   LN_TYPE_TCP   = 0x06,
+   LN_TYPE_UDP   = 0x11,
 };
 
 /* proto layer types */

@@ -111,12 +111,10 @@ FUNC_DECODER(decode_ip6)
 	 break;
    }
       
-   /*
-   if (opt == 0)
+   /* if (opt == 0)
       return get_decoder(OPT6_LAYER, ip6->next_hdr);
-   else 
-   */
-   return get_decoder(PROTO_LAYER, ip6->next_hdr);
+   else */
+      return get_decoder(PROTO_LAYER, ip6->next_hdr);
 }
 
 /* EOF */

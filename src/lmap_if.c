@@ -28,13 +28,25 @@
 #include <net/if.h>
 #include <net/route.h>
 
+#ifdef OS_SOLARIS
+#include <lmap_if_solaris.h>
+#endif
+
 /* protos... */
 
-int eth_addr_ntoa(u_int8 *ll_addr, u_char *ascii);
+int eth_addr_ntoa(const u_int8 *ll_addr, u_char *ascii);
 
-int get_iface_ip(char *iface, u_int32 *ip_addr);
-int get_iface_ll(char *iface, char *ll_addr);
-int get_iface_mask(char *iface, u_int32 *netmask);
+int get_iface_idx(const char *iface);
+
+int get_iface_ip(const char *iface, u_int32 *ip_addr);
+int set_iface_ip(const char *iface, const u_int32 *ip_addr);
+
+int get_iface_ll(const char *iface, char *ll_addr);
+int set_iface_ll(const char *iface, const char *ll_addr);
+
+int get_iface_mask(const char *iface, u_int32 *netmask);
+int set_iface_mask(const char *iface, const u_int32 *netmask);
+
 int get_default_gw(u_int32 *gw_addr);
 int get_default_dns(u_int32 *dns_addr);
 
@@ -43,7 +55,7 @@ int get_default_dns(u_int32 *dns_addr);
 
 /* convert a link layer address to a printable dot notation */
 
-int eth_addr_ntoa(u_int8 *ll_addr, u_char *ascii)
+int eth_addr_ntoa(const u_int8 *ll_addr, u_char *ascii)
 {
    sprintf(ascii, "%02X:%02X:%02X:%02X:%02X:%02X", ll_addr[0], ll_addr[1],
                    ll_addr[2], ll_addr[3], ll_addr[4], ll_addr[5]);
@@ -51,10 +63,27 @@ int eth_addr_ntoa(u_int8 *ll_addr, u_char *ascii)
    return ESUCCESS;
 }
 
+/* return index of iface */
+
+int get_iface_idx(const char *iface)
+{
+   int sock;
+   struct ifreq ifr;
+
+   sock = socket(AF_INET, SOCK_DGRAM, 0);
+   
+   memset(&ifr, 0, sizeof(ifr));
+   strncpy(ifr.ifr_name, iface, sizeof(ifr.ifr_name));
+
+   if (ioctl(sock, SIOCGIFINDEX, &ifr) < 0)
+      ERROR_MSG("ioctl(SIOCGIFINDEX)");
+
+   return ifr.ifr_ifindex;
+}
 
 /* return the IP address for the specified iface */
 
-int get_iface_ip(char *iface, u_int32 *ip_addr)
+int get_iface_ip(const char *iface, u_int32 *ip_addr)
 {
    int sock;
    struct ifreq ifr;
@@ -79,9 +108,37 @@ int get_iface_ip(char *iface, u_int32 *ip_addr)
    return ESUCCESS;
 }
 
+/* set the IP address for the specified iface */
+
+int set_iface_ip(const char *iface, const u_int32 *ip_addr)
+{
+   int sock;
+   struct ifreq ifr;
+
+   if (ip_addr == NULL)
+      return -EINVALID;
+
+   sock = socket(AF_INET, SOCK_DGRAM, 0);
+
+   memset(&ifr, 0, sizeof(ifr));
+   strncpy(ifr.ifr_name, iface, sizeof(ifr.ifr_name));
+   ifr.ifr_addr.sa_family = AF_INET;
+   strncpy(ifr.ifr_addr.sa_data + 2, (char *)ip_addr, IP_ADDR_LEN);
+
+   if ( ioctl(sock, SIOCSIFADDR, &ifr) < 0 ) {
+      close(sock);
+      return -ENOADDRESS;
+   }
+
+   close(sock);
+
+   return ESUCCESS;
+}
+
+
 /* return the NETMASK for the specified iface */
 
-int get_iface_mask(char *iface, u_int32 *netmask)
+int get_iface_mask(const char *iface, u_int32 *netmask)
 {
    int sock;
    struct ifreq ifr;
@@ -106,9 +163,36 @@ int get_iface_mask(char *iface, u_int32 *netmask)
    return ESUCCESS;
 }
 
+
+/* set the NETMASK for the specified iface */
+
+int set_iface_mask(const char *iface, const u_int32 *netmask)
+{
+   int sock;
+   struct ifreq ifr;
+
+   if (netmask == NULL)
+      return -EINVALID;
+
+   sock = socket(AF_INET, SOCK_DGRAM, 0);
+
+   memset(&ifr, 0, sizeof(ifr));
+   strncpy(ifr.ifr_name, iface, sizeof(ifr.ifr_name));
+
+   ifr.ifr_addr.sa_family = AF_INET;
+   memcpy(ifr.ifr_addr.sa_data + 2, netmask, IP_ADDR_LEN);
+
+   if ( ioctl(sock, SIOCSIFNETMASK, &ifr) < 0 ) {
+      close(sock);
+      return -ENOADDRESS;
+   }
+
+   return ESUCCESS;
+}
+   
 /* return the LINK LAYER address for the specified iface */
 
-int get_iface_ll(char *iface, char *ll_addr)
+int get_iface_ll(const char *iface, char *ll_addr)
 {
 #ifdef OS_LINUX
    int sock;
@@ -123,19 +207,113 @@ int get_iface_ll(char *iface, char *ll_addr)
    strncpy(ifr.ifr_name, iface, sizeof(ifr.ifr_name));
 
    if ( ioctl(sock, SIOCGIFHWADDR, &ifr) < 0 )
-      ERROR_MSG("ioctl(SIOCGIFNETMASK)");
+      ERROR_MSG("ioctl(SIOCGIFHWADDR)");
    
    memcpy(ll_addr, ifr.ifr_addr.sa_data, ETH_ADDR_LEN);
    
    close(sock);
 #elif defined OS_BSD
-   #error get_iface_ll is WIP
+   int mib[6];
+   size_t len;
+   char *buf, *next, *end;
+   struct if_msghdr *ifm;
+   struct sockaddr_dl *sdl;
+
+   mib[0] = CTL_NET;
+   mib[1] = AF_ROUTE;
+   mib[2] = 0;
+   mib[3] = AF_LINK;
+   mib[4] = NET_RT_IFLIST;
+   mib[5] = 0;
+
+   if (sysctl(mib, 6, NULL, &len, NULL, 0) < 0)
+      ERROR_MSG("sysctl()");
+
+   if ((buf = (char *)malloc(len)) == NULL )
+      ERROR_MSG("malloc()");
+
+   if (sysctl(mib, 6, buf, &len, NULL, 0) < 0)
+      ERROR_MSG("sysctl()");
+
+   end = buf + len;
+
+   for (next = buf ; next < end ; next += ifm->ifm_msglen)
+   {
+      ifm = (struct if_msghdr *)next;
+      if (ifm->ifm_type == RTM_IFINFO)
+      {
+         sdl = (struct sockaddr_dl *)(ifm + 1);
+         if (strncmp(&sdl->sdl_data[0], iface, sdl->sdl_nlen) == 0)
+         {
+            memcpy(ll_addr, LLADDR(sdl), ETHER_ADDR_LEN);
+            break;
+         }
+      }
+   }
+      
+   SAFE_FREE(buf);
+#elif defined OS_SOLARIS
+   int sock, dlpi;
+   char buf[2048];
+   union DL_primitives *dlp;
+
+   dlpi = if_open_raw(iface);
+
+   dlp = (union DL_primitives*) buf;
+
+   dlp->physaddr_req.dl_primitive = DL_PHYS_ADDR_REQ;
+   dlp->physaddr_req.dl_addr_type = DL_CURR_PHYS_ADDR;
+
+   if (send_request(dlpi, (char *)dlp, DL_PHYS_ADDR_REQ_SIZE, "physaddr", ebuf) < 0)
+      Error_msg("send_request(DL_PHYS_ADDR_REQ_SIZE) | %s \n", ebuf);
+
+   if (recv_ack(dlpi, DL_PHYS_ADDR_ACK_SIZE, "physaddr", (char *)dlp, ebuf) < 0)
+      Error_msg("recv_ack(DL_PHYS_ADDR_ACK_SIZE) | %s \n", ebuf);
+
+   memcpy( MyMAC,(struct ether_addr *) ((char *) dlp + dlp->physaddr_ack.dl_addr_offset), ETHER_ADDR_LEN);
+
+   /* raw sock fd is closed on exit */
 #else
-   #error get_iface_ll implemented only under linux
+   #error get_iface_ll not implemented under this os
 #endif
    
    return ESUCCESS;
 }
+
+
+/* set the LINK LAYER address for the specified iface */
+
+int set_iface_ll(const char *iface, const char *ll_addr)
+{
+#ifdef OS_LINUX
+   int sock;
+   struct ifreq ifr;
+
+   if (ll_addr == NULL)
+      return -EINVALID;
+
+   sock = socket(AF_INET, SOCK_DGRAM, 0);
+
+   memset(&ifr, 0, sizeof(ifr));
+   strncpy(ifr.ifr_name, iface, sizeof(ifr.ifr_name));
+
+   memcpy(ifr.ifr_addr.sa_data, ll_addr, ETH_ADDR_LEN);
+
+   if ( ioctl(sock, SIOCSIFHWADDR, &ifr) < 0 )
+      ERROR_MSG("ioctl(SIOCSIFHWADDR");
+
+#elif defined OS_BSD
+   #error set_iface_ll is WIP under BSD
+#elif defined OS_SOLARIS
+   #error set_iface_ll is WIP under SOLARIS
+#else
+   #error get_iface_ll not implemented under this os
+#endif
+
+   return ESUCCESS;
+
+}
+
 
 int get_default_gw(u_int32 *gw_addr)
 {
