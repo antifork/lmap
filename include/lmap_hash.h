@@ -11,3 +11,4 @@ extern Fnv32_t fnv_32(void *buf, size_t len);
 extern Fnv64_t fnv_64(void *buf, size_t len);
 
 #endif /* __FNV_H__ */
+
