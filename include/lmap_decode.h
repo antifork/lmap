@@ -29,6 +29,7 @@ void * get_decoder(int level, int type);
 
 /* interface layer types */
 
+#define LI_TYPE_RAW     0
 #define LI_TYPE_ETH     DLT_EN10MB
 #define LI_TYPE_WIFI    DLT_IEEE802_11
 

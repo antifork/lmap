@@ -38,7 +38,7 @@ void raw_init(void);
 
 void __init raw_init(void)
 {
-   add_decoder(LINK_LAYER, 0, decode_raw);
+   add_decoder(LINK_LAYER, LI_TYPE_RAW, decode_raw);
 }
 
 
