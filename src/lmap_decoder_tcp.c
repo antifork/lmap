@@ -92,7 +92,7 @@ FUNC_DECODER(decode_tcp)
    BUCKET->L4->port_dst = tcp->dport;
   
    /* this is TCP */
-   BUCKET->L4->proto = htons(LN_TYPE_TCP);
+   BUCKET->L4->proto = LN_TYPE_TCP;
 
    /* 
     * complete the passive fingerprint

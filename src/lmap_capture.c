@@ -68,7 +68,7 @@ void capture_init(void)
    
    DEBUG_MSG("capture_init %s", GBL_OPTIONS->iface);
               
-   USER_MSG("Listening on on %s...\n\n", GBL_OPTIONS->iface);
+   USER_MSG("Listening on %s...\n\n", GBL_OPTIONS->iface);
    
    /*
     * set the snaplen to maximum

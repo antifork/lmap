@@ -65,7 +65,7 @@ FUNC_DECODER(decode_udp)
    BUCKET->L4->port_dst = udp->dport;
 
    /* this is UDP */
-   BUCKET->L4->proto = htons(LN_TYPE_UDP);
+   BUCKET->L4->proto = LN_TYPE_UDP;
 
    /* return the next decoder */
    return get_decoder(APP_LAYER, ntohs(udp->dport));
