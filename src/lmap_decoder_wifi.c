@@ -62,7 +62,7 @@ FUNC_DECODER(decode_wifi)
 {
    struct wifi_header *wifi;
    struct wifi_ll_header *wifi_ll;
-   void *next_decoder;
+   void *next_decoder = NULL;
 
    DECODED_LEN = sizeof(struct wifi_header);
       
@@ -72,7 +72,7 @@ FUNC_DECODER(decode_wifi)
    
    if (ntohs(wifi->type) == 0x0802) {
       wifi_ll = (struct wifi_ll_header *)(wifi + 1);
-      DECODED_LEN = sizeof(struct wifi_ll_header);
+      DECODED_LEN += sizeof(struct wifi_ll_header);
       next_decoder = get_decoder(NET_LAYER, ntohs(wifi_ll->type));
    }
 
@@ -81,7 +81,7 @@ FUNC_DECODER(decode_wifi)
                    DECODE_DATALEN, 
                    hex_format(DECODE_DATA, DECODED_LEN));
 
-   return NULL;
+   return next_decoder;
 }
 
 /* EOF */
