@@ -28,7 +28,6 @@ struct thread_list {
    LIST_ENTRY (thread_list) next;
 };
 
-//
 
 /* global data */
 
