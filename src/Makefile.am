@@ -34,7 +34,8 @@ lmap_SOURCES = lmap_main.c \
                lmap_decoder_arp.c \
                lmap_decoder_udp.c \
                lmap_decoder_tcp.c \
-			   lmap_decoder_dhcp.c
+			   lmap_decoder_dhcp.c \
+               lmap_recursive_mutex.c
 
 
 lmap_CFLAGS = @LMAP_CFLAGS@
